@@ -1,18 +1,13 @@
 ---
-title: "1204. Last Person to Fit in the Bus"
-images: ["None"]
-date: "2023-11-18T01:51:01.000Z"
+title: '1204. Last Person to Fit in the Bus'
+images: ['None']
+date: '2023-11-18T01:51:01.000Z'
 tags: ['codingtest', 'leetcode']
 ---
 
 <TOCInline toc={props.toc} asDisclosure />
-[Last Person to Fit in the Bus - LeetCode
 
-Can you solve this real interview question? Last Person to Fit in the Bus - Table: Queue +-------------+---------+| Column Name | Type |+-------------+---------+| person\_id | int || person\_name | varchar || weight | int || turn | int |+-------------+---------+p…
-
-![](https://leetcode.com/favicon.ico)LeetCode
-
-![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/last-person-to-fit-in-the-bus/)
+[](https://leetcode.com/problems/last-person-to-fit-in-the-bus/)
 
 It's a simple problem to calculate cumulative sum. But the question is how to do so in SQL?
 
@@ -33,7 +28,6 @@ LIMIT 1
 
 Then why was it correct? I asked this to ChatGPT:
 
-
 The `SUM() OVER()` construct in SQL gives a cumulative sum because of the way the `OVER` clause works.
 
 When you use `SUM() OVER (ORDER BY column)`, it calculates the sum in the order specified by the column, and for each row, it includes all rows up to and including that row in the sum. This is why it gives a cumulative sum.
@@ -42,22 +36,21 @@ Here’s a simple example:
 
 Suppose you have a table `sales`:
 
-| sale\_id | sale\_amount |
-| --- | --- |
-| 1 | 100 |
-| 2 | 200 |
-| 3 | 300 |
+| sale_id | sale_amount |
+| ------- | ----------- |
+| 1       | 100         |
+| 2       | 200         |
+| 3       | 300         |
 
 If you run the query `SELECT sale_id, sale_amount, SUM(sale_amount) OVER (ORDER BY sale_id) as cumulative_sum FROM sales;`, you would get:
 
-| sale\_id | sale\_amount | cumulative\_sum |
-| --- | --- | --- |
-| 1 | 100 | 100 |
-| 2 | 200 | 300 |
-| 3 | 300 | 600 |
+| sale_id | sale_amount | cumulative_sum |
+| ------- | ----------- | -------------- |
+| 1       | 100         | 100            |
+| 2       | 200         | 300            |
+| 3       | 300         | 600            |
 
 As you can see, for each row, the `cumulative_sum` column contains the sum of `sale_amount` for that row and all preceding rows, in the order of `sale_id`. This is why `SUM() OVER (ORDER BY column)` gives a cumulative sum.
 
----
 
 In summary, `OVER` window function can count on preceding rows and a current row. Simple, but powerful!
