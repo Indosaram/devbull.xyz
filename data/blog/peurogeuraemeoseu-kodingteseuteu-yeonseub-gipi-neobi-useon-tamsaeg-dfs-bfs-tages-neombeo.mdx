@@ -1,0 +1,58 @@
+---
+title: "프로그래머스 - 코딩테스트 연습 - 깊이/너비 우선 탐색(DFS/BFS) - 타겟 넘버"
+images: ["None"]
+date: "2022-06-08T14:39:04.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://programmers.co.kr/learn/courses/30/lessons/43165)
+
+## 정답
+
+얼핏 보기에 DFS가 아닌 것 같지만 DFS 문제이다. 주어지는 `numbers` 의 길이가 20개 이하기 때문에 재귀로 간단하게 해결이 가능하다.
+
+```
+def solution(numbers, target):
+    result = 0
+
+    def dfs(numbers, target):
+        nonlocal result
+        if not numbers:
+            if target == 0:
+                result += 1
+            return
+        elif sum(numbers) == target:
+            result += 1
+            return
+
+        dfs(numbers[1:], target - numbers[0])
+        dfs(numbers[1:], target + numbers[0])
+
+    dfs(numbers, target)
+    return result
+
+```
+
+또는 큐를 사용해 BFS로도 풀이가 가능하다. 다만 큐로 구현할 경우, `pop(0)` 이 `O(n)` 이 소요되기 때문에 deque로 구현했다.
+
+```
+from collections import deque
+
+def solution(numbers, target):
+    result = 0
+    queue = deque([(numbers[0], 0), (-numbers[0], 0)])
+
+    while queue:
+        value, idx = queue.popleft()
+        call += 1
+        if idx == len(numbers) - 1:
+            if value == target:
+                result += 1
+        else:
+            idx += 1
+            queue += [(value + numbers[idx], idx), (value - numbers[idx], idx)]
+    return result
+```

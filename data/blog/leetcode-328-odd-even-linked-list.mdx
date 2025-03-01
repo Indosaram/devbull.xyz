@@ -1,0 +1,42 @@
+---
+title: "Leetcode - 328. Odd Even Linked List"
+images: ["https://images.unsplash.com/photo-1587059623844-d6d02a63bb70?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDZ8fG9kZCUyMGV2ZW58ZW58MHx8fHwxNjQ2NTU2MjQ5&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-03-06T08:43:15.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/odd-even-linked-list/)
+
+## 정답
+
+홀수와 짝수 인덱스의 링크드 리스트를 따로 진행시키면 됩니다.
+
+```
+class Solution:
+    def oddEvenList(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        if head is None:
+            return head
+
+        odd = head
+        even_head = even = head.next
+        while odd.next and even.next:
+            odd.next = odd.next.next
+            even.next = even.next.next
+
+            odd = odd.next
+            even = even.next
+
+        odd.next = even_head
+
+        return head
+
+```

@@ -1,0 +1,77 @@
+---
+title: "파이썬 문자열 로우 표현법(Raw string notation in Python)"
+images: ["https://images.unsplash.com/photo-1455894127589-22f75500213a?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T12:36:18.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+SWEA를 듣다가 처음 보는 표현을 들어서 정리해 보려고 한다.
+
+![pythonrawstring](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/pythonrawstring.png)
+
+로우 표현법이 대체 뭐지? 옆에 영어로 병기를 해주던가.. 왜 저렇게 썼는지 이해는 되는데 초심자 입장에서는 굉장히 난해한 표현이다. 문제는 그냥 저렇게 띡 "로우표현법"이라고 던지고 다음 챕터로 넘어가는 것 ㅠㅠ
+
+# 파이썬에서 Raw String(로우 표현법)
+
+## String prefix `r`, `R`
+
+사실 이건 로우 표현법이라는 말 자체가 잘못된 것 같다. 적절한 한국어 이름이 생각나지 않는데 그냥 Raw String이라고 하겠다. 파이썬에서 Raw String이라고 하면 보통 다음 방법을 말한다.
+
+```
+raw_string = r'Hi\nHello'
+print(raw_string)
+```
+
+실행결과
+
+```
+Hi\nHello
+```
+
+만일 그냥 `raw_s = 'Hi\nHello'`라고 했다면 `\n`이 Escape Character이기 때문에 줄바꿈이 일어난다.
+
+```
+raw_string = 'Hi\nHello'
+print(raw_string)
+```
+
+실행결과
+
+```
+Hi
+Hello
+```
+
+하지만 `r`을 string 앞에 붙여주어 이게 Raw string임을 표시했기 때문에 `'`안의 내용이 그대로(Raw) 출력되는 것을 알 수 있다.
+
+위 방법처럼 Raw string을 사용하려면 string 앞에 `r`또는 `R`을 붙여주면 된다.
+
+## String Literals
+
+그런데 Raw sting을 사용할때 문자 그대로 출력할 수 없는 것이 있다. 바로 String Literal이다. 예를 들어 `\'`은 Quote을, `\"`은 Double quote을 나타낸다. 원래 String에서 quote mark를 나타내려면 이 표현법을 사용했다.
+
+```
+string = '\''
+print(string)
+```
+
+실행결과
+
+```
+'
+```
+
+예상대로 `'`가 출력된다. 그런데 문제는 `\`를 출력하는 경우이다.
+
+```
+string =r'\'
+```
+
+실행결과
+
+```
+SyntaxError: EOL while scanning string literal
+```
+
+`\'` 때문에 개행이 되어버려 EOL 에러가 발생한다. 이러한 규칙에 따라 [Python Docs](https://docs.python.org/2.0/ref/strings.html)에 있는 String Literal은 Raw string으로도 출력할 수 없다.

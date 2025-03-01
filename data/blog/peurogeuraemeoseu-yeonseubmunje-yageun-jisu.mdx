@@ -1,0 +1,32 @@
+---
+title: "프로그래머스 - 연습문제 - 야근 지수"
+images: ["None"]
+date: "2022-10-28T13:15:41.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://school.programmers.co.kr/learn/courses/30/lessons/12927)
+
+## 정답
+
+max heap
+
+```
+import heapq
+
+def solution(n, works):
+    works = [-work for work in works]
+    heapq.heapify(works)
+
+    for _ in range(n):
+        work = heapq.heappop(works)
+        if work == 0:
+            heapq.heappush(works, work)
+            break
+        heapq.heappush(works, work + 1)
+
+    return sum([work**2 for work in works])
+```

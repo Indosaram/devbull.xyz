@@ -1,0 +1,56 @@
+---
+title: "Leetcode - 771. Jewels and Stones"
+images: ["https://images.unsplash.com/photo-1600119612651-0db31b3a7baa?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDV8fGpld2VsfGVufDB8fHx8MTYxOTY1NTY4Ng&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-04-29T00:20:34.000Z"
+tags: ['rust']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+* [](https://leetcode.com/problems/jewels-and-stones/)
+
+## 풀이
+
+### 파이썬 풀이
+
+```
+class Solution:
+    def numJewelsInStones(self, jewels: str, stones: str) -> int:
+        num = 0
+        for jewel in jewels:
+            num += stones.count(jewel)
+            
+        return num
+```
+
+### 러스트 풀이
+
+처음에 내가 생각한 풀이
+
+```
+impl Solution {
+    pub fn num_jewels_in_stones(jewels: String, stones: String) -> i32 {
+        let mut count = 0;
+        for stone in stones.chars() {
+            if jewels.contains(&stone.to_string()) {
+                count += 1;
+            }
+        }
+
+        count
+    }
+}
+
+```
+
+너무 파이썬 같은 풀이인 것 같아서 다른 풀이도 찾아보았는데 훨씬 함수형 프로그래밍에 적합한 풀이가 있다.
+
+```
+impl Solution {
+    pub fn num_jewels_in_stones(jewels: String, stones: String) -> i32 {
+        stones.chars().filter(|s| jewels.contains(*s)).count() as i32
+    }
+}
+
+```

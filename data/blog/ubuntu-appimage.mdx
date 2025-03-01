@@ -1,0 +1,79 @@
+---
+title: "Ubuntu에 AppImage를 System Application으로 등록하기"
+images: ["https://images.unsplash.com/photo-1613253932202-686cbcd993b0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDEwfHxsaW51eHxlbnwwfHx8fDE2MTgzNzY1Nzg&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-04-14T04:50:33.000Z"
+tags: ['set-up']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Intro
+
+AppImage는 다양한 리눅스 distro별로 바이너리를 빌드해야 하는 기존의 패키지 배포의 어려움을 해결한 획기적인 방법이다. 패키지를 설치할 필요 없이 파일 하나로 실행이 가능해 굉장히 편리하다. 가끔 윈도우에서 "포터블" 프로그램으로 `.exe` 파일 한개로 배포되는 경우가 있는데 이와 비슷하다.
+
+AppImage의 자세한 원리와 소스코드는 해당 레포를 참고하자.
+
+[AppImage/AppImageKit
+
+Package desktop applications as AppImages that run on common Linux-based operating systems, such as RHEL, CentOS, openSUSE, SLED, Ubuntu, Fedora, debian and derivatives. Join #AppImage on irc.freen...
+
+![](https://github.githubassets.com/favicons/favicon.svg)GitHubAppImage
+
+![](https://repository-images.githubusercontent.com/9435153/35f18d80-a800-11e9-9c88-4e43ce0563c1)](https://github.com/AppImage/appimagekit)
+
+AppImage 파일을 다운받았다면 실행 방법은 엄청 간단하다.
+
+![](/static/images/2021/04/image.png)
+
+해당 파일의 `권한` 에서 "파일을 프로그램으로 실행 허용"에 체크해주면 된다. 셸에서는
+
+```
+sudo chmod a+x $FILENAME.AppImage
+```
+
+와 같이 하면 된다.
+
+## 단점
+
+설치 없이 파일 하나로 실행이 된다는 점은 매우 편리하지만, 의외로 단점도 존재한다. 프로그램 자체가 파일로 존재하기 때문에, 해당 패키지를 실행하려면 AppImage가 저장된 폴더로 가서 실행하거나, 심볼릭 링크를 만들어 실행해야 한다.
+
+그러나 심볼릭 링크의 경우는 이 앱을 System Appliation으로 인식하지 않기 때문에 실행된 프로그램이 이상 작동을 하는 경우가 발생한다. 나의 경우는 해당 앱에서 구글 로그인을 해야했는데, 브라우저에서 로그인을 한 다음 앱으로 돌아와도 먹통인 문제가 있었다.
+
+## 해결 방법
+
+그래서 어쩔 수 없이 AppImage를 시스템 앱으로 인식하게 하는 툴을 사용했다.
+
+[TheAssassin/AppImageLauncher
+
+Helper application for Linux distributions serving as a kind of “entry point” for running and integrating AppImages - TheAssassin/AppImageLauncher
+
+![](https://github.githubassets.com/favicons/favicon.svg)GitHubTheAssassin
+
+![](https://avatars.githubusercontent.com/u/4503202?s=400&v=4)](https://github.com/TheAssassin/AppImageLauncher)
+
+원래 `AppImaged` 라는 공식 툴이 있었는데 아직 정식 릴리즈도 아니고, 부족한 기능이 많아서 이걸 사용했다.
+
+.deb으로도 배포중이지만, 역시 AppImage로 배포가 되고 있어서 간단하게 사용이 가능하다. 사용 방법은 다음과 같다.
+
+먼저 해당 패키지를 서비스로 등록한다. 파일명은 버전, 아키텍처에 따라 바뀔 수 있다.
+
+```
+./appimagelauncher-lite-2.2.0-travis995-0f91801-x86_64.AppImage install
+```
+
+그 다음 서비스를 실행한다.
+
+```
+./appimagelauncher-lite-2.2.0-travis995-0f91801-x86_64.AppImage appimagelauncherd
+```
+
+그러면 셸에 다음과 같이 출력된다.
+
+```
+Searching for existing AppImages
+Searching directory: /home/indo/Applications
+Watching directories: /home/indo/Applications 
+```
+
+그러면 해당 디렉터리로 이동해서 설치하길 원하는 AppImage를 넣어주면 된다. 끝!
+
+### 

@@ -1,0 +1,269 @@
+---
+title: "파이썬의 가비지 콜렉션에 대해서"
+images: ["https://images.unsplash.com/photo-1583916197120-4a6c3ab27a6f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDh8fHBhY21hbnxlbnwwfHx8fDE2NTUzNjQ2NDA&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-06-16T07:30:11.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+파이썬의 쓰레기 수집, 즉 가비지 콜렉션(Garbage collection)은 두 가지 양상을 가지고 있습니다.
+
+* 레퍼런스 카운팅
+* 세대기반
+
+다만 주의해야 하는 점은 여기서 이야기하는 파이썬은 C 구현체(CPython)라는 점입니다.
+
+## 1. 레퍼런스 카운팅(Reference counting)
+
+### 개념
+
+파이썬의 주된 가비지 콜렉션 메커니즘은 [레퍼런스 카운팅](https://docs.python.org/3.6/c-api/intro.html#reference-counts)입니다. 우리가 파이썬에서 어떤 객체를 생성하면, C  수준 객체는 이 파이썬 객체의 타입과 레퍼런스 카운트를 가지고 있게 됩니다.
+
+이 레퍼런스 카운트란 특정 객체가 몇 번이나 참조(referenced)되고 있는지를 나타냅니다. 만일 특정 객체의 참조가 사라진다면 카운트는 감소하게 됩니다. 이때 객체의 카운트가 0이라는 뜻은 더이상 이 객체에 접근하고 있는 코드가 없다는 의미이므로 메모리에서 삭제, 즉 할당 해제(deallocation)를 할 수 있게 되고, 바로 이 때 객체가 지워지게 됩니다. 따라서 안전하게 해당 메모리를 "즉시" 확보 가능합니다.
+
+레퍼런스 카운트의 특징은 다음에 소개할 세대기반 가비지 콜렉션과는 다르게 해제할 수 없는 기능이라는 점입니다. 또한 중요한 문제가 하나 있는데, 바로 객체의 순환 참조가 발생하는 경우 객체가 메모리에서 영원히 지워지지 않는 문제입니다.
+
+### 파이썬에서 레퍼런스 카운트를 확인하는 방법
+
+[sys](https://docs.python.org/3/library/sys.html) 라이브러리를 사용해서 특정 객체의 레퍼런스 카운트를 확인할 수 있습니다. 위에서 설명했지만, 레퍼런스 카운트를 증가시키는 방법은 다음과 같습니다.
+
+* 객체를 변수에 할당
+* 객체를 리스트, 튜플과 같은 자료구조에 하거나 인스턴스 프로퍼티로 추가
+* 함수에 파라미터로 전달
+
+이제 REPL에서 위 내용을 테스트 해보겠습니다.
+
+```
+>>> import sys
+>>> a = 'mystring'
+>>> sys.getrefcount(a)
+2
+
+```
+
+위에서 레퍼런스 카운트가 2인걸 알 수 있습니다. 1은 처음 객체가 `a` 에 할당되는 순간에 증가하고, 2는 `sys.getrefcount()`함수에 전달되는 순간에 증가하게 됩니다.
+
+REPL을 재시작하고 리스트와 딕셔너리에 객체를 추가해보면,
+
+```
+>>> import sys
+>>> a = 'mystring'
+>>> b = [a]
+>>> c = { 'key': a }
+>>> sys.getrefcount(a)
+4
+
+```
+
+이번에는 4가 나옵니다. 변수를 인스턴스 프로퍼티로 추가해보는 부분은 직접 해보시면 좋을 것 같습니다.
+
+### 순환 참조(Cyclic reference)
+
+레퍼런스 카운팅은 굉장히 직관적이고 즉각적으로 객체를 삭제할 수 있지만, 해결할 수 없는 케이스가 한 가지 있습니다. 예를 들어, 두 객체가 서로를 참조하고 있다면 어느 객체 하나를 삭제하더라도 나머지 객체의 카운트가 항상 1이기 때문에 두 객체 모두를 삭제할 수 없다는 문제가 있습니다. 아래 코드를 통해 직접 이 경우를 실험해볼 수 있습니다.
+
+> 해당 예제는 [Artem Golubin의 예제 코드](https://rushter.com/blog/python-garbage-collector/)를 참고해 부분 수정했습니다.
+
+```
+import ctypes
+
+# this class will allow us to access the object from memory 
+# (even after it is deleted)
+class PyObject(ctypes.Structure):
+    _fields_ = [("refcnt", ctypes.c_long)]
+
+
+my_dict1 = {}
+my_dict2 = {}
+my_dict1['dict2'] = my_dict2
+my_dict2['dict1'] = my_dict1
+
+obj_address = id(my_dict1)  # getting memory address to track memory block
+print(obj_address)
+
+del my_dict1, my_dict2  # deleting both objects
+print(
+    PyObject.from_address(obj_address).refcnt
+)  # fetching obj from memory and printing it's reference count
+
+# 1
+
+```
+
+실행해보면 카운트가 1이 나옵니다. 즉 실제 객체를 삭제하더라도 각 객체 내부에서 서로를 참조하고 있기 때문에 레퍼런스가 지워지지 않게 됩니다. 한 가지 경우를 더 보겠습니다.
+
+```
+>>> class MyClass(object):
+...     pass
+...
+>>> a = MyClass()
+>>> a.obj = a
+>>> del a
+
+```
+
+위 예제에서 `MyClass` 라는 클래스의 인스턴스를 생성하고, 인스턴트 프로퍼티로 인스턴스 자신을 할당했습니다. 이제 객체를 삭제하더라고 객체의 프로퍼티가 자기 자신이기 때문에 순환 참조가 발생해 객체가 즉시 메모리에서 할당 해제되지 않습니다.
+
+따라서 레퍼런스 카운팅만 가지고 가비지 콜렉션을 수행하면 처리하지 못하는 케이스가 발생하게 됩니다.
+
+### 참고: `sys.getrefcount()` 란?
+
+wip
+
+## 2. 세대기반(Generational) 쓰레기 수집
+
+### 세대기반 쓰레기 수집이란?
+
+위에서 설명한 레퍼런스 카운팅과 함께, 파이썬은 순환 참조 문제를 해결하기 위해 세대기반 쓰레기 수집이라는 기법을 동시에 사용하고 있습니다. 파이썬에서는 [`gc`](https://docs.python.org/3/library/gc.html) 모듈에 해당 내용이 구현되어 있습니다.
+
+세대기반 쓰레기 수집의 핵심 개념은 두 가지입니다.
+
+1. 세대(generation)
+2. 임계점(Threshold)
+
+가비지 콜렉터는 파이썬의 모든 객체를 추적하고 있습니다. 만일 객체의 수가 임계값을 넘으면, 즉시 쓰레기 수집에 들어갑니다. 이때 첫 세대가 시작되고, 여기서 생존한 객체는 다음(older) 세대로 넘어갑니다. 가비지 콜렉터는 총 3개의 세대를 가지고 있고, 쓰레기 수집 과정에서 생존한 객체는 다음 세대로 넘어갑니다.
+
+### 세대기반의 장점
+
+레퍼런스 카운팅과는 다르게 세대기반 쓰레기 수집은 개발자가 임계값을 설정 가능합니다. 쓰레기 수집은 `gc.collect()` 라는 함수에 의해서 수행됩니다. 따라서 개발자가 이 함수를 직접 호출한다면 원하는 시점에 쓰레기 수집을 수행할 수 있습니다. 또는  쓰레기 수집 자체를 꺼버릴 수도 있습니다. `gc` 모듈의 공식 문서에서도 순환 참조가 발생하지 않는 경우에는 `gc.disable()` 을 호출해 쓰레기 수집을 비활성화할 수 있다고 안내하고 있습니다.
+
+> 그래도 정말 특별한 경우가 아니면 `gc` 는 건드리지 않는 게 가장 좋습니다.
+
+만일 추가로 객체를 생성할 메모리가 부족한 경우, 바로 필요없는 객체를 지우도록 해서 메모리를 확보할 수도 있습니다. 사용 상황에 따라 다를 수 있지만, [대략적으로 20% 정도의 메모리가 확보되었다](https://stackoverflow.com/questions/1316767/how-can-i-explicitly-free-memory-in-python/1316793#1316793)고 합니다.
+
+### 수동으로 쓰레기 수집 해보기
+
+쓰레기 수집을 해보기 전에 현재 파이썬의 가비지 콜렉션 세팅을 보겠습니다.
+
+```
+>>> import gc
+>>> gc.get_threshold()
+(700, 10, 10)
+>>> gc.get_count()
+(192, 1, 1)
+
+
+```
+
+튜플의 첫번째부터 1세대, 2세대, 3세대를 나타냅니다. 따라서 1세대 객체의 수가 700개를 넘지 않으면, 순환 참조를 비롯한 사용되지 않는 객체들의 경우에도 메모리에 살아있게 됩니다. 2세대와 3세대의 객체는 세대가 넘어가면 카운트가 올라가기 때문에 1세대에 비해 훨씬 천천히 발생합니다. 즉 2세대 가비지 콜렉션이 일어나려면 700 \* 10번의 사이클이, 3세대는 700 \* 10 \* 10번의 사이클이 필요하게 됩니다.
+
+이제 순환 참조 객체를 삭제해 보겠습니다. 레퍼런스 카운팅 방법으로는 카운트가 1 밑으로 내려가지 않았는데요.
+
+```
+import gc
+import ctypes
+
+# collect some garbage before we start
+print(f"Collected {gc.collect()} objects")
+
+# The same example above
+class PyObject(ctypes.Structure):
+    _fields_ = [("refcnt", ctypes.c_long)]
+
+
+my_dict1 = {}
+my_dict2 = {}
+my_dict1['dict2'] = my_dict2
+my_dict2['dict1'] = my_dict1
+
+print(f"Collected {gc.collect()} objects")
+
+obj_address = id(my_dict1)  # getting memory address to track memory block
+del my_dict1, my_dict2
+
+print(f"Collected {gc.collect()} objects")
+
+print(
+    PyObject.from_address(obj_address).refcnt
+)
+
+"""
+Collected 29 objects
+Collected 8 objects
+Collected 2 objects
+0
+"""
+
+```
+
+세대기반으로 쓰레기 수집을 하니 카운트가 0이 되는 것을 알 수 있습니다.
+
+### 세대기반의 단점
+
+세대기반의 단점은, 가비지 컬렉션을 수행하려면 프로그램을 완전히 중지(stop-the-world)해야 합니다. 따라서 가비지 컬렉션이 빈번하게 발생할수록 프로그램의 수행 성능이 낮아질 수밖에 없습니다. CPU 로드 관점에서 보면 oscillation이 발생하는 걸 알 수 있습니다.
+
+이를 막기 위해서 수집 주기를 늘리고, 그에 따라 객체가 많이 생성되기 때문에 필요한 메모리를 많이 할당하는 방법도 있습니다.
+
+## 파이썬 글로벌 메모리 관리
+
+### 리눅스에서의 메모리 관리
+
+리눅스에서는 프로세스가 메모리를 할당받으면, 프로세스가 종료되기 전까지 할당받은 메모리를 그대로 가지고 있습니다. 따라서 프로세스에 할당되는 메모리가 시간이 지남에 따라 커지는 경우가 많습니다.
+
+파이썬의 경우에는, 정확히는 CPython 구현체를 사용하는 파이썬의 경우에는 C 백엔드로 되어있고 여기서 `glibc` 를 사용하고 있습니다. `glibc` 는 동적 메모리 할당에 `malloc()` 과 `free()` 함수를 사용합니다. 여기서 리눅스는 `malloc()` 호출 시 `brk()` 또는 `mmap()` 을 사용해 메모리를 할당하게 되는데, `glibc`는
+
+* 128KB보다 작은 메모리가 필요하면 `brk()`를,
+* 보다 큰 메모리의 경우는 `mmap()` 을
+
+사용하게 됩니다. 문제는 `brk()` 로 할당된 메모리는 힙(heap) 메모리에 할당되기 때문에 전체 블럭이 해제되기 전에는 `free()`를 사용해서 할당을 해제하더라도 운영체제로 메모리가 반환되지 않는다는 점입니다. 지금 블럭이라는 새로운 용어가 나왔는데, 이에 대해서는 바로 밑에서 설명하겠습니다.
+
+### 파이썬에서의 메모리 관리
+
+파이썬은 `PyMalloc` 을 사용해 메모리를 할당합니다. `PyMalloc` 은 `Arena` 라는 라이브러리 위에서 동작합니다. `Arena`는 먼저 힙 메모리 영역에서 256KB를 OS로부터 할당받는데, 이것을 Arena라고 부릅니다. 그 다음, 이 덩어리를 64개의 4KB 단위(x86 아키텍처의 페이지 사이즈와 동일)의 풀(pool)로 나누게 됩니다. 각 풀은 다시 512B의 블럭으로 나뉘어집니다. 이제 각 객체별 얼로케이터(allocator)들은 Arena에서 순서대로 풀을 가지고 와서, 각 풀의 가용한 블럭들을 이용해 자신의 객체들을 할당합니다. 만일 해당 풀에 가용한 블럭이 없다면 다음 풀로 넘어가고, 가용한 풀이 없다면 새로운 Arena가 할당되고 그 Arena의 pool에 실제 객체가 할당됩니다.
+
+따라서 우리가 `del` 명령어를 사용해 객체를 지우고, reference count가 0이 되거나 Cyclic reference가 되어 garbage collection이 진행되더라도 실제로 운영체제로 메모리가 반환되지 않는 이유는 메모리가 Arena 단위로 관리되기 때문입니다. Arena는 하위 64개 풀이 모두 할당되지 않은 상태여야만 운영체제로 반환되기 때문입니다.
+
+## 간단한 최적화
+
+### `__slots__`
+
+파이썬에서 모든 클래스들은 인스턴스 속성을 가질 수 있습니다. 기본적으로 파이썬에서는 객체의 인스턴스 속성을 저장하기위해 `dict`형을 사용합니다. 원래 객체는 속성이 런타임에 계속 추가가 가능하지만, `__slots__`를 이용하면 객체가 가질 수 있는 속성을 사전에 정의할 수 있어서 객체의 크기를 (대략적으로) 미리 지정해줄 수 있습니다.
+
+```
+class MyClass:
+    __slots__ = ('x','y')
+
+my_instance = MyClass()
+my_instance.x = 1
+my_instance.y = 2
+my_instance.z = 3
+
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+/var/folders/74/l6jhlmk114g8kx1pzz2s9fm80000gn/T/ipykernel_3497/1529763914.py in <module>
+      5 my_instance.x = 1
+      6 my_instance.y = 2
+----> 7 my_instance.z = 3
+
+AttributeError: 'MyClass' object has no attribute 'z'
+
+```
+
+### `weakref`
+
+`weakref`는 레퍼런스 카운트를 늘리지 않는 레퍼런스입니다. 크기가 큰 객체를 생성할 때 weakref를 사용하면 순환 참조를 피할 수 있어 메모리를 더 효율적으로 관리할 수 있게 됩니다.
+
+```
+import weakref
+
+class MyClass:
+    def __init__(self):
+        self.prop = 1
+
+a = MyClass()
+b = a
+
+a = None
+print(b)
+
+a = MyClass()
+b = weakref.ref(a)
+a = None
+print(b)
+
+```
+
+## 결론
+
+파이썬의 장점이자 단점인 가비지 콜렉션에 대해서 자세히 알아봤는데요. 이 글을 읽으신 후 "굳이 이런 걸 다 알아야 하나..?" 또는 "이렇게까지 해야하나?"라는 생각이 드신다면, 어쩔 수 없습니다. 파이썬은 언어의 간결함과 유연함을 위해 많은 부분을 포기했기 때문입니다.
+
+결국, CPU나 메모리를 "많이" 사용하는 어플리케이션이라면 Go나 Rust 같은 언어로 개발하는 것이 더 낫다고 생각합니다. 그게 아니라면 더 많은 리소스를 투입해 수평적으로 스케일하는 방법도 있겠죠.

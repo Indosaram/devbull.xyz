@@ -1,0 +1,116 @@
+---
+title: "Leetcode - 938. Range Sum of BST"
+images: ["https://images.unsplash.com/photo-1622396727617-9d80c2c8ac79?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8YWxsfDN8fHx8fHwyfHwxNjIyNjA3OTMw&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-02T02:11:18.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/range-sum-of-bst/)
+
+## 풀이
+
+쉽게 풀 수 있지만 BST의 특징을 활용하면 pruning이 가능하다.
+
+```
+class Solution:
+    cur_sum = 0
+
+    def rangeSumBST(self, root: TreeNode, low: int, high: int) -> int:
+        def get_sum(node):
+            if not node:
+                return 0
+
+            get_sum(node.left)
+            get_sum(node.right)
+            if low <= node.val <= high:
+                self.cur_sum += node.val
+
+        get_sum(root)
+        return self.cur_sum
+```
+
+### DFS with pruning
+
+```
+class Solution:
+    cur_sum = 0
+
+    def rangeSumBST(self, root: TreeNode, low: int, high: int) -> int:
+        def get_sum(node):
+            if node:
+
+                if node.val > high:
+                    get_sum(node.left)
+                elif node.val < low:
+                    get_sum(node.right)
+                else:
+                    get_sum(node.left)
+                    get_sum(node.right)
+
+                if low <= node.val <= high:
+                    self.cur_sum += node.val
+
+        get_sum(root)
+        return self.cur_sum
+```
+
+### DFS with pruning 2
+
+```
+class Solution:
+    cur_sum = 0
+
+    def rangeSumBST(self, root: TreeNode, low: int, high: int) -> int:
+        stack = [root]
+        cur_sum = 0
+
+        while stack:
+            node = stack.pop()
+            if not node:
+                continue
+
+            if node.val > low:
+                stack.append(node.left)
+            if node.val < high:
+                stack.append(node.right)
+
+            if low <= node.val <= high:
+                cur_sum += node.val
+
+        return cur_sum
+```
+
+### BFS with pruning
+
+```
+class Solution:
+    cur_sum = 0
+
+    def rangeSumBST(self, root: TreeNode, low: int, high: int) -> int:
+        queue = [root]
+        cur_sum = 0
+
+        while queue:
+            node = queue.pop()
+            if not node:
+                continue
+
+            if node.val > low:
+                queue.append(node.left)
+            if node.val < high:
+                queue.append(node.right)
+
+            if low <= node.val <= high:
+                cur_sum += node.val
+
+        return cur_sum
+```

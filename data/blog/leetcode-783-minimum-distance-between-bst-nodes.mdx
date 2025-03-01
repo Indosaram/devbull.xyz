@@ -1,0 +1,60 @@
+---
+title: "Leetcode - 783. Minimum Distance Between BST Nodes"
+images: ["https://images.unsplash.com/photo-1622511149002-5ac892ea0ee9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8YWxsfDR8fHx8fHwyfHwxNjIyNjA3OTMw&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-03T00:34:09.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/minimum-distance-between-bst-nodes/)
+
+## 풀이
+
+in-order traversal로 해결할 수 있다.
+
+```
+class Solution:
+    res = float("inf")
+    prev = -float("inf")
+
+    def minDiffInBST(self, root: TreeNode) -> int:
+        if root:
+            self.minDiffInBST(root.left)
+
+            self.res = min(self.res, root.val - self.prev)
+            self.prev = root.val
+
+            self.minDiffInBST(root.right)
+
+        return self.res
+```
+
+그런데 DFS 재귀는 항상 반복으로도 구현이 가능하다. Detail 페이지에서 가장 빠른 실행속도를 보인 답변을 조금 수정한 코드는 다음과 같다.
+
+```
+ class Solution:
+    def minDiffInBST(self, root: TreeNode) -> int:
+        min_diff = float("inf")
+        stack = [(root, -float("inf"), float("inf"))]
+
+        while stack:
+            node, low, high = stack.pop()
+
+            if node:
+                min_diff = min(min_diff, node.val - low, high - node.val)
+
+                stack.append((node.right, node.val, high))
+                stack.append((node.left, low, node.val))
+
+        return min_diff
+```
+
+스택에 노드, 최소값, 최대값을 같이 넣는게 진짜 좋은 아이디어다.

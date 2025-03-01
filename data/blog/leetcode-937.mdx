@@ -1,0 +1,52 @@
+---
+title: "Leetcode - 937. Reorder Data in Log Files"
+images: ["https://images.unsplash.com/photo-1643101809251-76afdc4df379?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDU3fHxsb2clMjBmaWxlfGVufDB8fHx8MTY0MzQ5NjA5NQ&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-01-29T22:40:12.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/reorder-data-in-log-files/)
+
+## 풀이
+
+```
+class Solution:
+    def reorderLogFiles(self, logs: List[str]) -> List[str]:
+        letter_log = []
+        digit_log = []
+        for log in logs:
+            if log.split()[1].isnumeric():
+                digit_log.append(log)
+            else:
+                letter_log.append(log)
+
+        return (
+            sorted(letter_log, key=lambda x: (x.split()[1:], x.split()[0]))
+            + digit_log
+        )
+
+```
+
+만일 `digit_log` 도 함께 정렬하는 문제였다면 아래와 같이 풀이 가능하다.
+
+```
+class Solution:
+    def reorderLogFiles(self, logs: List[str]) -> List[str]:
+        def key(log):
+            splited = log.split()
+            identifier, content = splited[0], splited[1:]
+            
+            return (content[0].isnumeric(), content, identifier)
+        
+        return sorted(logs, key=key)
+            
+```

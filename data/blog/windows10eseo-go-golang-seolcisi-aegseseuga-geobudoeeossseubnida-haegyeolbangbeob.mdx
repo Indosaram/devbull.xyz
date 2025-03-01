@@ -1,0 +1,25 @@
+---
+title: "Windows10에서 GO/GoLang 설치시 '액세스가 거부되었습니다' 해결방법"
+images: ["https://images.unsplash.com/photo-1553973784-ad1b60442b90?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T12:48:01.000Z"
+tags: ['go']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제 증상
+
+.msi파일을 Go 홈페이지에서 다운받아 설치하였다. 그 다음 테스트를 위해 코드를 실행시켰는데 액세스 거부가 발생했다. (Access Denied)
+
+![go_accessdenied_01](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/go_accessdenied_01.png)
+
+Powershell에서 에러가 나서 관리자 권한으로 실행해보아도 동일했다. 
+
+## 해결 방법
+
+한참 헤매다가 Antivirus 문제일 수도 있다고 해서 V3 실시간 검색에서 예외처리를 해주었더니 정상 동작했다.
+
+![go_accessdenied_02](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/go_accessdenied_02.png)
+
+C로 컴파일한 파일도 자꾸 지워버려서 애먹었는데 V3 왜그러니 ㅜㅜ 여러모로 윈도우에서 개발하기는 불편하다. WSL에서 모든 걸 세팅하는 게 맘이 편하다..
+
+아무튼 간단하게 해결.

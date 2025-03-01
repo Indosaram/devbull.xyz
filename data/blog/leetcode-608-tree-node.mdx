@@ -1,0 +1,29 @@
+---
+title: "Leetcode - 608. Tree Node"
+images: ["None"]
+date: "2022-06-14T00:43:20.000Z"
+tags: ['codingtest', 'leetcode']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/tree-node/)
+
+## 정답
+
+```
+SELECT id, 
+CASE
+    WHEN ISNULL(p_id) THEN 'Root'
+    WHEN id IN (SELECT p_id FROM Tree) THEN 'Inner'
+    ELSE 'Leaf'
+END as type
+FROM Tree
+```

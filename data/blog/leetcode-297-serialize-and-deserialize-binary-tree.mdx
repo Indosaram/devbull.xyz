@@ -1,0 +1,150 @@
+---
+title: "Leetcode - 297. Serialize and Deserialize Binary Tree"
+images: ["https://images.unsplash.com/photo-1579656798621-9bd35a772572?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDN8fHNlcmlhbHxlbnwwfHx8fDE2MjI0MjgyMDU&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-31T02:27:19.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/serialize-and-deserialize-binary-tree/)
+
+## 풀이
+
+얼핏 생각하면 굉장히 쉬워보이는데, 막상 구현해보려고 하면 어렵고, 그림을 그려보면 쉽다.
+
+문제풀이 힌트가 문제 설명에 주어져있다.
+
+**Clarification:** The input/output format is the same as [how LeetCode serializes a binary tree](https://leetcode.com/faq/#binary-tree). You do not necessarily need to follow this format, so please be creative and come up with different approaches yourself.
+
+트리 문제를 풀면서 리트코드가 어떻게 직렬화를 수행하는지 생각해본 적이 있었는데, 리스트가 트리로 어떻게 바뀌는지 그림을 그려보면 쉽게 이해가 된다.
+
+```
+class Codec:
+    def serialize(self, root):
+        """Encodes a tree to a single string.
+
+        :type root: TreeNode
+        :rtype: str
+        """
+        if not root:
+            return None
+        series = [root.val]
+        queue = collections.deque([root])
+
+        while queue:
+            node = queue.popleft()
+
+            if node.left:
+                queue.append(node.left)
+                series.append(node.left.val)
+            else:
+                series.append(None)
+
+            if node.right:
+                queue.append(node.right)
+                series.append(node.right.val)
+            else:
+                series.append(None)
+
+        idx = len(series)
+        for i in range(len(series)):
+            idx -= 1
+            if series[idx] is not None:
+                break
+
+        return " ".join(map(str, series[: idx + 1]))
+
+    def deserialize(self, data):
+        """Decodes your encoded data to tree.
+
+        :type data: str
+        :rtype: TreeNode
+        """
+        if not data:
+            return None
+
+        data = data.split(" ")
+
+        depth = 0
+        node = root = TreeNode(int(data.pop(0)))
+        queue = [node]
+
+        while queue and data:
+            node = queue.pop(0)
+
+            if data:
+                val = data.pop(0)
+                if val != "None":
+                    node.left = TreeNode(int(val))
+                    queue.append(node.left)
+            if data:
+                val = data.pop(0)
+                if val != "None":
+                    node.right = TreeNode(int(val))
+                    queue.append(node.right)
+        return root
+```
+
+불필요한 부분을 정리하면 다음과 같다.
+
+```
+class Codec:
+    def serialize(self, root):
+        """Encodes a tree to a single string.
+
+        :type root: TreeNode
+        :rtype: str
+        """
+        if not root:
+            return None
+        series = []
+        queue = collections.deque([root])
+
+        while queue:
+            node = queue.popleft()
+            if node:
+                queue.append(node.left)
+                queue.append(node.right)
+                series.append(node.val)
+            else:
+                series.append(None)
+
+        return " ".join(map(str, series))
+
+    def deserialize(self, data):
+        """Decodes your encoded data to tree.
+
+        :type data: str
+        :rtype: TreeNode
+        """
+        if not data:
+            return None
+
+        data = data.split(" ")
+
+        depth = 0
+        node = root = TreeNode(int(data.pop(0)))
+        queue = collections.deque([node])
+
+        while queue:
+            node = queue.popleft()
+
+            val = data.pop(0)
+            if val != "None":
+                node.left = TreeNode(int(val))
+                queue.append(node.left)
+
+            val = data.pop(0)
+            if val != "None":
+                node.right = TreeNode(int(val))
+                queue.append(node.right)
+        return root
+```

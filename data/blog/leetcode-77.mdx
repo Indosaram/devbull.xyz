@@ -1,0 +1,60 @@
+---
+title: "Leetcode - 77. Combinations"
+images: ["https://images.unsplash.com/photo-1610726578286-8b77a4df7a77?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDN8fGNvbWJ8ZW58MHx8fHwxNjE5NzQxMzI0&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-04-29T11:17:12.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+* https://leetcode.com/problems/combinations/
+
+## 풀이
+
+```
+class Solution:
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        def comb(a, b):
+            if b == 1:
+                return [[a]]
+
+            res = []
+            for i in range(a + 1, n + 1):
+                for com in comb(i, b - 1):
+                    res.append([a] + com)
+            return res
+        
+        combs = []
+        for i in range(1, n + 1):
+            combs += comb(i, k)
+
+        return combs
+```
+
+DFS로 조합을 구현했다.
+
+책의 풀이
+
+```
+from typing import List
+
+
+class Solution:
+    def combine(self, n: int, k: int) -> List[List[int]]:
+        results = []
+
+        def dfs(elements, start: int, k: int):
+            if k == 0:
+                results.append(elements[:])
+                return
+
+            # 자신 이전의 모든 값을 고정하여 재귀 호출
+            for i in range(start, n + 1):
+                elements.append(i)
+                dfs(elements, i + 1, k - 1)
+                elements.pop()
+
+        dfs([], 1, k)
+        return results
+```

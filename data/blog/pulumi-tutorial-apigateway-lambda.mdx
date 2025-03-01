@@ -1,0 +1,176 @@
+---
+title: "Pulumi 시작하기(3) - API Gateway v2 + Lambda 예제"
+images: ["https://images.unsplash.com/photo-1581291518857-4e27b48ff24e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wxfDF8YWxsfDF8fHx8fHwyfHwxNjIwMzUwNTA1&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-06T10:12:17.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+> [Pulumi 시작하기(1) - Introduction](__GHOST_URL__/pulumi-tutorial-introduction/)  
+> [Pulumi 시작하기(2) - 코드 작성 및 배포](__GHOST_URL__/pulumi-tutorial-code-and-deploy/)  
+> [Pulumi 시작하기(3) - API Gateway v2 + Lambda 예제](__GHOST_URL__/pulumi-tutorial-apigateway-lambda/)  
+> [Pulumi 시작하기(4) - S3와 Lambda를 이용한 썸네일 추출기](__GHOST_URL__/pulumi-tutorial-s3-lambda/)
+
+## 프로젝트 시작하기
+
+Github에서 템플릿을 다운로드 받는다. 프로젝트 이름은 `http-api`로 한다.
+
+```
+pulumi new https://github.com/pulumi/examples/tree/master/aws-py-apigatewayv2-http-api-quickcreate
+
+```
+
+디렉터리에서 `__main__.py`를 확인해보자.
+
+```
+import pulumi
+import json
+import pulumi_aws as aws
+
+# Create the role for the Lambda to assume
+lambda_role = aws.iam.Role("lambdaRole", 
+    assume_role_policy=json.dumps({
+        "Version": "2012-10-17",
+        "Statement": [{
+                "Action": "sts:AssumeRole",
+                "Principal": {
+                    "Service": "lambda.amazonaws.com",
+                },
+                "Effect": "Allow",
+                "Sid": "",
+            }]
+    }))
+
+```
+
+람다 실행을 위한 iam을 먼저 생성한다. 그리고 Full access 정책을 추가해준다.
+
+```
+# Attach the fullaccess policy to the Lambda role created above
+role_policy_attachment = aws.iam.RolePolicyAttachment("lambdaRoleAttachment",
+    role=lambda_role,
+    policy_arn=aws.iam.ManagedPolicy.AWS_LAMBDA_BASIC_EXECUTION_ROLE)
+
+```
+
+다음으로 API 엔드포인트와 연결될 Lambda를 생성한다.
+
+```
+# Create the lambda to execute
+lambda_function = aws.lambda_.Function("lambdaFunction", 
+    code=pulumi.AssetArchive({
+        ".": pulumi.FileArchive("./app"),
+    }),
+    runtime="nodejs12.x",
+    role=lambda_role.arn,
+    handler="index.handler")
+
+```
+
+여기서 `AssetArchive`와 `FileArchive`를 잠깐 짚어보고 넘어가자. 이걸 설명하려면 Asset과 Archive가 뭔지 먼저 알아야 한다.
+
+[Pulumi 시작하기 - Asset과 Archive
+
+Assets and ArchivesPulumi SDK는 파일을 핸들링하는데 Asset과 Archive 두개의 클래스를 사용한다. Pulumi SDK의 각 리소스 API들은 각각Asset 또는 Archive를 요구하며, 그에 해당하는 객체를 인자로 입력하면 내부적으로 알아서 해석하도록 되어있다. Assets \* FileAsset : Asset의 컨텐츠를 디스크로부터 읽어온다. \* StringAsset: Asset의 컨텐츠를 메모리로부터 읽어온다. \* RemoteAsset : Asset의 컨텐츠를 file URI의 http,…
+
+![](__GHOST_URL__/assets/icon-192x192.png?v=a0aa9d7e1c)일시불 프로그래밍일시불
+
+![](https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wxfDF8YWxsfDF8fHx8fHwyfHwxNjIwMjgzNDU2&ixlib=rb-1.2.1&q=80&w=2000)](__GHOST_URL__/pulumi-asset-archive/)
+
+## 프로젝트 배포하기
+
+이제 스택을 추가로 초기화한다.
+
+```
+pulumi stack init http-api
+pulumi config set aws:region us-east-2
+
+```
+
+만들어진 스택을 확인해보면,
+
+```
+$ pulumi stack ls
+NAME       LAST UPDATE  RESOURCE COUNT  URL
+dev        n/a          n/a             https://app.pulumi.com/freedomzero91/http-api/dev
+http-api*  n/a          n/a             https://app.pulumi.com/freedomzero91/http-api/http-api
+
+```
+
+과 같다. 이제 `pulumi up`으로 배포를 실행한다. 그리고 만들어진 스택의 output을 확인해보자.
+
+```
+$ pulumi stack output
+Current stack outputs (1):
+    OUTPUT    VALUE
+    endpoint  https://vrc1fxslh2.execute-api.us-east-2.amazonaws.com
+
+```
+
+이제 이 생성된 enpoint로 Lambda를 호출할 수 있다.
+
+```
+$ curl $(pulumi stack output endpoint)
+Hello, Pulumi!
+
+```
+
+## Lambda function 로그 확인
+
+Lambda는 기본적으로 AWS CloudWatch에 로그가 기록되는데, Pulumi CLI를 사용하면 실행 로그를 볼 수 있다. 런타임 로그를 보려면 `pulumi logs`를, 로그 스트림을 보려면 `pulumi logs --follow` 를 하면 된다. 로그 스트림을 활성화한 다음, 다른 셸을 열어 endpoint를 호출해보자.
+
+```
+ 2021-05-07T10:14:03.879+09:00[        lambdaFunction-8d39e29] START RequestId: b277ee36-6df0-49fe-8d7e-1d49ef18d76a Version: $LATEST
+ 2021-05-07T10:14:03.892+09:00[        lambdaFunction-8d39e29] 2021-05-07T01:14:03.892Z      b277ee36-6df0-49fe-8d7e-1d49ef18d76a    INFO    EVENT: 
+{
+  "version": "2.0",
+  "routeKey": "GET /",
+  "rawPath": "/",
+  "rawQueryString": "",
+  "headers": {
+    "accept": "*/*",
+    "content-length": "0",
+    "host": "vrc1fxslh2.execute-api.us-east-2.amazonaws.com",
+    "user-agent": "curl/7.64.1",
+    "x-amzn-trace-id": "Root=1-6094945b-21c7a3cf4098b8691faf1a25",
+    "x-forwarded-for": "218.235.22.194",
+    "x-forwarded-port": "443",
+    "x-forwarded-proto": "https"
+  },
+  "requestContext": {
+    "accountId": "107945805984",
+    "apiId": "vrc1fxslh2",
+    "domainName": "vrc1fxslh2.execute-api.us-east-2.amazonaws.com",
+    "domainPrefix": "vrc1fxslh2",
+    "http": {
+      "method": "GET",
+      "path": "/",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "218.235.22.194",
+      "userAgent": "curl/7.64.1"
+    },
+    "requestId": "e7weViUtiYcEQdg=",
+    "routeKey": "GET /",
+    "stage": "$default",
+    "time": "07/May/2021:01:14:03 +0000",
+    "timeEpoch": 1620350043607
+  },
+  "isBase64Encoded": false
+}
+ 2021-05-07T10:14:03.893+09:00[        lambdaFunction-8d39e29] END RequestId: b277ee36-6df0-49fe-8d7e-1d49ef18d76a
+ 2021-05-07T10:14:03.893+09:00[        lambdaFunction-8d39e29] REPORT RequestId: b277ee36-6df0-49fe-8d7e-1d49ef18d76a        Duration: 13.65 ms      Billed Duration: 14 ms       Memory Size: 128 MB     Max Memory Used: 63 MB  Init Duration: 125.03 ms
+
+```
+
+로그 내용은 CloudWatch와 완전히 동일하다. 콘솔에 들어가지 않고 CLI로 확인이 가능하기 때문에 테스트하는 데 굉장히 편리하다.
+
+## 정리하기
+
+테스트가 끝났다면 만든 리소스를 제거하기 위해 다음 명령어를 입력한다.
+
+```
+pulumi destroy
+
+```
+
+Pulumi를 사용해서 리소스를 관리하면 해당 스택을 만들 때 사용한 모든 리소스를 한번에 제거할 수 있다. 콘솔을 사용해 일일히 만든 리소스였다면 IAM, Policy와 같은 부분을 신경쓰기 어려운데 Pulumi에서는 모든 dependency를 자동으로 관리하기 때문에 효율적으로 클라우드를 관리할 수 있는 장점이 있다.

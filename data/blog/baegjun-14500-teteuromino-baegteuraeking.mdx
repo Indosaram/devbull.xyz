@@ -1,0 +1,132 @@
+---
+title: "백준-14500 : 테트로미노(백트래킹)"
+images: ["https://images.unsplash.com/photo-1570114935920-bb9f5b9c2edb?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T09:19:16.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   백준-14500 : 테트로미노(BFS)
+
+# 풀이
+
+브루트 포스로 풀어도 되지만 경우의 수가 너무 많고 실수할 가능성이 크기 때문에 백트래킹으로 해결했다. 그런데 속도는 브루트 포스가 압도적으로 빠르다. 당연한가?
+
+## 1번째
+
+내가 선호하는 방법대로 풀이. 중복으로 검사하지 않도록 `visitLoop`를 선언해주었다. 그런데 실행시간은 별 차이가 없다.. 왜그러지?
+
+```python
+M, N = map(int, input().split())
+
+arr = []
+for i in range(M):
+    arr.append(list(map(int, input().split())))
+
+visit = [[0]*N for _ in range(M)]
+stacks = []
+maxi = 0
+# result = 0
+
+
+def isSafe(m, n):
+    # 밖으로나가면 안됨
+    if -1 < m < M and -1 < n < N:
+        # 방문한 적 없음
+        if visit[m][n] == 0:
+            return 1
+    return 0
+
+
+def search(cnt, m, n):
+    global result, maxi
+    # backtracking으로 구현
+    # 종료부
+    if cnt == 4:
+        maxi = max(result, maxi)
+        return
+
+    # 실행부
+    stacks.append([m,n])
+    visit[m][n] = 1
+
+    for stack in stacks:
+        for i, j in [ (-1,0), (1,0), (0,-1), (0,1) ]:
+            # print(stack)
+            X = stack[0] + i
+            Y = stack[1] + j
+            if isSafe(X,Y):
+                result += arr[X][Y]
+                search(cnt+1, X,Y)
+                result -= arr[X][Y]
+
+    stacks.pop()
+    visit[m][n] = 0
+
+    return
+
+for m in range(M):
+    for n in range(N):
+        result = arr[m][n]
+        search(1, m, n)
+
+print(maxi)
+```
+
+## 2번째
+
+`result`를 함수 매개변수로 선언해서 인자로 넘겨주는 방법. 내가 선호하는 방법은 아니다. 중복으로 검사하는 경우가 있어서 `visit` 리스트를 하나 더 선언해서 내부용으로 쓰면 되지만 그렇게 안해도 시간복잡도에서 통과함.
+
+```python
+M, N = map(int, input().split())
+
+arr = []
+for i in range(M):
+    arr.append(list(map(int, input().split())))
+
+visit = [[0]*N for _ in range(M)]
+stacks = []
+maxi = 0
+
+
+def isSafe(m, n):
+    # 밖으로나가면 안됨
+    if -1 < m < M and -1 < n < N:
+        # 방문한 적 없음
+        if visit[m][n] == 0:
+            return 1
+    return 0
+
+
+def search(cnt, m, n, result):
+    global maxi
+    result += arr[m][n]
+    if cnt == 4:
+        maxi = max(result, maxi)
+        return
+
+    stacks.append([m,n])
+    visit[m][n] = 1
+
+    for stack in stacks:
+        for i, j in [ (-1,0), (1,0), (0,-1), (0,1) ]:
+            # print(stack)
+            X = stack[0] + i
+            Y = stack[1] + j
+            if isSafe(X,Y):
+                search(cnt+1, X,Y, result)
+
+    stacks.pop()
+    visit[m][n] = 0
+
+    return
+
+for m in range(M):
+    for n in range(N):
+        result = 0
+        search(1, m, n, 0)
+
+print(maxi) 
+```

@@ -1,0 +1,88 @@
+---
+title: "Windows 10에서 WSL(Ubuntu 18.04) 코딩 환경 설정하기"
+images: ["https://images.unsplash.com/photo-1537498425277-c283d32ef9db?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-17T04:26:39.000Z"
+tags: ['cpp']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## VS Code 설치
+
+`choco`라는 툴을 이용해 윈도우에 간단하게 설치가 가능합니다. 방법은 아래 링크를 참고해주세요.
+
+[Chocolatey로 쉽고 빠른 프로그램 설치 방법](__GHOST_URL__/chocoro-windows-teomineol-powershell7-posh-git-oh-my-posh-seolcihagi)
+
+## WSL Ubuntu 18.04 Distro 설치
+
+윈도우 스토어에서 Ubuntu를 쉽게 설치할 수 있습니다.
+
+## zsh, oh-my-zsh 설치
+
+자세한 설치 방법은 아래 링크를 참고해주세요.
+
+[VSCode 터미널 Zsh로 바꾸는 법 Windows 10](__GHOST_URL__/vscode-teomineol-zshro-bagguneun-beob-windows-10)
+
+## 패키지 업데이트 및 업그레이드
+
+```
+sudo apt-get update
+sudo apt-get upgrade
+```
+
+## 언어 설치
+
+### C/C++
+
+```
+sudo apt-get install gcc gdb g++
+```
+
+설치 확인
+
+```
+gcc --version
+gdb --version
+g++ --version
+```
+
+### go
+
+먼저 [Go 언어 다운로드 페이지](https://golang.org/dl/)에서 자신의 운영체제에 맞는 원하는 버전을 다운로드한다. 다운로드 후에는 원하는 경로에 압축 해제한다. 일반적으로 `go`는 `/usr/local`에 압축 해제한다.
+
+```
+wget https://dl.google.com/go/go1.14.1.linux-amd64.tar.gz
+// -C옵션으로 압축 해제 경로 지정
+tar -zxvf go1.14.1.linux-amd64.tar.gz -C /usr/local
+// Set GOPATH
+vi ~/.bashrc
+```
+
+`bashrc`마지막 부분에 아래 내용을 추가해 준다. 이때 `GOPATH`는 앞으로 자신이 `go`의 소스코드를 편집하고 패키지를 관리하고자 하는 경로이다. 다시 말하면 해당 경로의 하위 폴더로 `src`, `pkg`, `bin` 세 폴더를 생서하고자 하는 경로를 적어주면 된다.
+
+```
+export GOPATH=/home/indo/git/go
+export GOBIN=$GOPATH/bin
+export PATH=$PATH:/usr/local/go/bin:$GOBIN
+```
+
+저장한 다음 `go`환경이 제대로 설정되었는지 확인하기 위해 `go env`를 터미널에 입력해본다.
+
+![win10_wsl_evn_setup](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/win10_wsl_evn_setup.png)
+  
+제대로 설치됐다면 위 그림과 같이 `go`의 환경변수 목록이 출력될 것이고, `go`도 제대로 컴파일되고 실행될 것이다.
+
+## github 설정
+
+git 설치
+
+```
+sudo apt-get install git
+
+```
+
+git 사용자 ID와 이메일 설정을 해야 github remote repository를 사용할 수 있다.
+
+```
+git config --global user.name "Indosaram"
+git config --global user.email "freedom_zero@naver.com"
+```

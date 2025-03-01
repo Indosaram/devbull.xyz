@@ -1,0 +1,63 @@
+---
+title: "Leetcode - 617. Merge Two Binary Trees"
+images: ["https://images.unsplash.com/photo-1569605803663-e9337d901ff9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDF8fGJpbmFyeXxlbnwwfHx8fDE2MjI0MjE1OTE&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-31T00:32:19.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/merge-two-binary-trees/submissions/)
+
+## 풀이
+
+if문이 너무 많아 지저분한 풀이.
+
+```
+class Solution:
+    def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
+        def merge(node1, node2):
+            if node2 is None:
+                return
+
+            node1.val += node2.val
+
+            if node1.left is None:
+                node1.left = node2.left
+            else:
+                merge(node1.left, node2.left)
+
+            if node1.right is None:
+                node1.right = node2.right
+            else:
+                merge(node1.right, node2.right)
+
+        if root1 and root2:
+            merge(root1, root2)
+        return root1
+```
+
+기존 트리를 사용하지 않아야 간결하게 풀 수 있겠다는 아이디어로 구현한 풀이. 결과적으로 책의 풀이와 같다.
+
+```
+class Solution:
+    def mergeTrees(self, root1: TreeNode, root2: TreeNode) -> TreeNode:
+        def merge(node1, node2):
+            if node1 and node2:
+                node = TreeNode(node1.val + node2.val)
+                node.left = merge(node1.left, node2.left)
+                node.right = merge(node1.right, node2.right)
+                return node
+            else:
+                return node1 or node2
+
+        return merge(root1, root2)
+        
+```

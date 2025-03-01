@@ -1,0 +1,50 @@
+---
+title: "구글 Colab 대신 사용할 수 있는 온라인 개발 환경 4가지 ( 4 Google Colab Alternatives)"
+images: ["https://images.unsplash.com/photo-1581462700959-99ee74a9bc6d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-17T04:16:00.000Z"
+tags: ['cloud']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 구글 코랩이란?
+
+구글 코랩은 구글 계정만 있으면 jupyter notebook을 온라인에서 바로 사용할 수 있는 편리한 개발 환경이다.웬만한 딥러닝 프레임워크나 파이썬 패키지들이 기본적으로 탑재돼 있어 로컬에 별도로 파이썬이나 종속성 패키지들을 설치하지 않아도 되는 점이 굉장히 좋다. 최근에는 Docker 등을 통한 Tensorflow나 PyTorch 설치가 굉장히 편해졌지만, 예전에 로컬에 종속성 하나만 잘못 설치해도 우분투를 초기화하고 처음부터 다시 설치했던 걸 생각하면...😏 무료임에도 머신 러닝과 딥러닝페 반드시 필요한 GPU와 TPU도 시간 제한은 있지만 무료로 사용이 가능해 인기가 많은 서비스이다.
+
+![four_colab_alternatives_00](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/four_colab_alternatives_00.png)
+
+
+기본 런타임은 CPU로 설정되어 있고, 런타임 탭에서 하드웨어 가속기를 선택할 수 있다. GPU는 12시간의 세션 타임이 있지만 단순 테스트용으로 돌려보기에는 충분한 시간이다.
+
+![four_colab_alternatives_01](https://res-1.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/four_colab_alternatives_01.png)
+
+각각의 노트북은 Docker 컨테이너를 할당받는 방식이라 \`!\` 명령어를 붙이면 shell 명령어도 입력이 가능하기 때문에 `wget`이나 `curl`을 이용해 추가로 필요한 파일이나 패키지도 설치할 수 있어서 간단한 테스트 용이나 급하게 뭔가 확인해볼 때 굉장히 편리하다.하지만 개인 취향에 따라 불편한 점도 있을 수 있다. 그래서 구글 코랩 대신 사용할 수 있는 온라인 개발 환경 4가지를 소개한다.
+
+## [Kaggle](https://www.kaggle.com/google-cloud)
+
+![four_colab_alternatives_02](https://res-5.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/four_colab_alternatives_02.png)
+
+![four_colab_alternatives_03](https://res-1.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/four_colab_alternatives_03.png)
+
+Kaggle 역시 구글에서 개발한 개발 환경이다. Jupyter Notebook 기반이고, 대부분의 단축키를 공유한다. Colab과 유사한 점도 상당히 많다. Colab보다 데이터 로딩과 같은 작업 속도가 빠른 편이다. GPU를 무료로 제공하고 구글 클라우드 연동이 가능하다.
+
+데이터 사이언스나 데이터 분석 분야를 공부하는 학생들이나 엔지니어들이 개인 프로젝트나 챌린지를 위해 많이 찾는 사이트 중 하나이다.
+
+## [Azure Notebooks](https://notebooks.azure.com/)
+
+![four_colab_alternatives_04](https://res-1.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/four_colab_alternatives_04.png)
+
+![four_colab_alternatives_05](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/four_colab_alternatives_05.png)
+
+Microsoft에서 개발한 Colab과 유사한 개발 환경이다. Colab이 구글 클라우드와 연동이 가능하다면 Azure는 MS Cloud와 연동이 가능하다. 작업 속도가 훨씬 빨라 쾌적한 개발 환경을 우선시한다면 추천한다. 최대 메모리는 4GB까지 제공된다. 노트북은 노트북들을 묶은 Library 형태로 저장되며 이 Library의 최대 용량은 100MB까지 제공된다. 현재 Python, R, F# 세 가지 언어를 지원한다. 단, UI가 Jupyter Notebook과 동일하기 때문에 실제 사용 시에는 약간 불편할 수 있다.
+
+## [Amazon Sagemaker](https://aws.amazon.com/sagemaker/)
+
+![four_colab_alternatives_06](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/four_colab_alternatives_06.png)
+
+Amazon의 Sagemaker도 Jupyter Notebook 기반이다. UI가 미려하고 AWS에 속해있는 서비스이기 때문에 EC2등을 활용한 연속적인 사용자 경험 면에서 매우 유리하다고 할 수 있다. 처음부터 관리형 ML 개발 툴로 시작했기 때문에 내 모델을 트레이닝하고 배포하는 과정까지 API가 제공되어 사용자 편의성을 극대화했다.
+
+## [IBM DataPlatform Notebooks](https://dataplatform.cloud.ibm.com/docs/content/wsj/analyze-data/notebooks-parent.html)
+
+![four_colab_alternatives_07](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/four_colab_alternatives_07.png)
+
+IBM DataPlatform Notebooks는 Apache Spark, R, Python, Scala, Jupyter Notebook을 모두 지원한다. 사용자가 원하는 서비스 연결도 자유롭다. ataPlatform에서 만든 결과를 Docker나 CloudFoundry 컨테이너로 배포할 수도 있다. 멀티 클라우드 환경으로 Containerization이 가능하다는 점이 Colab과의 가장 큰 차이점이라고 할 수 있겠다. 다시 말해, Colab이 간단한 테스트 용이라면 DataPlatform은 통합 IDE에 Kubernetes 배포까지 가능한 서비스이다.

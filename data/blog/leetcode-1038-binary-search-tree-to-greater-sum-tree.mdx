@@ -1,0 +1,39 @@
+---
+title: "Leetcode - 1038. Binary Search Tree to Greater Sum Tree"
+images: ["https://images.unsplash.com/photo-1586769852836-bc069f19e1b6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDF8fHNlYXJjaHxlbnwwfHx8fDE2MjI1OTgxMDg&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-02T01:40:18.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/binary-search-tree-to-greater-sum-tree/)
+
+## 풀이
+
+일반적인 트리 순회구조와 다르게 무조건 우측 노드(BST에서 값이 큰 노드)부터 순회해야 하는 구조다.
+
+일부 노드 값이 제대로 안 나와서 결국 힌트를 봤는데 내가 생각한 거랑 큰 차이가 없어서 너무 아쉬웠던 문제.
+
+```
+class Solution:
+    cur_sum = 0
+
+    def bstToGst(self, root: TreeNode) -> TreeNode:
+        if not root:
+            return 0
+
+        self.bstToGst(root.right)
+        self.cur_sum += root.val
+        root.val = self.cur_sum
+        self.bstToGst(root.left)
+
+        return root
+```

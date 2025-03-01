@@ -1,0 +1,36 @@
+---
+title: "Leetcode - 1082. Sales Analysis I"
+images: ["None"]
+date: "2022-10-09T02:22:04.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/sales-analysis-i/description/)
+
+## 정답
+
+```
+SELECT seller_id FROM
+(
+    SELECT seller_id, SUM(price) AS total
+    FROM Sales
+    GROUP BY seller_id
+) AS T1
+WHERE total IN
+(
+    SELECT MAX(total) as max_total FROM ( 
+        SELECT seller_id, SUM(price) AS total
+        FROM Sales
+        GROUP BY seller_id
+    ) AS T2
+)
+```

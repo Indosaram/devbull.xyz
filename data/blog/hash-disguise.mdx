@@ -1,0 +1,50 @@
+---
+title: "프로그래머스: 코딩테스트 연습 - 해시 - 위장"
+images: ["None"]
+date: "2022-05-08T07:00:55.000Z"
+tags: ['codingtest', 'programmers']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://programmers.co.kr/learn/courses/30/lessons/42578)
+
+## 정답
+
+```
+from collections import defaultdict
+
+
+def solution(clothes):
+    comb = defaultdict(list)
+
+    for cloth, category in clothes:
+        comb[category].append(cloth)
+
+    result = 1
+    for category in comb.keys():
+        result *= len(comb[category]) + 1
+
+    return result - 1
+
+```
+
+그런데 사실 가짓수만 구하면 되기 때문에 무슨 "옷"이 들어가는지는 알 필요가 없다. 그래서 아래와 같이 바꿀 수 있다.
+
+```
+from collections import defaultdict
+
+
+def solution(clothes):
+    comb = defaultdict(int)
+
+    for cloth, category in clothes:
+        comb[category] += 1
+
+    result = 1
+    for category in comb.keys():
+        result *= comb[category] + 1
+
+    return result - 1
+```

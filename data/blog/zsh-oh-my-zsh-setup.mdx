@@ -1,0 +1,156 @@
+---
+title: "zsh + oh-my-zsh(omz) 설치 및 세팅"
+images: ["https://images.unsplash.com/photo-1523800503107-5bc3ba2a6f81?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDZ8fHByb2dyYW1taW5nfGVufDB8fHx8MTYxOTc0OTQ0NA&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-04-30T02:08:23.000Z"
+tags: ['set-up']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## `zsh` 설치
+
+셸에서 `zsh`를 설치한다.
+
+```
+sudo apt-get install zsh
+
+```
+
+그 다음 `nano`를 실행시킨다.
+
+```
+nano ~/.bashrc
+
+```
+
+다음 명령어로 기본 쉘을 `zsh`로 변경한다. `bashrc`의 마지막 줄에 다음 라인을 입력하면 된다.
+
+```
+...
+
+if [ -t 1 ]; then
+  exec zsh
+fi
+
+```
+
+## 예쁜 걸 원한다면 `oh-my-zsh`
+
+### 1. oh-my-zsh(omz) 설치
+
+`zsh`사용을 편리하게 해주는 `oh-my-zsh`를 설치한다.
+
+> 이때 `curl`을 사용하려면 `git`이 있어야 하므로 `git`이 없으면 설치한다.   
+> `sudo apt-get install git`
+
+다음을 입력해 `oh-my-zsh`를 설치한다.
+
+```
+curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
+
+```
+
+### 2.테마 설정
+
+![](/static/images/2021/04/image-4.png)
+
+원래는 Agnoster를 사용했었는데, 훨씬 예쁘고 명령 수행에 소요된 시간과 작업 시작시간 등이 표시되는 powerlevel10k 테마를 사용하고 있다.
+
+[romkatv/powerlevel10k
+
+A Zsh theme. Contribute to romkatv/powerlevel10k development by creating an account on GitHub.
+
+![](https://github.githubassets.com/favicons/favicon.svg)GitHubromkatv
+
+![](https://opengraph.githubassets.com/db5c00ce9a6fb3d0dba8f1d173aa891324500ed9635bfe97a440057f0bb46131/romkatv/powerlevel10k)](https://github.com/romkatv/powerlevel10k)
+
+oh-my-zsh를 설치했다면 쉽게 설치할 수 있다.
+
+```
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+```
+
+이제 `ZSH_THEME="powerlevel10k/powerlevel10k"` 를 `~/.zshrc` 에 추가한다. `source ~/.zhsrc` 로 설정을 적용해주면, 테마를 설정하는 마법사가 실행된다. 화면의 안내를 따라 취향대로 설정하면 된다.
+
+#### (deprecated) Agnoster 테마 설정
+
+테마에 어울리는 Powerline 폰트를 설치한다.
+
+> [Powerline Fonts 설치](https://github.com/powerline/fonts)
+
+테마를 `agnoster` 테마로 바꾸어준다. 먼저 `nano`를 실행한다.
+
+```
+nano ~/.zshrc
+
+```
+
+`ZSH_THEME`부분을 찾은 다음, 아래와 같이 변경한다.
+
+```
+ZSH_THEME="agnoster"
+
+```
+
+기본 쉘이 `zsh`로 변경되고 테마도 변경된 것을 확인하였다. 반드시 기본 쉘이 변경된 것을 확인한 다음 진행해야 한다. 어디서 하나가 꼬이면 고치기가 힘드니 반드시 주의할 것.
+
+### 3.Syntax Highliter 설치하기
+
+[zsh-users/zsh-syntax-highlighting
+
+Fish shell like syntax highlighting for Zsh. Contribute to zsh-users/zsh-syntax-highlighting development by creating an account on GitHub.
+
+![](https://github.githubassets.com/favicons/favicon.svg)GitHubzsh-users
+
+![](https://opengraph.githubassets.com/d3e4ebdac4420dd4dcdf66bb06d31a6fe86c22353c4139dade3605fde8bc7a05/zsh-users/zsh-syntax-highlighting)](https://github.com/zsh-users/zsh-syntax-highlighting)
+
+내가 입력한 명령어가 올바른 명령어인지 확인해주는 Highlighter를 설치하자.
+
+![](/static/images/2021/04/image-7.png)
+
+잘못된 명령어인 경우는 빨간색으로, 올바른 명령어인 경우 초록색으로 나타내준다.
+
+```
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
+echo "source ${(q-)PWD}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
+```
+
+저장소를 클론해주고 `~/.zshrc` 에 관련 내용을 추가해준다. 그리고 `source` 해주면 끝.
+
+```
+source ./zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+```
+
+### 4.autosuggestion 설치하기
+
+[zsh-users/zsh-autosuggestions
+
+Fish-like autosuggestions for zsh. Contribute to zsh-users/zsh-autosuggestions development by creating an account on GitHub.
+
+![](https://github.githubassets.com/favicons/favicon.svg)GitHubzsh-users
+
+![](https://opengraph.githubassets.com/80ad5b11306abee5842b999dc12c340d0487ed611e85e6c0513caea7688ece65/zsh-users/zsh-autosuggestions)](https://github.com/zsh-users/zsh-autosuggestions)
+
+이전에 입력했던 명령어를 `history` 에서 읽어와 자동완성을 도와주는 기능이다.
+
+![](/static/images/2021/04/image-5.png)
+
+`docker` 만 입력했는데 회색으로 전에 입력했던 명령어가 나타난다. 여기서 오른쪽 방향키 ➡️ 를 누르면 자동 완성된다.
+
+![](/static/images/2021/04/image-6.png)
+
+설치는 다음과 같다.
+
+```
+git clone https://github.com/zsh-users/zsh-autosuggestions ~/.zsh/zsh-autosuggestions
+
+```
+
+그 다음 `~/.zshrc` 파일에 아래 라인을 추가한다.
+
+```
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+```
+
+셸을 "재시작" 해주면 해당 설정이 적용된다.

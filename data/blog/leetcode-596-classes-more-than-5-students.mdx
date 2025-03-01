@@ -1,0 +1,38 @@
+---
+title: "Leetcode - 596. Classes More Than 5 Students"
+images: ["None"]
+date: "2022-06-16T01:31:11.000Z"
+tags: ['codingtest', 'sql']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/classes-more-than-5-students/)
+
+## 정답
+
+처음에는 이렇게 풀었는데...
+
+```
+SELECT class
+FROM (SELECT class, COUNT(*) AS counts FROM Courses GROUP BY class) AS C
+WHERE counts > 4
+
+```
+
+간단한 문제인데 이렇게 안해도 되지 않을까 해서 다른 답변을 찾아봤더니 `HAVING` 으로 간단하게 풀 수 있었다. 자주 안쓰다 보니 까먹었는데 그룹화했을 때 조건을 달 때는 `HAVING` 을 사용하자.
+
+```
+SELECT class
+FROM Courses
+GROUP BY class
+HAVING COUNT(class) > 4
+
+```

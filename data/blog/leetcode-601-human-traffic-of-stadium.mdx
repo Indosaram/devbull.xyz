@@ -1,0 +1,33 @@
+---
+title: "Leetcode - 601. Human Traffic of Stadium"
+images: ["None"]
+date: "2022-07-02T03:10:25.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/human-traffic-of-stadium/)
+
+## 정답
+
+`CREATE VIEW` 가 안돼서 찾아보니 다행히 `WITH AS` 로 뷰를 만들 수 있었다.
+
+```
+WITH temp AS (
+select *, id - ROW_NUMBER() OVER(ORDER BY id) AS gap
+FROM Stadium
+WHERE people >= 100
+)
+SELECT id, visit_date, people
+FROM temp
+WHERE gap IN (SELECT gap FROM temp GROUP BY gap HAVING COUNT(*) >= 3)
+
+```

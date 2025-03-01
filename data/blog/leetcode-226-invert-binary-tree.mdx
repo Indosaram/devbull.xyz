@@ -1,0 +1,88 @@
+---
+title: "Leetcode - 226. Invert Binary Tree"
+images: ["https://images.unsplash.com/reserve/bOvf94dPRxWu0u3QsPjF_tree.jpg?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDF8fHRyZWV8ZW58MHx8fHwxNjIyMjY0ODIw&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-29T05:06:39.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/invert-binary-tree/)
+
+## 풀이
+
+```
+class Solution:
+    def invertTree(self, root: TreeNode) -> TreeNode:
+        def invert_tree(node):
+            if node is None:
+                return
+            node.left, node.right = node.right, node.left
+
+            invert_tree(node.left)
+            invert_tree(node.right)
+
+        invert_tree(root)
+
+        return root
+
+```
+
+노드를 리스트로 만들어서 풀어보려고 했는데 조금 생각하다 보니 좀 더 간결한 풀이가 생각나서 역시 재귀함수로 구현했다.
+
+책을 보니 좀 더 Pythonic한 비슷한 답이 있다.
+
+```
+def invertTree(self, root: TreeNode) -> TreeNode:
+    if root:
+        root.left, root.right = self.invertTree(root.right), self.invertTree(root.left)
+        return root
+    return None
+```
+
+마찬가지로 책에 있는 BFS, DFS 풀이도 참고용으로 올려놓는다.
+
+### BFS
+
+```
+class Solution:
+    def invertTree(self, root: TreeNode) -> TreeNode:
+        queue = collections.deque([root])
+
+        while queue:
+            node = queue.popleft()
+
+            if node:
+                node.left, node.right = node.right, node.left
+
+                queue.append(node.left)
+                queue.append(node.right)
+
+        return root
+```
+
+### DFS
+
+```
+class Solution:
+    def invertTree(self, root: TreeNode) -> TreeNode:
+        stack = collections.deque([root])
+
+        while stack:
+            node = stack.pop()
+
+            if node:
+                node.left, node.right = node.right, node.left
+
+                stack.append(node.left)
+                stack.append(node.right)
+
+        return root
+```

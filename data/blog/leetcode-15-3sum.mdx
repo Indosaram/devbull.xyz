@@ -1,0 +1,82 @@
+---
+title: "Leetcode - 15. 3Sum"
+images: ["https://images.unsplash.com/photo-1559329255-2e7cb2e21ca7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDJ8fHN1bXxlbnwwfHx8fDE2NDQxMzI4Mjg&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-02-06T07:32:26.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/3sum/)
+
+## 정답
+
+### 오답
+
+예상했지만, Brute force로 하면 TLE가 나온다.
+
+```
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        nums = sorted(nums)
+
+        result = []
+        for ii in range(len(nums)):
+            if ii > 0 and nums[ii] == nums[ii - 1]:
+                continue
+            for jj in range(ii + 1, len(nums)):
+                if jj > ii + 1 and nums[jj] == nums[jj - 1]:
+                    continue
+                for kk in range(jj + 1, len(nums)):
+                    if kk > jj + 1 and nums[kk] == nums[kk - 1]:
+                        continue
+                    res = [nums[ii], nums[jj], nums[kk]]
+                    if sum(res) == 0 and res not in result:
+                        result.append(res)
+                        break
+        return result
+
+```
+
+### 쓰리 포인터 구현
+
+가장 왼쪽 숫자를 `left` 로 놓고, 나머지 숫자 내에서 투 포인터로 합을 계산하는 방식이다.
+
+```
+class Solution:
+    def threeSum(self, nums: List[int]) -> List[List[int]]:
+        nums = sorted(nums)
+
+        result = []
+        for left in range(len(nums) - 2):
+            if left > 0 and nums[left] == nums[left - 1]:
+                continue
+
+            mid = left + 1
+            right = len(nums) - 1
+            while mid < right:
+                res = [nums[left], nums[mid], nums[right]]
+                res_sum = sum(res)
+                if res_sum < 0:
+                    mid += 1
+                elif res_sum == 0:
+                    result.append(res)
+                    while mid < right and nums[mid] == nums[mid + 1]:
+                        mid += 1
+                    while mid < right and nums[right] == nums[right - 1]:
+                        right -= 1
+                    mid += 1
+                    right -= 1
+                else:
+                    right -= 1
+
+        return result
+
+```

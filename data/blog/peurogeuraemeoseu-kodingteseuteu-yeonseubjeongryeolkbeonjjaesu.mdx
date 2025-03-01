@@ -1,0 +1,23 @@
+---
+title: "프로그래머스 - 코딩테스트 연습 - 정렬 - K번째수"
+images: ["None"]
+date: "2022-07-19T01:13:12.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://school.programmers.co.kr/learn/courses/30/lessons/42748)
+
+## 정답
+
+```
+def solution(array, commands):
+    result = []
+    for command in commands:
+        i, j, k = command
+        
+        result.append(sorted(array[i-1:j])[k-1])
+    return result
+```

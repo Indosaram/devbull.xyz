@@ -1,0 +1,88 @@
+---
+title: "Leetcode - 17. Letter Combinations of a Phone Number"
+images: ["https://images.unsplash.com/photo-1549319692-4ce3a9c2e1a6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDF8fG51bWJlcnBhZHxlbnwwfHx8fDE2MTk2MTIxMzc&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-04-28T12:06:54.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+* [](https://leetcode.com/problems/letter-combinations-of-a-phone-number/)
+
+## 풀이
+
+```
+from itertools import combinations
+
+
+class Solution:
+    def letterCombinations(self, digits: str) -> List[str]:
+        chars = {
+            "2": ["a", "b", "c"],
+            "3": ["d", "e", "f"],
+            "4": ["g", "h", "i"],
+            "5": ["j", "k", "l"],
+            "6": ["m", "n", "o"],
+            "7": ["p", "q", "r", "s"],
+            "8": ["t", "u", "v"],
+            "9": ["w", "x", "y", "z"],
+        }
+
+        def get_comb(prev):
+            if len(prev) == 1:
+                return chars[prev]
+
+            res = []
+            combs = get_comb(prev[1:])
+            for comb in combs:
+                for char in chars[prev[0]]:
+                    res.append(char + comb)
+            return res
+		
+        if len(digits) == 0:
+	        return []
+        return get_comb(digits)
+
+```
+
+처음 문제를 보자마자 생각난 건 두 가지 풀이다.
+
+1. 브루트 포스 - 주어진 문자열에 따라서 모든 배열을 계속 뒤에 더해 나간다.
+2. 한 글자 단위로 recursive하게 짠다.
+
+이 문제는 브루트 포스로 풀면 굉장히 복잡하다. 주어지는 문자열 길이를 모르기 때문이다. 백트래킹을 사용하면 깔끔하게 풀 수 있다.
+
+책에서는 같은 방법이지만 다른 구현을 적어놓았다.
+
+```
+from typing import List
+
+
+class Solution:
+    def letterCombinations(self, digits: str) -> List[str]:
+        def dfs(index, path):
+            # 끝까지 탐색하면 백트래킹
+            if len(path) == len(digits):
+                result.append(path)
+                return
+
+            # 입력값 자릿수 단위 반복
+            for i in range(index, len(digits)):
+                # 숫자에 해당하는 모든 문자열 반복
+                for j in dic[digits[i]]:
+                    dfs(i + 1, path + j)
+
+        # 예외 처리
+        if not digits:
+            return []
+
+        dic = {"2": "abc", "3": "def", "4": "ghi", "5": "jkl",
+               "6": "mno", "7": "pqrs", "8": "tuv", "9": "wxyz"}
+        result = []
+        dfs(0, "")
+
+        return result
+```
+
+종료조건은 조합한 문자열이 주어진 문자열의 길이와 같을 경우이다. 이 경우 dfs에 path를 계속 넣어주어야 해서 오히려 불필요한 연산이 생긴다.

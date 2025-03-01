@@ -1,0 +1,56 @@
+---
+title: "Leetcode - 207. Course Schedule"
+images: ["https://images.unsplash.com/photo-1503428593586-e225b39bddfe?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDN8fGNvdXJzZXxlbnwwfHx8fDE2MjE0MjA1MzY&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-19T10:32:45.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/course-schedule/)
+
+## 풀이
+
+DFS로 풀 수 있는 문제인데, 노드 순환인 경우를 찾아야 해서 까다로웠다. 내가 헷갈린 부분은 지금 방문하고 있는 노드를 재방문하는 경우의 처리였는데, 방문이 끝난 다음 다른 노드를 순회할 때에도 재방문이 아닌 순환으로 처리해서 틀렸다.
+
+```
+class Solution(object):
+    def canFinish(self, numCourses, prerequisites):
+        graph = [[] for _ in range(numCourses)]
+        visited = [0 for _ in range(numCourses)]
+
+        for course, prereq in prerequisites:
+            graph[course].append(prereq)
+
+        def dfs(target):
+            # is being visited
+            if visited[target] == -1:
+                return False
+            # already visited
+            if visited[target] == 1:
+                return True
+
+            visited[target] = -1
+            for req in graph[target]:
+                if not dfs(req):
+                    return False
+            visited[target] = 1
+
+            return True
+
+        for course in range(numCourses):
+            if not dfs(course):
+                return False
+
+        return True
+
+```
+
+까다로운 포인트가 있어서 나중에 꼭 다시 풀어봐야겠다.

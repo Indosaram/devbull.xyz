@@ -1,0 +1,35 @@
+---
+title: "Leetcode - 234. Palindrome Linked List"
+images: ["https://images.unsplash.com/photo-1605701250441-2bfa95839417?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDF8fGxpbmt8ZW58MHx8fHwxNjQ1OTQ0OTMx&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-02-27T06:54:55.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/palindrome-linked-list/)
+
+## 정답
+
+```
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+class Solution:
+    def isPalindrome(self, head: ListNode) -> bool:
+        stack = []
+        while head is not None:
+            stack.append(head.val)
+            head = head.next
+            
+        return stack == stack[::-1]:
+```

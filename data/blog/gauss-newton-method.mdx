@@ -1,0 +1,103 @@
+---
+title: 'Gauss-Newton Method 정리'
+images:
+  [
+    'https://images.unsplash.com/photo-1489549132488-d00b7eee80f1?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ',
+  ]
+date: '2020-10-07T03:23:20.000Z'
+tags: ['estimation']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+> 이 문서는 아직 작성 중입니다.
+
+## Nonlinear least squares
+
+### 주어진 문제
+
+minimize:
+
+$$
+g(x)=\sum_{i=1}^m{f_i(x)^2}=||f(x)||^2_2
+$$
+
+$f:R^n\rarr R^m$가 미분가능한 n-벡터 $x_k$로 이루어진 함수
+
+$$
+f(x)=(f_1(x), \cdots, f_m(x))
+$$
+
+일반적으로 Non-convex 최적화 문제이다.
+
+선형 least-square 문제는 $Ax=b$ 문제의 특수한 경우이다.
+
+$$
+x=(A^TA)^{-1}A^Tb
+$$
+
+## Gauss-Raphson
+
+## Gauss-Newton
+
+관측값 : $(x_i, y_i), \ i=1,\cdots,n$
+
+모델 파라미터 : $p=(p_1, p_2, \cdots, p_,)$
+
+모델 : $y=f(x,p)$
+
+Residual : $r_i(p)=y_i-f(x_i,p)$
+
+Target function
+
+$$
+E(p)=\sum_{i=1}^{n}r_i(p)^2=\begin{bmatrix}r_1(p) & \cdots & r_n(p)\end{bmatrix}
+\begin{bmatrix} r_1(p) \\\\\\
+\cdots\\\\\\
+r_n(p)\end{bmatrix}=r^Tr
+$$
+
+이때 Target function을 최소화하는 해는 초기값 $p_0$에서부터 시작해 반복 갱신을 통해 얻을 수 있다. 초기값으로부터 다음 step의 p값을 얻는 수식은
+
+$$
+p_{k+1}=p_k-(J^T_rJ_r)^{-1}J^Tr
+$$
+
+이때 $r$은 Residual, $J$는 $r$의 Jacobian이다. 따라서 다음 step의 $p$는 이전 스텝에서
+
+$$
+r=J\delta
+$$
+
+를 만족하는 $\delta$를 만큼 이동한 것과 동일하다. 위의 업데이트 식은 사실 Gradient descent의
+
+$$
+x_{k+1}=x_k-\lambda r
+$$
+
+와 동일하다는 것을 알 수 있다. 이때 Jacobian은
+
+$$
+J=\begin{bmatrix}
+\dfrac{\partial r_1(p)}{\partial p_1} & \cdots & \dfrac{\partial r_1(p)}{\partial p_m} \\\\\\
+\vdots & \ddots & \vdots \\\\\\
+\dfrac{\partial r_n(p)}{\partial p_1} & \cdots & \dfrac{\partial r_n(p)}{\partial p_m}
+\end{bmatrix}
+$$
+
+와 같이 계산된다.
+
+만일 Weighted least-square를 구해야 한다면
+
+$$
+p_{k+1}=p_k-(J^T_rWJ_r)^{-1}J^TWr
+$$
+
+와 같이 풀 수 있다.
+
+우리가 풀고자 하는 문제는 어떤 파라미터가 포함된 Residual vector의 Squared-sum, 즉 Target function을 최소화하는 것이다. 이를 위해서는 초기값이 필요하고 이를 이용해 특정 포인트 근방에서 Target function을 선형화한다. 선형화된 식을 이용해 Least-square를 풀어 step size를 구한다. 그리고 step만큼 이동하며 Local minima를 찾아가는 과정이 바로 Gauss-Newton 방법의 아이디어인 것이다.
+
+## Reference
+
+- L. Vandenberghe, http://www.seas.ucla.edu/~vandenbe/236C/lectures/gn.pdf
+
+- https://darkpgmr.tistory.com/142

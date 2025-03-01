@@ -1,0 +1,70 @@
+---
+title: "Leetcode - 240. Search a 2D Matrix II"
+images: ["https://images.unsplash.com/photo-1598792014238-d5972511dd6c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDIyfHxtYXRyaXh8ZW58MHx8fHwxNjIzMDU3MTU2&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-07T08:48:16.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/search-a-2d-matrix-ii/)
+
+## 풀이
+
+고전적인 BFS 완전탐색 풀이
+
+```
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        def is_safe(x, y):
+            if (
+                -1 < x < len(matrix)
+                and -1 < y < len(matrix[0])
+                and visited[x][y] != 1
+            ):
+                return True
+            return False
+
+        moves = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+        visited = [[0 for _ in range(len(matrix[0]))] for _ in range(len(matrix))]
+        visited[0][0] = 1
+        queue = [(0, 0)]
+        while queue:
+            x, y = queue.pop()
+
+            if matrix[x][y] == target:
+                return True
+
+            for dx, dy in moves:
+                x_ = x + dx
+                y_ = y + dy
+                if is_safe(x_, y_):
+                    queue.append((x_, y_))
+                    visited[x_][y_] = 1
+
+        return False
+```
+
+두 방향으로만 이동
+
+```
+class Solution:
+    def searchMatrix(self, matrix: List[List[int]], target: int) -> bool:
+        row = len(matrix) - 1
+        col = 0
+        while row >= 0 and col < len(matrix[0]):
+            if matrix[row][col] == target:
+                return True
+            elif matrix[row][col] < target:
+                col += 1
+            else:
+                row -= 1
+        return False
+```

@@ -1,0 +1,97 @@
+---
+title: "공용체(Union)와 리틀 엔디언(Little endian)"
+images: ["https://images.unsplash.com/photo-1484417894907-623942c8ee29?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T18:52:47.000Z"
+tags: ['cpp']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+엔디언이란 메모리에 바이트를 배열하는 방식을 말하며, 주로 사용되는 엔디언으로는 빅 엔디언(Big Endian)과 리틀 엔디언(Little Endian) 두 가지가 있다.
+
+## 빅 엔디언
+
+사람이 쓰는 것과 동일하게 큰 자릿수(큰 바이트)가 앞에 위치하고, 작은 자릿수가 뒤에 위치한다.
+
+## 리틀 엔디언
+
+빅 엔디언과 반대로 작은 자릿수(작은 바이트)가 앞에 위치하고, 큰 자릿수가 뒤에 위치한다.
+
+아래 표로 보면 이해가 쉽다.
+
+| 종류       | 0x 1234 5678의 표현 |
+|----------|--------------------|
+| 빅 엔디언 | 12 34 56 78       |
+| 리틀 엔디언 | 78 56 34 12       |
+
+리틀 엔디언은 x86 아키텍처에서 사용하는 방법으로 대부분의 경우에는 리틀 엔디언이라고 생각하면 된다. ARM 프로세서의 경우 빅 엔디언과 리틀 엔디언을 선택할 수 있다. 각 엔디언의 장단점 비교는 위키피디아를 [참조](https://ko.wikipedia.org/wiki/%EC%97%94%EB%94%94%EC%96%B8).
+
+리틀 엔디언에서 공용체를 사용하여 메모리를 공유할 경우 바이트 저장 순서를 확인할 수 있는 예제를 소개하겠다.
+
+```cpp
+#include <stdio.h>
+
+struct DeviceOption{
+    union {
+        int option;
+        struct{
+            unsigned char power;
+            unsigned char mode;
+            unsigned char mouse;
+            unsigned char keyboard;
+        };
+    };
+};
+
+int main()
+{
+    struct DeviceOption opt;
+
+    // struct 저장 순서 11 -> 22 -> 33 -> 44 이지만
+    // 리틀 엔디언이므로 메모리에는 반대로 저장됨
+    opt.power = 0x11;
+    opt.mode = 0x22;
+    opt.mouse = 0x33;
+    opt.keyboard = 0x44;
+
+    printf("0x%x\n", opt.option); // 0x44331122
+
+    return 0;
+}
+```
+
+실행 결과
+
+```
+0x44331122
+```
+
+마지막으로 리틀 엔디언에서 포인터 형 변환 예제를 통해 메모리 주소를 저장하고 불러올 때를 확인해보자.
+
+```cpp
+#include <stdio.h>
+#include <stdlib.h>    // malloc, free 함수가 선언된 헤더 파일
+
+int main()
+{
+    int *numPtr = malloc(sizeof(int));    // sizeof(int) == 4
+    char *charPtr;
+
+    *numPtr = 0x12345678;
+
+    charPtr = (char *)numPtr;
+
+    printf("0x%x\n", *charPtr);   // 0x78: 낮은 자릿수 1바이트를 읽음
+
+    free(numPtr);
+
+    return 0;
+}
+```
+
+마찬가지로 실행 결과는
+
+```
+0x78
+```
+
+이다. 주소값은 int형 포인터이므로 메모리 상에 78 56 34 12 순으로 저장된다. char형 포인터로 형변환을 시도하면 1바이트만 읽어올 수 있으므로 가장 앞의 바이트인 78을 읽어들이는데, 이는 원래 메모리 주소 0x12345678에서 가장 낮은 자릿수 78과 같다.

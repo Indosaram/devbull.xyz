@@ -1,0 +1,381 @@
+---
+title: '가볍게 배우는 Markdown (+ LaTex) with Typora'
+images:
+  [
+    'https://images.unsplash.com/photo-1616711642010-f7822e169fb5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDIwfHxlZGl0b3J8ZW58MHx8fHwxNjI0ODg0MTUz&ixlib=rb-1.2.1&q=80&w=2000',
+  ]
+date: '2021-06-28T12:35:32.000Z'
+tags: ['dev-diary']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 0. Typora
+
+현재 사용하고 있는 마크다운(Markdown) 편집기가 없다면 Typora를 추천합니다.
+
+![[](http://typora.io/img/twitter-sum.png)](https://typora.io/#download)
+
+Typora는 매우 편리하고 심플한, 그리고 예쁜 마크다운 편집기다. 마크다운 편집이 아니더라도 메모장으로도 자주 사용한다. 특히 코드블럭과 수식도 자유롭게 넣을 수 있기 때문에 더욱 자주 사용하게 된다.
+
+일렉트론 기반의 앱이라 CSS를 편집하면 테마도 커스터마이징이 가능하지만, 기본 테마도 충분히 예쁘다.
+
+![](/static/images/2021/06/Untitled.png)
+
+# 1. Markdown
+
+![](/static/images/2021/06/image-1.png)
+
+## ⬇️What is Markdown?
+
+마크다운에 대해 설명하기 전 마크업 언어가 무엇인지 먼저 알아야 합니다.
+
+### Markup language
+
+마크업 언어란 태그 등을 사용해 문서 또는 데이터를 구조화하는 언어입니다. 프로그래밍 언어와는 달리 정해진 데이터를 표현하기만 하기 때문에 구분해서 부릅니다. 대표적인 마크업 언어로는 HTML이 있습니다.
+
+```html
+<!doctype html>
+<html>
+  <head>
+    <title>Hello HTML</title>
+  </head>
+  <body>
+    <p>Hello World!</p>
+  </body>
+</html>
+```
+
+마크다운 역시 마크업 언어의 한 종류로, 태그 없이 일반 텍스트를 사용해 데이터의 구조를 정의하는 것이 특징입니다.
+
+## ？Why use Markdown?
+
+데이터 구조를 간단한 문법으로 만들 수 있기 때문에 가독성이 좋고 배우기 쉬운 장점을 가지고 있습니다. 마크다운으로 작성한 문서는 최종적으로는 HTML 또는 XHTML로 변환되어 사용자에게 렌더링됩니다.
+
+> 최근 많은 곳에서 마크다운을 지원하고 있어 배워두면 두고두고 써먹을 수 있습니다!
+
+### Github
+
+[Github Flavored Markdown](https://guides.github.com/features/mastering-markdown/)이 별도로 있을 정도로 예전부터 마크다운을 꾸준히 지원해왔습니다. 특히 깃허브 저장소의 안내문 역할을 하는 `README.md`가 바로 마크다운으로 작성됩니다. 이외에도 issue 등에서도 마크다운을 네이티브로 지원하므로 알아두면 여러모로 편리합니다.
+
+### Notion
+
+헤딩, 코드 펜스, 리스트 등 일부 마크다운 문법을 지원합니다. LaTex를 수식 입력기를 통해 입력할 수 있습니다.
+
+이외에도 StackOverflow, Reddit, 심지어는 티스토리에서도 마크다운을 네이티브로 지원한다!
+
+## ✨Markdown syntax
+
+### 헤더
+
+HTML의 `<h1>, <h2>, ... <h6>` 에 대응하는 문법이다. `#` 의 갯수로 레벨을 정할 수 있습니다.
+
+```markdown
+# This is an <h1> tag
+
+## This is an <h2> tag
+
+###### This is an <h6> tag
+```
+
+참고로, 네이버 예티나 구글 봇같은 크롤링 봇의 경우 웹페이지 구조에서 h1 태그는 아티클의 제목으로 단 한번만 나타날 것이라고 예상합니다. 그리고 소문단의 내용은 h2, h3 와 같은 태그를 사용해 구분해 주어야 컨텐츠 구조를 올바르게 해석할 수 있어요. 눈썰미 있으신 분은 본 게시물이 이렇게 구조화돼 있음을 보실 수 있을거에요. 이와 같이 컨텐츠를 검색 엔진에 최적화하는 것을 SEO(Search Engine Optimization)이라고 합니다.
+
+### 리스트
+
+순서가 있는 리스트와 없는 리스트, 그리고 체크리스트를 만들 수 있습니다.
+
+```markdown
+- unordered 1
+- unordered 2
+  - you can indent
+
+1. ordered 1
+2. ordered 2
+   - you can also indent
+
+- [ ] checked
+- [x] checked
+  - [ ] indented checker
+```
+
+### 인라인 코드
+
+인라인 코드는 백틱(`) 1개를 이용하면 됩니다. 별도 언어별 린트(Lint) 또는 하이라이트(Highlight)는 적용되지 않습니다.
+
+```markdown
+Normal text, but `this is inline code`
+```
+
+### 코드 펜스
+
+코드 펜스는 백틱(`) 세개를 이용해 선언할 수 있고, 첫 번째 줄 다음에 언어명을 적으면 HTML에서 해당 언어의 코드로 인식하고 CSS에 하이라이트 기능이 있으면 코드를 예쁘게 표시해줍니다.
+
+````markdown
+```python
+import requests
+res = requests.get("example.com/api/v1/test")
+```
+
+```go
+package main
+
+import "fmt"
+
+func main(){
+fmt.Println("Hello World")
+}
+```
+````
+
+코드를 예쁘게 표시해주는 하이라이트 라이브러리로는 PrismJS가 가장 널리 쓰입니다.
+
+### Typography
+
+아쉽게도 밑줄(underline)은 자체 문법으로 지원하지 않아요😢 `<u>` 태그로 밑줄을 그을 수 있지만, 타이포라를 이용하면 워드나 한글처럼 단축키를 사용해 스타일을 지정할 수 있어서 매우 편리합니다.
+
+```markdown
+**BOLD**는 Ctrl/Cmd + B
+
+*Italic*는 Ctrl/Cmd + I
+
+<u>Underline</u>는 Ctrl/Cmd + U
+
+~~Centerline~~는 Ctrl + Shift + `
+```
+
+### Images
+
+이미지 삽입 문법은 아래와 같습니다.
+
+```markdown
+![Alternative text](https://link.to.image)
+```
+
+하지만 역시 타이포라를 사용하면 바로 삽입이 가능하죠!
+
+### Links
+
+링크는 이미지 삽입과 비슷한 syntax를 가지고 있습니다.
+
+```markdown
+[Text to represent](https://link.you.want)
+```
+
+### Blockquotes
+
+우리말로 인용구라고 하는 quote는 다음과 같습니다.
+
+```markdown
+> This is quoted section
+>
+> Ofc, you can change line
+```
+
+참고로 노션에서는 `>` 을 입력하면 토글 메뉴가 생성되고,  `|` 을 입력해야 인용구가 입력되는 점 기억하세요.
+
+### Simple table
+
+언제 이렇게 복잡하게 테이블을 그리나.. 싶지만 역시 타이포라에서는 GUI로 테이블을 손쉽게 만들 수 있어요. 다만 테이블 내부의 스타일링이나 간격 조정 등은 직접 HTML을 건드려야 합니다.. 😱
+
+```markdown
+| First Header | Second Header |
+| ------------ | ------------- |
+| Row 1 Col 1  | Row 1 Col 2   |
+| Row 2 Col 1  | Row 2 Col 2   |
+```
+
+### Divide line
+
+구분선은 대시(-) 세 개로 나타냅니다. 일부 렌더러에서는 H1을 렌더링하면서 아래에 이 구분선을 자동으로 넣는 경우가 있습니다.
+
+```markdown
+---
+```
+
+## 참고
+
+단, 테이블이나 체크리스트의 경우 Gatsby의 Remark 모듈과 같은 일부 렌더러에서는 제대로 렌더링되지 않을 수 있습니다.
+
+# 2. LaTex
+
+![](/static/images/2021/06/image.png)
+
+레이텍이라고 읽습니다. LaTex 역시 마크업 언어의 하나로, 보통 수식을 작성할 때 많이 사용됩니다. 여담으로 아래아 한글의 수식 편집기 문법이 LaTex과 거의 유사합니다.
+
+본래는 템플릿을 완벽하게 지켜야 하는 논문 등의 작성에 많이 사용되는 언어지만, ~~여러분을 보호하기 위해서^^~~ 여기서는 단순히 수식 입력기로서의 기능만을 다룹니다.
+
+## 💪Typora에서 수식 넣기
+
+역시 실습은 타이포라에서 할 것입니다. 실시간으로 LaTex을 렌더링해주는데다, 오류 메세지도 보기 쉽게 표시해주기 때문입니다.
+
+타이포라에서 `$$` 을 입력하면 수식 입력기가 실행됩니다.
+
+![](/static/images/2021/06/Untitled-3.png)
+
+이제 여기에 아래에 나오는 예제 수식을 입력(복사)하면 됩니다!
+
+정말 나는 타이포라가 싫어! 하시는 분들은 노션에서 수식 입력기를 사용하셔도 됩니다 😂
+
+$$
+|x| = x^2+1
+$$
+
+## 기본 LaTex 문법
+
+여기서는 편의상 LaTex 수식 지시자인 `$$` 는 생략하겠습니다.
+
+레이텍의 문법은 백슬래시(`\`)와 중괄호(`{, }`)를 기본으로 거의 모든 표현이 이루어집니다.
+
+### 사칙연산
+
+```
+A + B - C \times D / 2
+
+```
+
+### 줄바꿈
+
+레이텍은 별도의 줄바꿈 표시가 없으면 수식을 한 줄에 이어서 표시하기 때문에 명시적인 줄바꿈 기호인 `\\` 을 넣어주어야 합니다.
+
+### 분수
+
+분수를 나타내는 방법 중 많이 쓰이는 건 `frac` 과 `dfrac` 2가지가 있습니다. 하지만 웬만한 경우 `dfrac` 하나를 사용하길 추천합니다.
+
+```
+\dfrac{1}{2}\\
+y=\dfrac{x^2+x+1}{x+1}
+
+```
+
+분수 표기를 응용하면 미분과 편미분도 표시할 수 있습니다.
+
+```
+\dfrac{df(x)}{dx}=\dfrac{\partial z}{\partial y}\dfrac{\partial y}{\partial x}
+
+```
+
+### 문자 꾸미기
+
+문자의 첨자와 아랫첨자를 쉽게 넣을 수 있습니다. 중첩해 사용할 수도 있으니 여러가지로 연습해 보면 금방 익힐 수 있습니다.
+
+```
+a_x^{y+\Delta x} = a_x^y+a_x^{\Delta y}
+
+```
+
+### 합과 적분
+
+은근히 많이 사용되는게 합기호와 적분기호입니다.
+
+```
+\int_{0}^{1}f(x)dx=\sum_{n=0}^{1}f(n)\delta n
+
+```
+
+### 크기별로 괄호 넣기
+
+쓸데없어 보여도 나중에 고마워할 거에요.
+
+```
+\big( \Big( \bigg( \Bigg( \\
+\big\{ \Big\{ \bigg\{ \Bigg\{ \\
+\big \langle \Big \langle \bigg \langle \Bigg \langle
+
+```
+
+### 행렬
+
+가장 까다로운 게 행렬 입력입니다. 괄호 종류에 따라 `bmatrix` 와 `pmatrix` 등 여러 종류가 있지만 각진 괄호를 사용하는 행렬은 `bmatrix` 만 기억하면 됩니다.
+
+column 구분은 `&`로, row 구분은 `\\`로 이루어집니다.
+
+```
+A_{22}=\begin{bmatrix}
+x_{11} & x_{12} \\
+x_{21} & x_{22}
+\end{bmatrix}
+
+```
+
+### 그리스 문자
+
+그리스 문자를 전부 알 필요는 없지만, 자주 쓰이는 문자 몇 개는 외워두면 요긴합니다. 대문자와 소문자는 맨 앞자리를 대문자로 하느냐, 소문자로 하느냐에 따라 결정됩니다.
+
+```
+\alpha, \Alpha \\
+\epsilon, \pi, \theta, \\
+\lambda, \omega, \rho \\
+
+```
+
+### 다항식
+
+다항식은 이렇게 할 수 있습니다.
+
+```
+x^3+x^2+x+1
+
+```
+
+### 초월함수
+
+함수 이름을 그대로 적어주면 됩니다.
+
+```
+\sin^2{\theta} + \cos^2{\theta} = 1 \\
+f(x) = \log{x}
+
+```
+
+### 수식 정렬
+
+여러 줄로 이어지는 수식을 한 줄로 예쁘게 정렬할 수 있습니다.
+
+```
+\begin{aligned}
+E[(X-m_X)(Y-m_Y)]&=E[XY-m_XY-m_YX+m_Xm_Y]\\
+&=E[XY]-m_XE[Y]-m_YE[X]+m_Xm_Y\\
+&=m_Xm_Y-m_Xm_Y-m_Ym_X+m_Xm_Y=0\\
+\therefore\rho=0
+\end{aligned}
+
+```
+
+### 조건문
+
+조건문은 약간의 트릭이 필요한데요. `cases` 를 사용하면 쉽습니다!
+
+```
+\int_x^{x+dx}f_X(u)du=
+\begin{cases}
+\displaystyle\int_y^{y+dy}f_Y(u)du,\text{ for }dy \text{ positive}\\
+-\displaystyle\int_y^{y+dy}f_Y(u)du,\text{ for }dy \text{ negative}
+\end{cases}
+
+```
+
+## 🤬그럼 이걸 다 외워야 하나요?
+
+외우면 좋겠지만 현실적으로 어렵겠죠. 필요할 때마다 꺼내서 볼 수 있는 Cheatsheet가 있으니 걱정 마세요!
+
+[](https://drive.google.com/file/d/1dEEAXMhHo9TgmZmXSNWSVlG6YOeWp_gj/view?usp=sharing)
+
+## FAQ.
+
+### 1. 웹에서 LaTex를 쓰고싶어요.
+
+웹에서 레이텍을 렌더링해주는 [MathJax](https://www.mathjax.org)를 쓰면 됩니다. 여기서 소개한 `$$` 문법이나, 인라인으로 수식을 넣을 수 있는 `$` 을 사용하려면 아래 스크립트를 웹페이지나 블로그의 헤더에 넣어주시면 됩니다.
+
+```html
+<script
+  type="text/javascript"
+  async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.3/MathJax.js?config=TeX-MML-AM_CHTML"
+>
+  MathJax.Hub.Config({
+      tex2jax: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]],
+          processEscapes: true
+      }
+  });
+</script>
+```

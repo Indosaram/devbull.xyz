@@ -1,0 +1,35 @@
+---
+title: "프로그래머스 - 2021 Dev-Matching: 웹 백엔드 개발자(상반기) - 로또의 최고 순위와 최저 순위"
+images: ["https://images.unsplash.com/photo-1518688248740-7c31f1a945c4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDF8fGxvdHRvfGVufDB8fHx8MTY1NjIyODE1NA&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-06-26T07:22:01.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://programmers.co.kr/learn/courses/30/lessons/77484)
+
+## 정답
+
+```
+def solution(lottos, win_nums):
+    unknown = 0
+    win = []
+    lose = []
+    for num in lottos:
+        if num == 0:
+            unknown += 1
+        elif num in win_nums:
+            win.append(num)
+            win_nums.remove(num)
+        else:
+            lose.append(num)
+
+    max_win = len(win) + unknown
+    min_win = len(win)
+
+    stand = {6: 1, 5: 2, 4: 3, 3: 4, 2: 5, 1: 6, 0: 6}
+    return [stand[max_win], stand[min_win]]
+
+```

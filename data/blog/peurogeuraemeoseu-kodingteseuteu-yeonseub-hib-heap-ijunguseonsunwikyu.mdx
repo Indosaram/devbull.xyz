@@ -1,0 +1,64 @@
+---
+title: "프로그래머스 : 코딩테스트 연습 - 힙(Heap) - 이중우선순위큐"
+images: ["https://images.unsplash.com/photo-1519248200454-8f2590ed22b7?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T09:24:42.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   프로그래머스 코딩테스트 연습 - 힙(Heap) - 이중우선순위큐
+-   [문제링크](https://programmers.co.kr/learn/courses/30/lessons/42628)
+
+# 풀이
+
+`heapq` 모듈을 사용한 간단한 풀이. 그러나 최대값을 반환하는 부분에서 `max()`함수를 사용하기 때문에 배열의 크기가 클 경우 시간초과의 우려가 있다.
+
+```python
+import heapq
+
+def solution(operations):
+    heap = []
+    for oper in operations:
+        comm, num = oper.split()
+        if comm=="I":
+            heapq.heappush(heap, int(oper[1:]))
+        elif comm=="D":
+            if not heap:
+                continue
+            if num == "1":
+                heap.remove(max(heap)) # O(n^2)
+            elif num == "-1":
+                heapq.heappop(heap)
+
+    `answer = [max(heap), min(heap)] if heap else [0,0]`
+    return answer 
+```
+
+힙 두개를 선언해서 동기화해주면 `max()`함수를 사용하지 않기 때문에 시간복잡도가 $O(n^2)$에서 $O(nlog(n))$으로 줄어든다.
+
+```python
+import heapq
+
+def solution(operations):
+    minheap = []
+    maxheap = []
+    for oper in operations:
+        comm, num = oper.split()
+        if comm=="I":
+            temp = int(oper[1:])
+            heapq.heappush(minheap, temp)
+            heapq.heappush(maxheap, (-temp, temp))
+        elif comm=="D":
+            if not minheap:
+                continue
+            if num == "1":
+                minheap.remove(heapq.heappop(maxheap)[1])  # O(nlogn)
+            elif num == "-1":
+                temp = heapq.heappop(minheap) # O(logn)
+                maxheap.remove((-temp, temp))  # O(n)
+
+    answer = [maxheap[0][1], minheap[0]] if minheap else [0,0]
+    return answer
+```

@@ -1,0 +1,44 @@
+---
+title: "Leetcode - 347. Top K Frequent Elements"
+images: ["https://images.unsplash.com/photo-1619522893407-c2912518e126?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8YWxsfDR8fHx8fHwyfHwxNjE5NTY4MDkx&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-04-20T11:58:43.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+* [](https://leetcode.com/problems/top-k-frequent-elements/)
+
+## 풀이
+
+```
+from collections import Counter
+
+
+class Solution:
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        frequency = sorted(Counter(nums).items(), key=lambda x: -x[1])
+        return [item[0] for item in frequency[0:k]]
+
+```
+
+파이썬 기본 해시맵인 Dictionary를 이용해서 풀었다. 리스트를 정렬해 리턴해주는 `sorted` 를 람다 키를 사용해 역순으로 정렬한 다음, 처음 `k` 개 요소를 리턴하면 된다.
+
+정렬 대신에 `heapq` 를 사용할까도 했는데 파이썬은 리스트 자체의 연산이 워낙 자유로워서 그냥 리스트로 풀었다.
+
+Pythonic solution으로는 다음과 같은 것도 가능하다.
+
+```
+Class Solution:
+	def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        return list(zip(*collections.Counter(nums).most_common(k)))[0]
+```
+
+먼저 내장 모듈 `Counter` 를 사용해서,
+
+```
+collections.Counter(nums).most_common(k)
+```
+
+최빈 튜플 k개를 추출한다. 튜플이 키와 빈도값으로 이루어져 있으므로 `zip` 을 사용해 각각을 generator로 만든 다음, list로 변환한다. 첫 번째 원소가 키값이므로 원하는 정답이 된다.

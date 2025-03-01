@@ -1,0 +1,120 @@
+---
+title: "객체지향 프로그래밍이란? 5분 정리(OOP, Object Orientied Programming)"
+images: ["https://images.unsplash.com/photo-1593642702909-dec73df255d7?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T11:01:49.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 서론
+
+만약 대학교때 코딩을 처음 접한 사람들은 대부분 `C`로 코딩을 배웠을 것이다. `C`는 강력하지만, 이해하기 어렵고, 코드를 작성하기 어려운 언어이다. 또한 이 글에서 다룰 객체지향 프로그래밍(이하 OOP, Object Orientied Programming)과 반대의 개념인 절차지향 프로그래밍(Procedural Oriented Programming) 언어이다. 만일 `C`를 공부하다가 답답한 마음에 다른 프로그래밍 언어를 기웃거리고 있다면 이 글을 읽어볼 것을 추천한다.
+
+## 스파게티 코드 (Spaghetti Code)
+
+![](https://images.unsplash.com/photo-1551892374-ecf8754cf8b0?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ)
+
+Photo by [Krista Stucchio](https://unsplash.com/@kristastucchio?utm_source=ghost&utm_medium=referral&utm_campaign=api-credit) / [Unsplash](https://unsplash.com/?utm_source=ghost&utm_medium=referral&utm_campaign=api-credit)
+
+절차지향 프로그래밍의 단점은 "스파게티 코드"라는 말로 표현할 수 있다. `C`를 예로 들면, 수많은 함수와 변수를 정의하고 사용하다 보면 함수와 변수를 기능별로 또는 구조별로 나눌 필요성이 생기기 때문에 이를 헤더 파일 `.h`로 저장하고 `main.c`에서 불러오는 방식으로 사용하게 된다.
+
+이 방법의 문제점은 만일 어떤 헤더 파일에서 함수 구조를 바꾸거나, 변수명을 수정하면 이를 메인 파일에서 동일하게 수정해주어야 하고, 만일 동일 헤더 파일이나 다른 헤더 파일에서도 이 변수나 함수를 사용하고 있다면 이 함수와 변수에 의존하는 모든 부분을 매번 고쳐야 하는 매우 지루하고 피곤한 작업을 수행해야 한다.
+
+그런데 이 방법을 손쉽게 해결할 수 있는데, 그게 바로 OOP의 장점이다.  
+(참고 : 본문에서는 이해를 돕기 위해 간단한 예제로 작성하였다.)
+
+## OOP란?
+
+OOP는 크게 4가지 개념으로 설명할 수 있다.
+
+1. 캡슐화 - Encapsulation
+2. 추상화 - Abstraction
+3. 상속성 - Inheritance
+4. 다형성 - Polymorphism
+
+### 캡슐화 - Encapsulation
+
+![Pills to make you better](https://images.unsplash.com/photo-1523299174285-a59d80640155?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ)
+
+Photo by [Hush Naidoo](https://unsplash.com/@hush52?utm_source=ghost&utm_medium=referral&utm_campaign=api-credit) / [Unsplash](https://unsplash.com/?utm_source=ghost&utm_medium=referral&utm_campaign=api-credit)
+
+지금껏 우리는 함수와 변수를 따로 정의하고 관리해왔다. 예를 들면 아래 파이썬 코드와 같다.
+
+```
+level = 1
+name = "indo"
+
+def level_up(level):
+    level += 1
+    return level
+
+```
+
+변수 `level`, `name`과 함수 `level_up`은 개별로 존재하고 있고 구조적 연관성은 없는 상태이다. 그런데 만일 다음과 같이 변경한다면
+
+```
+class Character:
+    def __init__(self, level, name) -> None:
+        self.level = level
+        self.name = name
+
+    def level_up(self):
+        self.level += 1
+
+```
+
+`class Character` 내부에 변수와 함수가 모두 정의되었다. 이때 `class Character`를 객체라고 부르고, 객체 내부에 정의된 변수를 프로퍼티(Property), 함수를 메소드(Method)라고 부른다. 참고로, 객체 선언부를 보면, 메소드 `level_up()`은 입력받고 있는 변수(Parameter)가 없는 것을 알 수 있다. 이렇게 프로퍼티와 메소드를 정의하게 되면 변수는 변수대로, 함수는 함수대로 묶여있을 수 있게 되고 이 전체를 하나의 객체로 묶을 수 있기 때문에 이를 캡슐화한다는 뜻의 Encapsulation이라고 정의한다.
+
+* 각 개체가 다른 객체에 주는 영향이 최소화된다.
+* 정보의 접근 가능성이 다르다. - private, public, protected
+* 인터페이스가 단순해지고 객체간 의존성 및 결합도가 적어진다.
+* 재사용이 용이해진다.
+
+### 추상화 - Abstraction
+
+![](https://images.unsplash.com/photo-1587145820266-a5951ee6f620?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ)
+
+Photo by [Charles Deluvio](https://unsplash.com/@charlesdeluvio?utm_source=ghost&utm_medium=referral&utm_campaign=api-credit) / [Unsplash](https://unsplash.com/?utm_source=ghost&utm_medium=referral&utm_campaign=api-credit)
+
+Abstraction은 추상화라는 의미인데, 쉽게 생각하면 블랙박스 모델을 떠올리면 된다. 예를 들면, 우리가 계산기를 사용할 때 원하는 것은 1+1을 입력했을 때 2가 출력되는 것이지, 계산기가 내부적으로 어떤 동작을 통해 2를 출력하는지 알고싶은 게 아니다. Abstraction은 객체 내에서만 필요한 프로퍼티와 메소드를 숨기고(`Private`) 객체를 사용자에게 필요한 프로퍼티와 메소드만 나타내는 방법(`Public`)이다. 이렇게 하면 코드를 단순화시킬 수 있고, 유저 인터페이스가 간편해지며, 최소한의 수정만으로 코드의 유지보수가 가능하다는 장점이 있다.
+
+* 불필요한 부분이 생략된다.
+
+### 상속성 - Inheritance
+
+Inheritance, 즉 상속이란 여러 변수가 동일한 속성을 필요로 할 때 유용한 개념이다. 예를 들어 `window`, `popup`, `button` 세 클래스가 모두 `size()`라는 메소드를 필요로 한다고 할 때, 클래스를 선언할 때마다 해당 메소드를 정의하기보다는 `size()`를 포함하고 있는 `control`이라는 클래스로부터 해당 메소드를 상속받을 수 있다면 코드를 작성하기 쉬울 것이다.
+
+### 다형성 - Polymorphism
+
+"여러 가지 형태"라는 뜻의 단어이다. 아래 예제를 보자. 각 개체의 크기를 조절하는 코드이다. 각 개체의 타입이 맞을 경우에 `size()`함수를 호출하고 있다. 이렇게 하면 명시적이지만 코드가 길어지고 복잡해진다.
+
+```
+switch (element.type) {
+    case window: size();
+    case popup: size();
+    case button: size();
+    ...
+}
+
+```
+
+아래 코드처럼 수정하여 `element`의 하위 개체들에게 해당되는 메소드를 생성해주면 간단하다.
+
+```
+element.size();
+
+```
+
+## 마치며
+
+마지막으로 OOP의 네 가지 요소별로 특징을 정리하면서 이 글을 마친다.
+
+* Encapsulation : 복잡성을 줄일 수 있다. 코드의 재사용이 쉬워진다.
+* Abstraction : 복잡성을 줄일 수 있다. 작은 변화가 전체 코드에 미치는 영향이 줄어든다.
+* Inheritance : 길고 복잡한 코드를 간단히 할 수 있다.
+* Polymorphism : 공통 속성을 가진 경우 `switch .. case`나 `If ... elif ...` 문의 사용을 줄일 수 있다.
+
+## 함께 읽기
+
+* [Object-oriented Programming in 7 minutes](https://www.youtube.com/watch?v=pTB0EiLXUC8%5D)
+* [What Is OOP?](https://writeabout.tech/programming/what-is-oop/)

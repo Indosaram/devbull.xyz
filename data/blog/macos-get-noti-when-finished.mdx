@@ -1,0 +1,36 @@
+---
+title: "맥에서 터미널 작업 끝나고 알림 받는 방법"
+images: ["https://images.unsplash.com/photo-1624060798683-144bad071963?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDF8fGFsZXJ0fGVufDB8fHx8MTY1MzgwNzEyMA&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-05-29T06:42:01.000Z"
+tags: ['dev-diary']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+작업을 하다 보면 어떤 작업이 끝날 때까지 한참 기다려야 하는 경우가 종종 있다. 예를 들어서 로컬에서 도커 이미지 빌드를 한다던지 하면 10~15분을 기다려야 하는데 이때 다른 작업을 하곤 한다.
+
+문제는 다른 작업을 하다 보면 도커 이미지를 빌드하던것을 까먹고 다른 작업을 계속 한다는 점이다. 그래서 작업이 끝나면 알림을 받을 수 있도록 하려고 찾아보니 `osascript` 로 가능하다고 한다. 이게 뭔지는 잘 모른다 ㅎㅎㅎ
+
+## osascript 로 알림 받기
+
+아래 스크립트의 `Finish` 와 `Noti` 는 원하는 내용으로 수정하면 된다.
+
+```
+osascript -e 'display notification "Finish" with title "Noti"'
+
+```
+
+위 코드를 zsh 프로파일에 alias로 넣어준다.
+
+```
+alias noti="osascript -e 'display notification \"Finish\" with title \"Noti\"'" >> ~/.zshrc && source ~/.zshrc
+```
+
+이제 `noti` 라는 명령어로 알림을 받을 수 있다.
+
+![](/static/images/2022/05/image.png)
+
+이제 원하는 커맨드 위에 이를 붙여서 사용하면 된다. 예를 들면
+
+```
+docker build -t test . && noti
+```

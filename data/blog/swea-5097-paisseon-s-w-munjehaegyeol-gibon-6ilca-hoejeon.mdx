@@ -1,0 +1,30 @@
+---
+title: "SWEA-5097 : [파이썬 S/W 문제해결 기본] 6일차 - 회전"
+images: ["https://images.unsplash.com/photo-1526379095098-d400fd0bf935?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-15T11:53:11.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   \[파이썬 S/W 문제해결 기본\] 6일차 - 회전
+
+# 풀이
+
+```python
+T = int(input())
+for test_case in range(1, T + 1):
+    N, M = map(int, input().split())
+    templist = list(map(int, input().split()))
+
+    queue = []
+    for i in range(N):
+        queue.append(templist[i])
+
+    for j in range(M):
+        temp = queue.pop(0)
+        queue.append(temp)
+
+    print('#%d %d' % (test_case, queue[0]))
+```

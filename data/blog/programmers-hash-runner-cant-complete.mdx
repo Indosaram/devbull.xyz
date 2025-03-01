@@ -1,0 +1,40 @@
+---
+title: "프로그래머스 - 코딩테스트 연습 - 해시 - 완주하지 못한 선수"
+images: ["https://images.unsplash.com/photo-1581889470536-467bdbe30cd0?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDJ8fG1hcmF0aG9ufGVufDB8fHx8MTYyMzAzNDA2Nw&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-06T06:26:16.000Z"
+tags: ['codingtest', 'programmers']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://programmers.co.kr/learn/courses/30/lessons/42576)
+
+## 풀이
+
+```
+from collections import defaultdict
+
+
+def solution(participant, completion):
+    completes = defaultdict(int)
+    for name in completion:
+        completes[name] += 1
+
+    for name in participant:
+        if name in completes and completes[name] > 0:
+            completes[name] -= 1
+        else:
+            return name
+```
+
+`Collections.Counter` 모듈을 이용한 풀이
+
+```
+import collections
+
+
+def solution(participant, completion):
+    answer = collections.Counter(participant) - collections.Counter(completion)
+    return list(answer.keys())[0]
+```

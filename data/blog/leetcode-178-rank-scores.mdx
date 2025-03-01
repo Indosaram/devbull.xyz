@@ -1,0 +1,25 @@
+---
+title: "Leetcode - 178. Rank Scores"
+images: ["None"]
+date: "2022-07-02T02:18:16.000Z"
+tags: ['codingtest', 'sql']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/rank-scores/)
+
+## 정답
+
+```
+SELECT score, DENSE_RANK() OVER(ORDER BY score DESC) AS "rank"
+FROM Scores
+ORDER BY score DESC
+```

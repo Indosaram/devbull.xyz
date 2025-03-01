@@ -1,0 +1,28 @@
+---
+title: "Leecode - 2298. Tasks Count in the Weekend"
+images: ["None"]
+date: "2023-02-06T13:42:47.000Z"
+tags: ['None']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Problem
+
+[Tasks Count in the Weekend - LeetCode
+
+Tasks Count in the Weekend - Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon.ico)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/tasks-count-in-the-weekend/description/)
+
+## Solution
+
+```
+SELECT COUNT(weekend) AS weekend_cnt, COUNT(working) AS working_cnt
+FROM (
+    SELECT CASE WHEN WEEKDAY(submit_date) > 4 THEN 'weekend' END as weekend,
+             CASE WHEN WEEKDAY(submit_date) < 5 THEN 'working' END as working
+    FROM Tasks
+) AS Temp
+```

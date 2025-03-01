@@ -1,0 +1,41 @@
+---
+title: "Leetcode - 110. Balanced Binary Tree"
+images: ["https://images.unsplash.com/photo-1587740896339-96a76170508d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDF8fGJhbGFuY2V8ZW58MHx8fHwxNjIyNDQ4NjAz&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-31T08:09:11.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/balanced-binary-tree/submissions/)
+
+## 풀이
+
+재귀로 구현.
+
+```
+class Solution:
+    def isBalanced(self, root: TreeNode) -> bool:
+        def get_height(node: TreeNode):
+            if not node:
+                return True, 1
+
+            left_is_bal, left_hei = get_height(node.left)
+            right_is_bal, right_hei = get_height(node.right)
+
+            if abs(left_hei - right_hei) > 1:
+                return False, max(left_hei, right_hei) + 1
+
+            return left_is_bal and right_is_bal, max(left_hei, right_hei) + 1
+
+        is_bal, _ = get_height(root)
+
+        return is_bal
+```

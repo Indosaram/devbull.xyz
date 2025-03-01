@@ -1,0 +1,164 @@
+---
+title: "카카오 맵 API 길찾기 사용하는 방법"
+images: ["https://images.unsplash.com/photo-1604355231395-bf02775c357f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDF8fG5hdml8ZW58MHx8fHwxNjM1NTk5MzE4&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-10-30T12:55:39.000Z"
+tags: ['dev-diary']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 들어가면서
+
+[카카오 API](https://developers.kakao.com/)는 정말 편리한 기능들을 무료로 제공하고 있어서 개발자들이 많이 사용하고 있습니다. 물론 일일 제한이 있지만, 트래픽이 많지 않은 서비스라면 충분히 커버할 수 있는 만큼의 Quota가 제공됩니다.
+
+그 중 카카오 지도 API가 위경도에서 주소 또는 주소에서 위경도 변환이 가능해 많이 사용되고 있습니다. 그런데 카카오 지도 API는 길찾기 기능을 제공하지 않고 랜딩 페이지로의 리디렉션 API만 제공하고 있습니다. 왜 하필 길찾기만 따로 제공하지 않는지는 잘 모르겠습니다😂
+
+[공식 문서](https://apis.map.kakao.com/web/guide/)에 따르면
+
+
+좌표나 장소ID를 이용하여 해당 위치의 로드뷰를 바로 실행하는 URL을 만들 수 있습니다.
+
+| URL Pattern | 예시 |
+| --- | --- |
+| /link/roadview/`위도`,`경도` | *[](https://map.kakao.com/link/roadview/37.402056,127.108212)* |
+| /link/roadview/`장소ID` | *[](https://map.kakao.com/link/roadview/18577297)* |
+
+
+라고 하는데요. Q&A 페이지에서도 공식적으로 이를 확인해줘서 앞으로도 언제 추가가 될지는 모르는 상황입니다.
+
+[지도 api 길찾기기능
+
+안녕하세요 길찾기 api 관련해서 궁금한게 있습니다. 혹시 다음지도 오픈 api에서 길찾기 기능은 처음부터 배제된 부분인가요? 그게 아니라면 언제부터 종료가 된 건가요?
+
+![](https://devtalk.kakao.com/uploads/default/optimized/2X/4/45637762c7757790ac514e63fb8db66f92156332_2_180x180.png)카카오 데브톡solyoung3
+
+![](https://devtalk.kakao.com/uploads/default/original/2X/1/177b0155cf38c99fc8afe7af3f766f49d04aaf89.png)](https://devtalk.kakao.com/t/api/44727)
+
+일단 공식 문서에서 알려준대로 장소 ID를 사용해 랜딩 페이지를 만들려고 했습니다. 그래서 처음에는 "키워드로 ID 찾기" API를 사용해서 저 랜딩페이지로 들어간 다음, 시작 장소를 쿼리 파라미터로 넘겨주려고 했습니다. 그런데 문제는... 시작 부분에 해당하는 쿼리 파라미터를 제대로 찾지 못했던 것입니다. 어떤 부분인지는 짐작이 가는데 그 부분에 무슨 값을 만들어서 넣어줘야 할지를 모르겠더라구요.
+
+## 해결방법
+
+결국에는 `selenium` 을 활용해 브라우저 자동화로 해결했습니다. Brute force 방식이나 마찬가지라 별로 좋지는 않지만 딱히 다른 방법을 모르겠네요. 혹시 코드를 사용하고 싶은 분들은 `KAKAO_API_KEY` 부분만 발급받은 API키로 교체하면 됩니다!
+
+```python
+import os
+import time
+
+import pandas as pd
+from selenium import webdriver
+from selenium.common.exceptions import (
+    NoSuchElementException,
+    ElementNotInteractableException,
+)
+from selenium.webdriver.common.keys import Keys
+
+KAKAO_API_KEY = ""
+
+
+class KakaoRouteFinder:
+    def __init__(self, driver_path, file_path):
+        self.driver = webdriver.Chrome(driver_path)
+
+        self.df = pd.read_excel(file_path)
+
+    def _search_and_select_address(self, target, xpath):
+        element = self.driver.find_element_by_xpath(xpath)
+        element.click()
+        element.send_keys(target)
+        element.send_keys(Keys.ENTER)
+        time.sleep(1)
+        try:
+            address_selector = (
+                "#info\.flagsearch\.address\.list > li > span.name"
+            )
+            self.driver.find_element_by_css_selector(address_selector).click()
+        except:
+            address_selector = (
+                "#info\.flagsearch\.place\.list > "
+                "li.PlaceFlagItem.clickArea.PlaceFlagItem-ACTIVE > "
+                "div.infopanel.clickArea > strong"
+            )
+            self.driver.find_element_by_css_selector(address_selector).click()
+
+        time.sleep(1)
+
+    def get_distance(self, origin, dest):
+        origin = origin.replace("\xa0", " ")
+        dest = dest.replace("\xa0", " ")
+
+        base_url = "https://map.kakao.com/?map_type=TYPE_MAP&target=car"
+        self.driver.get(base_url)
+        time.sleep(1)
+
+        # Preventing clicking not working
+        try:
+            dimmed_layer_selector = "#dimmedLayer"
+            self.driver.find_element_by_css_selector(
+                dimmed_layer_selector
+            ).click()
+        except ElementNotInteractableException:
+            pass
+
+        # Inputs origin and destination
+        origin_xpath = '//*[@id="info.route.waypointSuggest.input0"]'
+        dest_xpath = '//*[@id="info.route.waypointSuggest.input1"]'
+        self._search_and_select_address(origin, origin_xpath)
+        self._search_and_select_address(dest, dest_xpath)
+
+        # Route by car
+        car_selector = "#cartab"
+        self.driver.find_element_by_css_selector(car_selector).click()
+        time.sleep(1)
+
+        # Select shortest route
+        option_list_selector = (
+            "#info\.flagsearch > div.CarRouteResultView > "
+            "div.info_pathfind > div > div.opt_pathfind"
+        )
+        self.driver.find_element_by_css_selector(option_list_selector).click()
+        option_selector = (
+            "#info\.flagsearch > div.CarRouteResultView > div.info_pathfind > "
+            "div > div.opt_pathfind > ul > li:nth-child(3) > a"
+        )
+        self.driver.find_element_by_css_selector(option_selector).click()
+
+        # Get distance
+        selector = (
+            "#info\.flagsearch > div.CarRouteResultView > ul > li > "
+            "div.summary > div > div.contents > p > span.distance > span.num"
+        )
+        try:
+            element = self.driver.find_element_by_css_selector(selector)
+        except NoSuchElementException:
+            print(f"Invalid address: {origin} -> {dest}")
+            return None
+        return element.text
+
+    def find_routes(self):
+        results = []
+        for row in self.df.itertuples():
+            try:
+                distance = self.get_distance(row.start, row.arrive)
+            except Exception as exc:
+                print(exc, row)
+                distance = None
+
+            results.append(distance)
+
+        self.df["distance"] = results
+
+    def __del__(self):
+        self.driver.close()
+
+
+if __name__ == '__main__':
+    # 주소 리스트 컬럼은 start, arrive, distance 3개로 구성됨
+    filename = "주소_리스트.xlsx"
+    driver_path = os.path.join(os.getcwd(), "chromedriver.exe")
+
+    kakao_route_fidner = KakaoRouteFinder(driver_path, filename)
+    kakao_route_fidner.find_routes()
+
+    print(kakao_route_fidner.df)
+    kakao_route_fidner.df.to_excel("결과.xlsx")
+
+```

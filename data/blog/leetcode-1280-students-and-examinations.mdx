@@ -1,0 +1,29 @@
+---
+title: "Leetcode - 1280. Students and Examinations"
+images: ["None"]
+date: "2023-02-11T01:14:11.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Problem
+
+[LeetCode - The World’s Leading Online Programming Learning Platform
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon.ico)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/students-and-examinations/description/)
+
+## Solution
+
+```
+SELECT Students.student_id, Students.student_name, Subjects.subject_name, IFNULL(cnt, 0) as attended_exams
+FROM Students
+CROSS JOIN Subjects
+LEFT JOIN (
+    SELECT student_id, subject_name, COUNT(*) as cnt FROM Examinations GROUP BY student_id, subject_name
+) as Temp ON Subjects.subject_name = Temp.subject_name AND Students.student_id = Temp.student_id
+ORDER BY student_id, subject_name
+```

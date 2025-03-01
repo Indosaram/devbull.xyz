@@ -1,0 +1,117 @@
+---
+title: "Jamstack : Ghost, Gatsby, Netlify로 블로그 만들기(3)"
+images: ["https://images.unsplash.com/photo-1593642532781-03e79bf5bec2?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-22T14:43:32.000Z"
+tags: ['set-up']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+> Jamstack 블로그 만들기 시리즈는 총 3편으로 구성되어 있습니다.
+> 1편 : [Jamstack 소개와 준비물](__GHOST_URL__/jamstack-ghost-gatsby-netlify-1/)
+> 2편 : [Ghost, Gatsby, Netlify로 Jamstack 블로그 구축하기](__GHOST_URL__/jamstack-ghost-gatsby-netlify-2/)
+> 3편 : [쾌적한 블로깅을 위한 몇 가지 세팅 방법 소개](__GHOST_URL__/jamstack-ghost-gatsby-netlify-3/)
+
+안녕하세요! 오늘은 저번에 구축했던 우리의 Jamstack의 기본 세팅 방법을 알려드리겠습니다. 세팅이 좀 복잡한데, 무료잖아요! 저는 무료로 이렇게 빠르고 가벼운 사이트를 돌릴 수 있다면.. 처음 설정하는데 들어가는 노력은 싼값이라고 생각해요.
+
+예를 들면...
+
+```
+블로그 호스팅 비용 월 최소 3.5달러 (아마존 라이트세일) * 블로그 2개 * 12개월 = 84달러
+```
+
+정도 되니까 1년에 9만원 정도를 아낄 수 있는거죠 ㅎㅎ 만일 더 많은 블로그를 운영한다면 더 많이 절약할 수 있겠죠? 물론 이와 같은 정적 사이트(Static site)가 만능은 아닙니다. 사용자와의 인터랙션이 많다거나, 데이터베이스에서 불러와야 하는 정보가 엄청나게 많은 경우에는 별 이득을 보지 못할 수도 있습니다. 그러나 우리의 주 목적은 블로그 개설이기 때문에 매우 유리한 환경이라는 것입니다. 텍스트가 많고, 주로 이미지 파일을 사용하기 때문이죠. 
+
+저에게 우리나라에서 가장 성공적인 정적 사이트를 하나 꼽으라고 하면 [뱅크샐러드 채용 홈페이지](https://career.banksalad.com/about/)를 꼽고 십네요. 물론 이렇게 깔끔하게 홈페이지를 만드려면.. React, 최소 Javascript와 CSS를 일정 수준이상 할 줄 알아야 하긴 하지만요 😂 아. 뱅크샐러드에서 왜 Gatsby로 홈페이지를 만들었는지 궁금하시면 [뱅크샐러드에 직접 설명한 곳](https://blog.banksalad.com/tech/build-a-website-with-gatsby/)으로 가보세요.
+
+서론이 너무 길었네요 ㅎㅎ 이제 세팅 방법으로 넘어가 보겠습니다.
+
+
+
+## 메타 태그 설정
+
+메타 태그는 사이트의 정보를 나타내는 태그로, 사이트의 이름과 주제, 포스팅의 이름, 내용, 태그 등을 포함하고 있는 태그입니다. 티스토리의 경우는 보통 이 부분에 사이트 소유자 확인 태그나, 애널리틱스, 애드센스 태그 등을 넣습니다. 우리도 마찬가지로 이 부분을 설정해 줄건데요. 파일을 수정해야 하기 때문에 Github로 접속해 우리의 Gatsby가 저장되어 있는 저장소로 이동합니다.
+
+
+
+### Websitemeta.js
+
+위 파일은 사이트의 메타데이터를 설정하는 파일입니다. `/src/components/coomon/meta/`폴더 안에 있습니다. 63~64 라인에 구글과 네이버 소유권 확인 태그가 삽입되어 있는데요. 사용하지 않으시는 분들은 지우셔도 됩니다. 사용하실 분들은 각 부분에 소유권 코드를 삽입하시면 됩니다.
+
+
+
+### post.js
+
+이 파일은 우리의 포스팅 부분의 렌더링을 담당하는 파일입니다. (포스팅이 어떻게 구성되는지 궁금하시면 이부분의 jsx 코드를 보시면 됩니다.) 이 파일은 `/src/templates/`에 있습니다. 파일을 열어 보시면 33번 라인에 구글 애드센스 코드가 들어있는데요. 자동광고 설정을 하실 분들은 여기에 게시자 아이디만 수정하시면 됩니다.
+
+
+
+### ads.txt
+
+블로그에 광고를 삽입하기 위해서는 루트 디렉토리에 `ads.txt`파일이 있어야 하는데요. `/static/`폴더에 넣어놓았으니 각 광고사마다 요구하는대로 파일을 수정하시면 됩니다.
+
+
+
+## Heroku Dyno 활성화
+
+Heroku는 서버를 운영하는 CPU를 Dyno라고 부릅니다. 이 Dyno는 계정 별로 신용카드 인증시 1000시간까지 사용 가능한데요. 그런데 30분 이상 사이트에 접속이 없을 경우 자동으로 수면 모드로 진입하게 됩니다. 이런 수면 상태에서 우리가 어떤 작업을 하려면 Dyno를 깨워야 하는데 이때 시간이 상당히 걸립니다.
+
+그래서 이런 문제를 해결하기 위해 아래 2가지 사이트를 이용할 것입니다. 
+
+
+
+### [Kaffeine](https://kaffeine.herokuapp.com/)
+
+첫 번째 사이트는 내 Heroku 앱에 카페인을 준다는 ㅋㅋㅋ 앱입니다. 사용법은 들어가서 내 App 주소를 넣으면 되는데요. 이 앱에서는 App을 하루 6시간을 잠들게 합니다. 그 이유는 예전에는 Free Dyno의 경우 하루 6시간을 의무로 Sleep 해야한다는 조건이 있었기 때문인데, 최근에는 사라진 것 같습니다. 그래도 이 앱을 사용하면 하루 18시간만 사용할 수 있어서 여러 앱을 동시에 사용할 수 있다는 장점이 있습니다.
+
+* 최근에 DB가 가득차서 새로운 앱 등록이 안되고 있으니 참고하세요.
+
+
+
+### [Uptimerobot](https://uptimerobot.com/dashboard#mainDashboard)
+
+두번째 사이트는 자동으로 내 서버에 핑을 보내서 서버 다운타임을 체크할 수 있는 Uptimerobot이라는 곳입니다. 여기서 Heroku 서버를 등록해놓으면 30분마다 핑을 보내서 서버가 계속 깨어있게 해줄 수 있습니다.
+
+![howtobuild_jamstack_03_07](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_03_07.png)
+
+사용 방법은 먼저 사이트에 이메일로 가입하세요. 가입 후에 대시보드로 이동한 다음 화면 상단의 `Add New Monitor`버튼을 눌러줍니다.
+
+![howtobuild_jamstack_03_08](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_03_08.png)
+
+Monitor Type은 HTTP(s)를 선택하고, Friendly Name은 내가 알아볼 수 있는 별명을 작성합니다. URL을 우리의 Heroku 앱 주소를 적으면 됩니다(예 : https://adsense.herokuapp.com). Monitoring Interval은 슬라이더를 조정해 30분으로 맞춰주세요. 이제 Uptimerobot이 30분마다 우리 앱을 방문해서 Heroku server가 잠들지 않게 해줄 것입니다 🤗
+
+## Netlify 도메인 연결
+
+만일 도메인을 구입하신 분들이 계시다면, 도멘인을 Netlify에 연결하셔야 합니다. 왜냐하면 우리가 화면에 보여주고 싶은 사이트는 Netlify에서 호스팅하고 있는 정적 사이트이기 때문입니다.
+
+![howtobuild_jamstack_03_01](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_03_01.png)
+
+먼저 Netlify 설정 메뉴로 들어가세요. 왼쪽에서 `Domain management`탭으로 이동합니다. 그 다음에 오른쪽 `Add custom domain`버튼을 눌러주세요.
+
+![howtobuild_jamstack_03_02](https://res-5.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_03_02.png)
+
+
+연결할 도메인을 입력해주세요.
+
+![howtobuild_jamstack_03_03](https://res-5.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_03_03.png)
+
+도메인 입력이 끝나면 화면이 위와 같이 바뀌어있게 됩니다. 빨간색 박스 부분을 클릭해주세요.
+
+![howtobuild_jamstack_03_04](https://res-1.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_03_04.png)
+
+여기서부터는 도메인 공급자마다 설정 방법이 조금씩 다르기 때문에 각 도메인 공급자 홈페이지를 참고해서 진행하세요. 만일 CNAME으로 DNS 설정이 가능한 도메인이면 위의 CNAME을 해당 부분에 입력해주세요. 이외의 경우라면 아래의 `Set up..`부분을 클릭합니다.
+
+![howtobuild_jamstack_03_05](https://res-4.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_03_05.png)
+
+`Add new record` 버튼을 클릭합니다.
+
+![howtobuild_jamstack_03_06](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_03_06.png)
+
+여기도 마찬가지로 도메인에서 제공하는 부분을 입력하시면 됩니다.
+
+## 기타
+
+- 제가 불펌 방지용 스크립트를 `/src/styles/` 폴더의 shield.css를 app.css에서 불러오도록 해놓았는데 이 부분이 필요 없으신 분들은 해당 코드를 삭제하시면 됩니다.
+- Google Analytics는 루트 위치의 `gatsby-config.js` 파일을 보시면 211 라인에 `trackingId`를 입력하는 부분이 있으니 여기를 이용하세요.
+- 댓글 관리 플랫폼으로 Disqus가 탑재되어있습니다. 기타 유료 플러그인이나 Github 기반의 Utterance로 바꾸실 분들은 자유롭게 수정하세요.
+
+이 외에도 많은 부분(검색, 관련 게시물 기능 등)을 아직 구현중입니다. 여러분께서 React를 다룰 줄 아신다면 좀 더 편하게 Gatsby 커스터마이징을 진행하실 수 있습니다. 여러분만의 블로그를 구현하는 중 막히는 부분이 있으면 댓글 부탁드립니다 😊

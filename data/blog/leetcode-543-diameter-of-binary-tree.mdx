@@ -1,0 +1,43 @@
+---
+title: "Leetcode - 543. Diameter of Binary Tree"
+images: ["https://images.unsplash.com/photo-1458966480358-a0ac42de0a7a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDN8fHRyZWV8ZW58MHx8fHwxNjIyMTcwOTY5&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-28T08:43:57.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/diameter-of-binary-tree/)
+
+## 풀이
+
+직접 손으로 트리를 그려보면 직관적으로 풀 수 있다. 역시 이진트리를 재귀 구조로 풀었다.
+
+```
+class Solution:
+    def diameterOfBinaryTree(self, root: TreeNode) -> int:
+        def get_length(node):
+            left_length = right_length = 0
+            if node.left:
+                left_length = get_length(node.left) + 1
+            if node.right:
+                right_length = get_length(node.right) + 1
+            res.append(left_length + right_length)
+
+            return max(left_length, right_length)
+
+        res = [0]
+        if root:
+            get_length(root)
+
+        return max(res)
+```
+
+양쪽 자식 노드를 체크하고, 자식 노드가 있다면 경로 길이에 +1을 해준다. 결과값은 가장 긴 경로를 찾는 것이므로, `get_length` 함수의 리턴은 자식 노드들의 경로 중 긴 것을 리턴한다. 결과 리스트인 `res` 는 가장 긴 경로값 자체가 되어야 하므로 지금까지 가지고 있는 왼쪽 자식노드와 우측 자식노드의 경로값의 합을 추가해준다. 그리고 노드 순회가 끝나면 그 중 가장 큰 값을 리턴한다.

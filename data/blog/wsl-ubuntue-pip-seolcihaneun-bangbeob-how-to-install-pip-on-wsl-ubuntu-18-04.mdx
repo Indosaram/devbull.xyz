@@ -1,0 +1,66 @@
+---
+title: "WSL Ubuntu에 pip 설치하는 방법 how to install pip on WSL Ubuntu 18.04"
+images: ["https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T12:34:09.000Z"
+tags: ['set-up']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+Windows Subsystem for Linux(WSL)은 Python 배포판이 기본으로 설치되어 있다.
+
+```bash
+python3 --version
+```
+
+위 명령어를 통해 설치된 파이썬의 버전을 확인할 수 있다. 참고로 `python3`이 파이썬2인 `python`대신 설치되어 있다. 그런데 파이썬 패키지 관리 툴인 `pip`가 설치되어 있지 않다. 그래서 오늘은 WSL Ubuntu에 pip를 설치해보겠다.
+
+먼저 WSL에 설치된 대부분의 리눅스는 첫 번째 방법을 이용해야 할 것이다. 만일 리눅스에 파이썬이 설치되어 있지 않아 직접 설치한 경우라면 두 번째 방법을 사용하자.
+
+# apt를 이용한 설치 방법(추천)
+
+`pip` 공식 홈페이지에서는 Ubuntu에 python 배포판이 설치되어 있는 경우에 이 방법으로 설치할 것을 권장한다. 이 방법을 사용하기 전 패키지 간 혹시 모를 꼬임을 방지하기 위해 저장소를 업데이트하고 업그레이드해준다.
+
+```bash
+sudo apt update && upgrade
+```
+
+그 다음 설치하고자 하는 파이썬 버전에 맞추어 아래 명령어를 입력한다.
+
+-   Python 2:
+    
+    ```bash
+    sudo apt install python-pip
+    ```
+    
+-   Python 3:
+    
+    ```bash
+    sudo apt install python3-pip
+    ```
+    
+
+관련 패키지를 함께 설치하게 되고 설치가 완료된 다음은 버전 체크를 반드시 진행하자.
+
+![howtoinstallpip](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtoinstallpip.png)
+
+나는 python3용 `pip`을 설치했기 때문에 쉘에서 버전을 확인하려면 `pip`가 아니라 `pip3`를 입력해야 한다. 설치가 완료되면 `pip3 --version`을 입력해보자. 잘 설치되었다면 위 사진과 같이 버전이 출력된다.
+
+# pip 20.0.2 documentation의 원래 설치 방법
+
+이 방법은 파이썬이 리눅스 배포판에 설치되어 있지 않은 경우에 설치하는 방법이다. 공식 문서에 따르면 기본 배포판이 있는 경우에는 심각한 시스템 에러를 발생시킬 수 있다고 하니 주의하기 바란다.
+
+## Installing with get-pip.py
+
+[이 링크](https://bootstrap.pypa.io/get-pip.py)에서 `get-pip.py`를 다운받는다. 혹은 `curl`을 사용할 수도 있다.
+
+```bash
+curl https://bootstrap.pypa.io/get\-pip.py \-o get\-pip.py
+```
+
+다운받은 `get-pip.py`를 아래 명령어로 실행시킨다.
+
+```bash
+python get-pip.py
+```
+
+`pip`이 자동으로 설치된다. 마지막으로 버전을 꼭 체크해주자.

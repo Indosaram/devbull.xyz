@@ -1,0 +1,63 @@
+---
+title: "Leetcode - 787. Cheapest Flights Within K Stops"
+images: ["https://images.unsplash.com/photo-1606768666853-403c90a981ad?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDR8fGZsaWdodHxlbnwwfHx8fDE2MjIxMDQ4NTg&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-27T08:33:34.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/cheapest-flights-within-k-stops/)
+
+## 풀이
+
+문제는 일반적인 다익스트라 알고리즘에 다음 두 가지를 추가하면 풀 수 있다.
+
+* 경유할 수 있는 정점의 개수 k
+* 이미 방문한 노드는 건너뛰도록(pruning)
+
+다만 이미 방문한 노드라고 해서 무조건 건너뛸 수 있는 건 아니고, 동일한 순서인 경우만 건너뛴다. 예를 들어, 1-2-3 으로 방문하는 루트와 1-2-4로 방문하는 루트가 있을 때, 2번 노드를 경유하는 순간을 생각해본다. 이때 노드 3과 4로 가는 간선 중 비용이 적은 간선을 선택할 것이기 때문에, 동일한 "순서"에 동일한 "노드"를 방문하는 과정은 반복할 필요가 없어진다.
+
+다익스트라 알고리즘을 바탕으로 위 2가지를 고려해 구현하면 다음과 같다.
+
+```
+class Solution:
+    def findCheapestPrice(
+        self, n: int, flights: List[List[int]], src: int, dst: int, K: int
+    ) -> int:
+        adj, visited = defaultdict(dict), defaultdict(set)
+        for s, e, w in flights:
+            adj[s][e] = w
+        heap = [(0, K + 1, src)]
+        while heap:
+            cost, step, u = heappop(heap)
+            if step in visited[u]:
+                continue
+            visited[u].add(step)
+            if u == dst:
+                return cost
+            if step > 0:
+                step -= 1
+                for v, w in adj[u].items():
+                    if step in visited[v]:
+                        continue
+                    heappush(heap, (cost + w, step, v))
+        return -1
+```
+
+### 해답 레퍼런스
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/cheapest-flights-within-k-stops/discuss/115541/JavaC%2B%2BPython-Priority-Queue-Solution)

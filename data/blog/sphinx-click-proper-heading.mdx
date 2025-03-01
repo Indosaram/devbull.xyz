@@ -1,0 +1,89 @@
+---
+title: 'Sphinx와 Sphinx-click 사용 시 헤딩 문제'
+images:
+  [
+    'https://images.unsplash.com/photo-1624764105920-f42737a506e6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDN8fGRvY3xlbnwwfHx8fDE2MzEwNzQ0NTM&ixlib=rb-1.2.1&q=80&w=2000',
+  ]
+date: '2021-09-08T04:13:55.000Z'
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+
+## sphinx_click 플러그인
+
+Sphinx에서 `.rst` 파일을 편집할 때, `sphinx-click` 플러그인을 사용하면 `click` CLI의 document를 자동으로 생성할 수 있다. `sphinx`의 `conf.py`에 다음 라인을 추가하면 된다.
+
+```
+extensions = ['sphinx_click']
+
+```
+
+그러면 아래와 같은 syntax로 사용이 가능하다.
+
+```
+.. click:: module:parser
+   :prog: hello-world
+   :nested: full
+
+```
+
+그 후 sphinx build를 하면 `:prog:`의 값을 h1 태그로 하는 페이지가 생성된다. 자세한 사용법은 [`sphinx_click` 문서](https://sphinx-click.readthedocs.io/en/latest/usage/)를 참고하자.
+
+## 문제점
+
+문제는 같은 페이지에 H2 태그로 서브섹션을 넣을 때 발생한다. 예를 들어 다음과 같이 문서를 만들면,
+
+```
+.. click:: module:parser
+   :prog: hello-world
+   :nested: full
+
+Subsection1
+----------
+
+Subsection2
+----------
+
+```
+
+sphinx에서는 sphinx_click에서 만들어진 부분의 H1태그를 인식하지 못하기 때문에 서브섹션을 H1태그로 만들어버린다. 따라서 TOC에서 다음과 같이 인식된다.
+
+```
+// Wrong
+Section
+├── hello-world
+├── Subsection1
+├── Subsection2
+
+```
+
+## 해결방법
+
+이를 해결하기 위해서는 Raw HTML을 넣어줘야 한다.
+
+```
+.. click:: module:parser
+   :prog: hello-world
+   :nested: full
+
+.. raw:: html
+
+    <h2>Subsection1</h2>
+
+.. raw:: html
+
+    <h2>Subsection1</h2>
+
+```
+
+`.. raw:: html` 다음에 한 줄 공백이 있어야 하는 Syntax에 유의하자. 이제 제대로 렌더링 되는 Doc을 볼 수 있다!
+
+```
+// Still wrong
+Section
+├── hello-world
+
+```
+
+하지만 TOC상에서는 나타나지 않는 문제가 있다. 왜냐하면 RST syntax로 넣어준 헤딩이 아니기 때문이다.

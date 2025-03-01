@@ -1,0 +1,111 @@
+---
+title: "프로그래머스 소수구하기, 순열 함수 구현하기"
+images: ["https://images.unsplash.com/photo-1555099962-4199c345e5dd?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T09:28:09.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+이 문제는 크게 두 부분으로 나눌 수 있다.
+
+1.  주어진 배열(ex: ''112'')의 순열 구하기
+2.  주어진 수가 소수인지 판별하기
+
+여기서 `2.`는 약수로 나눠보거나 에라토스테네스의 체로 풀면 되어 간단하다. 다만 순열 부분이 까다로운데, 길이 1부터 N까지의 모든 순열을 구해야 한다. 게다가 주어진 문자열을 이용해 다시 문자열을 리턴해야 하기 때문에 어려웠다.
+
+# 풀이 1
+
+첫 번째 풀이는 내가 푼 것으로 순열을 구하는 함수를 만들고 소수를 판별한 풀이이다. `itertools.permutation`을 사용하면 순열을 쉽게 구할 수 있지만 공부 차원에서 구현해 보았다.
+
+```python
+def isprime(num):
+    from math import sqrt
+    # 0~3을 구하는 부분은 사실 없어도 된다
+    if num <= 3:
+        return True
+    elif num%2==0:
+            return False
+    else:
+        for i in range(3, int(sqrt(num))+1):
+            if i%2==1:
+                if num%i==0:
+                    return False
+        return True
+
+
+def dfs_perm(lst):
+    ret = []
+    idx = [i for i in range(len(lst))]
+
+    stack = []
+    for i in idx:
+        stack.append([i])
+        # 길이 1인 순열
+        ret.append(int(lst[i]))
+
+
+    #순열을 바로 구하는 것이 아니고 인덱스의 순열을 구한 다음  
+    # 인덱스를 이용해 순열을 만드는 방법
+
+    while stack:
+        cur = stack.pop()
+
+        for i in idx:
+            if i not in cur:
+                temp = cur+[i]
+
+                stack.append(temp)
+
+                element = ''
+                for i in temp:
+                    element+=lst[i]
+                ret.append(int(element))
+    return set(ret)
+
+def solution(numbers):
+    answer = 0
+    subsets = dfs_perm(numbers)
+    for subset in subsets:
+        # 문자열에 0, 1이 남은 경우
+        if subset not in [0,1]:
+            if isprime(subset):
+                print(subset)
+                answer += 1
+    return answer
+```
+
+`dfs_perm`은 [여기](https://medium.com/@dltkddud4403/python-%EC%88%9C%EC%97%B4-%EC%A1%B0%ED%95%A9-%EA%B5%AC%ED%98%84-5e496e74621c) 참고
+
+# 풀이 2
+
+프로그래머스 다른 사람의 풀이 중 가장 위에 있었던 풀이. `set`과 or 연산자 `|`를 사용하는 부분이 신박해서 가져왔다.
+
+```python
+from itertools import permutations
+def solution(n):
+    a = set()
+    for i in range(len(n)):
+        a |= set(map(int, map("".join, permutations(list(n), i + 1))))
+    a -= set(range(0, 2))
+    for i in range(2, int(max(a) ** 0.5) + 1):
+        a -= set(range(i * 2, max(a) + 1, i))
+    return len(a)
+```
+
+## 풀이2 응용
+
+이 방법을 응용해서 순열을 구하는 방법은 아래와 같다
+
+```python
+# n = '123'
+from itertools import permutations
+def solution2(n):
+    lst = list(map(int, list(n)))
+
+    a = set()
+    for i in range(1, len(lst)+1):
+        a |= set(permutations(lst, i))
+    print(a)
+```

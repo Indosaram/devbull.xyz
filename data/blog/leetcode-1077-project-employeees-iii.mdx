@@ -1,0 +1,29 @@
+---
+title: "Leetcode - 1077. Project Employees III"
+images: ["None"]
+date: "2022-10-08T12:35:45.000Z"
+tags: ['codingtest', 'leetcode']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/project-employees-iii/description/)
+
+## 정답
+
+```
+SELECT project_id,Employee.employee_id  FROM Project
+JOIN Employee ON Project.employee_id = Employee.employee_id
+WHERE (project_id, experience_years) IN
+(SELECT project_id,MAX(experience_years) as max_years FROM Project
+JOIN Employee ON Project.employee_id = Employee.employee_id
+GROUP BY project_id)
+
+```

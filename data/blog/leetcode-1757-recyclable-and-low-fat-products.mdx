@@ -1,0 +1,25 @@
+---
+title: "Leetcode - 1757. Recyclable and Low Fat Products"
+images: ["None"]
+date: "2022-05-24T00:57:23.000Z"
+tags: ['codingtest', 'sql']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/recyclable-and-low-fat-products/)
+
+## 정답
+
+```
+SELECT product_id
+FROM Products
+WHERE low_fats = 'Y' AND recyclable = 'Y'
+```

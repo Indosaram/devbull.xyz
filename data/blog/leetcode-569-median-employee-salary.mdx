@@ -1,0 +1,33 @@
+---
+title: "Leetcode - 569. Median Employee Salary"
+images: ["None"]
+date: "2022-07-17T08:28:39.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/median-employee-salary/)
+
+## 정답
+
+요점은 `ROW_NUMBER` 를 거꾸로 만들어서 비교한다는 아이디어이다.
+
+```
+SELECT id, company, salary
+FROM (
+    SELECT *,
+      ROW_NUMBER() OVER (PARTITION BY company ORDER BY salary, id) AS idx_up,
+      ROW_NUMBER() OVER (PARTITION BY company ORDER BY salary DESC, id DESC) AS idx_down
+    FROM Employee
+) AS temp
+WHERE idx_up BETWEEN idx_down - 1 AND idx_down + 1
+ORDER BY company, salary
+```

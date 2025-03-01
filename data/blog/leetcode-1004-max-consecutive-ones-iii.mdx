@@ -1,0 +1,45 @@
+---
+title: "Leetcode - 1004. Max Consecutive Ones III"
+images: ["https://images.unsplash.com/photo-1569396116180-210c182bedb8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDJ8fGJpbmFyeXxlbnwwfHx8fDE2MjMyMDQ4MzY&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-09T02:13:27.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/max-consecutive-ones-iii/)
+
+## 풀이
+
+슬라이딩 윈도우
+
+```
+class Solution:
+    def longestOnes(self, nums: List[int], k: int) -> int:
+        max_freq = res = 0
+        count = 0
+
+        left = right = 0
+        while right < len(nums):
+            if nums[right] == 1:
+                count += 1
+            max_freq = max(max_freq, count)
+
+            if res < max_freq + k:
+                res += 1
+            else:
+                if nums[left] == 1:
+                    count -= 1
+                left += 1
+
+            right += 1
+
+        return res
+```

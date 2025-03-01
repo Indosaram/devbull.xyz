@@ -1,0 +1,25 @@
+---
+title: "Leetcode - 175. Combine Two Tables"
+images: ["None"]
+date: "2022-07-02T02:21:50.000Z"
+tags: ['codingtest', 'leetcode']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/combine-two-tables/)
+
+## 정답
+
+```
+SELECT firstName, LastName, city, state
+FROM Person
+LEFT JOIN Address ON Person.personId = Address.personId
+```

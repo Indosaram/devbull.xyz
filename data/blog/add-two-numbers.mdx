@@ -1,0 +1,66 @@
+---
+title: "Leetcode - 2. Add Two Numbers"
+images: ["https://images.unsplash.com/photo-1548175551-1edaea7bbf0d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MXwxMTc3M3wwfDF8c2VhcmNofDF8fGFkZGl0aW9ufGVufDB8fHw&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-02-27T23:46:40.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+* 문제 : [](https://leetcode.com/problems/add-two-numbers/)
+
+## 답안
+
+내 풀이는 전가산기를 구현하는 것이었다.
+
+```
+class Solution:
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        init = head = ListNode()
+        nxt = 0
+        while True:
+            temp = ListNode()
+            addition = nxt
+            if l1:
+                addition += l1.val
+                l1 = l1.next
+            if l2:
+                addition += l2.val
+                l2 = l2.next
+                
+            cur = addition % 10
+            nxt = addition // 10
+            head.val = cur
+            if (l1 or l2) or nxt:
+                head.next = temp
+                head = head.next
+            else:
+                break
+                        
+        return init
+```
+
+while 문 종료 조건이 if문으로 결정되는데, 이 부분이 깔끔하지 못하다. 모범 답안 역시 전가산기로 구현되었는데, 약간 수정한 코드는 다음과 같다.  이 문제를 두 번째 풀었을 때는 이 방법으로 풀었다.
+
+```
+class Solution:
+    def addTwoNumbers(self, l1: ListNode, l2: ListNode) -> ListNode:
+        init = head = ListNode()
+        round_up = 0
+        while l1 or l2 or round_up:
+            val = round_up
+            if l1:
+                val += l1.val
+                l1 = l1.next
+            if l2:
+                val += l2.val
+                l2 = l2.next
+
+            round_up, val = divmod(val, 10)
+            head.next = ListNode(val)
+            head = head.next
+
+        return init.next
+
+```
+
+변수명도 훨씬 직관적이고, `temp` 같은 불필요한 변수 할당이 없어서 같은 논리 구조라도 더 깔끔하게 작성이 가능하다.

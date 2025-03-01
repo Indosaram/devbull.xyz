@@ -1,0 +1,303 @@
+---
+title: "파이썬 가상환경 비교(pipenv, venv, conda)"
+images: ["https://images.unsplash.com/photo-1500964757637-c85e8a162699?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDE4fHxtYWN8ZW58MHx8fHwxNjI0MzI4NzYz&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-22T02:25:21.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 🖐 귀찮은데 그냥 깔면 안돼요?
+
+파이썬은 같은 인터프리터 버전이라면 같은 패키지를 공유한다. 예를 들어 프로젝트 A와 B에서 Python 3.9.4를 사용하고 있다면, A에서 설치한 패키지를 B에서도 사용할 수 있게 된다. 그런데 만일 프로젝트 A에서는 `requests` 패키지를 2.25.1 버전으로 사용하고 싶은데 B에서는 2.24.1 버전을 사용하고 싶다면?
+
+```
+# Project A
+pip3 install requests==2.25.1
+
+# Project B
+pip3 install requests==2.24.1
+
+```
+
+A에서 설치한 `requests` 2.25.1 버전은 사라지고 2.24.1 버전만 남게 된다. 이 상황에서 계속 프로젝트 A를 진행한다면 오류가 발생할 수도 있다.
+
+이런 문제를 해결하고자 각 프로젝트마다 별도의 격리된 환경을 생성해 각 프로젝트별로 패키지를 관리하도록 하는 것이 가상환경을 사용하는 이유다.
+
+## 그럼 뭘 쓸까요?
+
+파이썬 가상환경은 여러 가지가 있는데, 주관적으로 맘에 드는 순서대로 설명해 보겠다.
+
+### 1. pipenv✨
+
+개인적으로 가상환경을 사용해야 한다면 무조건 `pipenv`를 사용하고 싶다. 왜냐하면, `pipfile.lock` 파일을 기반으로 패키지 관리를 하기 때문이고, 그리고 [파이썬에서 공식으로 권장](https://packaging.python.org/tutorials/managing-dependencies/#managing-dependencies)하는 가상환경 모듈이기 때문이다.
+
+lock 파일로 패키지 관리를 하면 다음과 같은 장점이 있다.
+
+* virtualenv로 가상환경을 생성하면서 pip으로 패키지를 자동으로 설치한다.
+* lock파일의 해쉬로 안전한 버전 관리가 가능하다.
+* pip으로 패키지를 설치/추가하면 자동으로 `Pipfile`에 변경사항이 반영된다.
+
+#### pipenv 설치
+
+`pipenv` 는 별도로 설치가 필요하다.
+
+```
+pip install pipenv
+```
+
+#### 가상환경 생성/제거
+
+가상환경 생성 시 원하는 파이썬 버전을 입력하면 된다.
+
+```
+pipenv --python 3.X
+pipenv --rm
+
+```
+
+#### 가상환경 실행
+
+`shell` 로 실행하는 경우 가상환경이 활성화된 터미널이 열리고, `run` 은 스크립트 또는 명령어를 가상환경에서 실행만 하고 가상환경을 활성화하지는 않는 방법이다.
+
+```
+# Run shell
+pipenv shell
+
+# Rum custom commands
+pipenv run COMMANDS...
+
+```
+
+#### 가상환경 종료
+
+가상환경을 종료하려면 해당 터미널을 빠져나오면 된다.
+
+```
+exit
+
+```
+
+#### 패키지 관리
+
+위에서도 말했듯이 lock 파일을 통해 패키지 관리가 이루어진다. 이 lock 파일을 만들기 위한 명세가 바로 `pipfile`이다. `requirements.txt`와 비슷하다고 보면 된다.
+
+`pipfile`은 다음과 같은 구조로 되어있다.
+
+```
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+bs4 = "*"
+selenium = "*"
+requests = "*"
+cloudinary = "*"
+
+[dev-packages]
+python-dotenv = "*"
+
+[requires]
+python_version = "3.9"
+
+```
+
+`packages`는 실제 프로덕션에 사용되는 패키지들의 명세이다. 패키지명 뒤에 `"*"`과 같이 표시해 항상 최신 버전을 사용할 수 있다. `dev-packages`는 개발 환경에서만 필요한 패키지를 나타낸다.
+
+가상환경에 패키지를 설치하는 방법과 배포를 위해 현재 설치된 패키지의 lock 파일을 만드는 과정은 다음과 같다.
+
+```
+pipenv install numpy pandas matplotlib
+
+pipenv lock
+
+```
+
+이미 pipfile이 있는 경우는 `pipenv install` 만 하면 해당 파일의 스펙대로 가상환경을 생성하고 패키지를 자동으로 설치해준다.
+
+### 2. venv
+
+파이썬에 내장되어 있는 가상환경 모듈이다. [PEP 405](https://www.python.org/dev/peps/pep-0405)에서 제안되었고, Python 3.5 이후부터는 [파이썬 표준 라이브러리](https://docs.python.org/ko/3/library/venv.html#module-venv)에 들어가 있는 가상환경 생성 방법이다. `pip`이 내장되어 있어 매우 편리하다.
+
+#### 가상환경 생성
+
+```
+python3 -m venv ENV_NAME
+
+```
+
+#### 가상환경 실행
+
+```
+source ENV_NAME/bin/activate
+
+```
+
+#### 가상환경 종료
+
+```
+deactivate
+
+```
+
+#### 패키지 관리
+
+패키지 관리는 pip과 `requirements.txt`로 한다.
+
+```
+# 설치
+pip3 install -r requirements.txt
+
+# Lock
+pip3 freeze > requirements.txt
+
+```
+
+패키지를 추가, 삭제, 변경하더라도 `requirements.txt`는 변하지 않기 때문에 주의해야 한다.
+
+### 3. pyenv-virtualenv
+
+pyenv의 플러그인으로, virtualenv를 이용해 가상환경을 관리해준다. 파이썬 버전을 쉽게 변경할 수 있다는 장점이 있어서 편리하다.
+
+설치
+
+```
+pip3 install pyenv
+
+```
+
+가상환경 생성
+
+```
+pyenv virtualenv ENV_NAME
+
+```
+
+가상환경 실행
+
+```
+pyenv activate ENV_NAME
+
+```
+
+가상환경 종료
+
+```
+pyenv deactivate
+
+```
+
+#### 패키지 관리
+
+패키지 관리는 pip과 `requirements.txt`로 한다.
+
+```
+# 설치
+pip3 install -r requirements.txt
+
+# Lock
+pip3 freeze > requirements.txt
+
+```
+
+## 이제 쓰지 마세요
+
+### anaconda (conda)
+
+머신러닝, 데이터과학 분야의 다양한 라이브러리들이 설치된 런타임인 아나콘다 파이썬에서 기본적으로 제공되는 가상환경 모듈이다. 하지만 아나콘다를 추천하지 않는 이유는 여러 가지가 있는데,
+
+* 라이센스 문제 : 팀/회사 등에서 사용 시 라이센스를 구매해야 함
+* 기본 의존성 문제 : `pandas`, `numpy` 등이 기본 설치되어 있기 때문에 가상환경 크기가 커짐
+* 호환성 문제 : `conda` 패키지의 크기가 크고 베이스 이미지와 호환되지 않는 경우가 있어서 도커 이미지를 빌드하기 번거로움
+
+따라서 아나콘다를 사용하지 말고, 다른 가상환경을 만들고 그 안에서 의존성을 새로 설치하는 게 더 가볍고 정확하다.
+
+가상환경 생성
+
+```
+conda create -n ENV_NAME python=3.X
+
+```
+
+가상환경 실행
+
+```
+source activate
+
+```
+
+가상환경 종료
+
+```
+source deactivate
+
+```
+
+#### 패키지 관리
+
+패키지 관리는 pip과 `requirements.txt`로 한다.
+
+```
+# 설치
+conda env create -f conda_requirements.txt
+
+# Lock
+conda env export > conda_requirements.txt
+
+```
+
+### virtualenv
+
+내장 모듈 `venv` 와 동일한 역할을 하는 서드파티 도구다. `venv`와 비교해서 여러 가지 추가적인 기능을 제공하지만, 굳이 써야 할 필요성을 느끼지 못하고 있다.
+
+설치
+
+```
+pip3 install virtualenv
+
+```
+
+가상환경 생성
+
+```
+virtualenv ENV_NAME
+
+```
+
+가상환경 실행
+
+```
+source ENV_NAME/bin/activate
+
+```
+
+가상환경 종료
+
+```
+deactivate
+
+```
+
+#### 패키지 관리
+
+패키지 관리는 pip과 `requirements.txt`로 한다.
+
+```
+# 설치
+pip3 install -r requirements.txt
+
+# Lock
+pip3 freeze > requirements.txt
+
+```
+
+### pyvenv
+
+Python 3.3과 3.4에서 사용하던 가상환경 도구였지만, [3.6 이후부터 사용하지 말 것이 권고](https://docs.python.org/ko/3/whatsnew/3.6.html#deprecated-features)되고 있다.
+
+## pyenv?
+
+`pyenv` 는 컴퓨터 하나에 여러 버전의 파이썬을 설치하고 관리할 수 있는 도구다. 보통 파이썬을 설치하면 경로(`PATH`)에 파이썬 바이너리가 연결되어서 `python` 혹은 `python3` 와 같은 명령어로 터미널에서 실행하게 되는데, 파이썬 버전을 여러 개 설치하면 이 경로가 꼬이는 경우가 많이 발생한다. 하지만 `pyenv`를 사용하면 내가 원하는 파이썬 버전을 전역적 또는 지역적으로 설정할 수 있기 때문에 이런 문제를 해결할 수 있게 된다.
+
+따라서 `pyenv`로 파이썬 버전을 관리하고, 가상환경은 위에서 설명한 `pipenv`, `venv`, `pyenv-virtualenv`등을 사용하면 깔끔하게 파이썬 버전과 가상환경을 관리할 수 있게 된다.

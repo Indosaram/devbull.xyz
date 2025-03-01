@@ -1,0 +1,65 @@
+---
+title: "Pulumi 시작하기 - Asset과 Archive"
+images: ["https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wxfDF8YWxsfDF8fHx8fHwyfHwxNjIwMjgzNDU2&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-06T06:43:38.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Assets and Archives
+
+Pulumi SDK는 파일을 핸들링하는데 Asset과 Archive 두개의 클래스를 사용한다. Pulumi SDK의 각 리소스 API들은 각각 Asset 또는 Archive를 요구하며, 그에 해당하는 객체를 인자로 입력하면 내부적으로 알아서 해석하도록 되어있다.
+
+### Assets
+
+* `FileAsset` : Asset의 컨텐츠를 디스크로부터 읽어온다.
+* `StringAsset`: Asset의 컨텐츠를 메모리로부터 읽어온다.
+* `RemoteAsset` : Asset의 컨텐츠를 `file` URI의 `http`, `https`로부터 읽어온다.
+
+예시 :
+
+```
+file_asset = pulumi.FileAsset("./file.txt")
+string_asset = pulumi.StringAsset("Hello, world!")
+remote_asset = pulumi.RemoteAsset("http://worldclockapi.com/api/json/est/now")
+
+```
+
+`s3.BucketObject` 클래스는 `source`로 어떤 종류의 Asset이든 받을 수 있다.
+
+```
+obj = aws.s3.BucketObject("obj",
+    bucket=bucket.id,
+    key=key,
+    source=fileAsset)
+
+```
+
+### Archives
+
+* `FileArchive`: 컨텐츠를 압축파일 또는 폴더로부터 읽어온다. 압축파일은 다음 확장자를 지원한다: `.tar`, `.tgz`, `.tar.gz`, `.zip` or `.jar`.
+* `RemoteArchive`: `FileArchive`가 지원하는 타입의 Asset을 `file` URI의 `http`, `https`로부터 읽어온다.
+* `AssetArchive`: 컨텐츠를 Asset 또는 Archive의 `map` 에서 읽어온다. 각 파일 또는 폴더를 `map`의 엔트리에서 한개씩 가져온다. 파이썬의 경우는 `dict` 자료형의 엔트리로 저장된다.
+
+예시:
+
+```
+file_archive = pulumi.FileArchive("./file.zip")
+remote_archive = pulumi.RemoteArchive("http://contoso.com/file.zip")
+asset_archive = pulumiAssetArchive({
+    "file": pulumi.StringAsset("Hello, world!"),
+    "folder": pulumi.FileArchive("./folder")
+})
+
+```
+
+폴더 또한 `FileArchive`로 사용할 수 있다. 그리고 파일과 폴더를 한꺼번에 `AssetArchive`로 묶을 수도 있다.
+
+```
+fn = lambda_.Function("fn",
+    role=role.arn,
+    runtime="python3.7",
+    handler="hello.handler",
+    code=fileArchive)
+
+```

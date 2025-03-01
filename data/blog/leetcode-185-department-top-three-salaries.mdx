@@ -1,0 +1,29 @@
+---
+title: "Leetcode - 185. Department Top Three Salaries"
+images: ["None"]
+date: "2022-06-23T00:51:09.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/department-top-three-salaries/)
+
+## 정답
+
+```
+SELECT Department.name AS Department, Employee.name as Employee, Employee.salary AS Salary
+FROM (
+        SELECT *, DENSE_RANK() OVER (PARTITION BY departmentId ORDER BY salary DESC) AS n
+        FROM Employee
+) AS Employee
+JOIN Department ON Employee.departmentId = Department.id
+WHERE n <= 3
+```

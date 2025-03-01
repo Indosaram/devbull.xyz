@@ -1,0 +1,27 @@
+---
+title: "docker log 필터 / vim에서 보기"
+images: ["None"]
+date: "2022-09-13T06:17:38.000Z"
+tags: ['None']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+grep
+
+```
+docker logs nginx 2>&1 | grep "127."
+
+```
+
+pipe to vim
+
+```
+docker logs nginx 2>&1 | less  
+
+```
+
+directly open the log file
+
+```
+docker inspect --format={{.LogPath}} <ContainerName>
+```

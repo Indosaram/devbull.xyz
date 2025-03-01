@@ -1,0 +1,21 @@
+---
+title: "프로그래머스 - 코딩테스트 연습 - 정렬  - H-Index"
+images: ["None"]
+date: "2022-07-19T01:16:53.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://school.programmers.co.kr/learn/courses/30/lessons/42747)
+
+## 정답
+
+```
+def solution(citations):
+    for h in range(len(citations) + 1, -1, -1):
+        if len(list(filter(lambda x: x >= h, citations))) >= h:
+            return h
+
+```

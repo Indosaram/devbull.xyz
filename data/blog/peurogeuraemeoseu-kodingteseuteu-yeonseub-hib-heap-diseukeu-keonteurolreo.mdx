@@ -1,0 +1,53 @@
+---
+title: "프로그래머스 : 코딩테스트 연습 - 힙(Heap) - 디스크 컨트롤러"
+images: ["https://images.unsplash.com/photo-1595820920927-075e2eec2abe?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T09:27:18.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   프로그래머스 : 코딩테스트 연습 - 힙(Heap) - 디스크 컨트롤러
+
+# 풀이
+
+못풀었다. 다른 분의 풀이를 참고했다 ㅠ 이 분이 제일 간결하게 짜셔서 모범 답안으로 올려놓음!
+
+```python
+import heapq
+
+
+def solution(jobs):
+    start = -1
+    end = 0
+    waittime = 0
+
+    howmanyjobs = len(jobs)
+    pQ = []
+    count = 0
+    while(count < howmanyjobs):
+        for job in jobs:
+            # 현재 큐의 실행 중에 들어오는 요청만 처리
+            if start < job[0] <= end:
+                waittime += (end - job[0])
+                heapq.heappush(pQ, job[1])
+
+        if pQ:
+            # 가장 짧은 수행시간의 큐를 먼저 실행
+            # 나머지 큐는 그만큼 소요시간 증가
+            waittime += len(pQ)*pQ[0]
+            start = end
+            end += heapq.heappop(pQ)
+
+            count += 1
+        else:
+            # 실행 중 들어오는 요청이 없는 경우
+            end += 1
+
+    return waittime//(howmanyjobs) 
+```
+
+# 참고
+
+-   [https://codedrive.tistory.com/129](https://codedrive.tistory.com/129) : 해당 코드를 참고하고 주석만 추가하였다.

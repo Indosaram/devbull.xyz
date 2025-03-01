@@ -1,0 +1,297 @@
+---
+title: "아스키 미로 압축(ASCII maze compression)"
+images: ["https://images.unsplash.com/photo-1611920504212-25894774afc5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDJ8fG1hemV8ZW58MHx8fHwxNjQ3NTI3Mjc1&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-03-17T14:28:02.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+"+", "-", "|" 의 아스키 코드로 이루어진 텍스트 미로가 주어진다. 이 미로를 디스크에 저장하고자 하는데, 저장 용량을 최소화하여 저장해야 한다. 당연하게도 저장된 데이터로부터 원래 미로를 복원할 수 있어야 한다.
+
+미로 예시는 다음과 같다. 첫 줄에는 미로의 가로와 세로 크기가 주어진다. 이때 가로 세로는 실제 텍스트 길이가 아닌, 이동할 수 있는 길 기준의 크기이다. 따라서 텍스트 크기는 9 \* 2 + 1 = 19, 12 \* 2 + 1 = 25이다.
+
+```
+9 12
++-------+-------+-+
+|       |       | |
+| +---+ +---+ + | |
+|     | |     | | |
++---+ + + +-+ | | |
+|     |   |   | | |
+| +-+ +-+-+ +-+ + |
+| | | | | | |     |
+| | +-+ | +-+ +-+ |
+| | |   |     |   |
+| + | + +---+-+ + |
+|   | |     |   | |
+| +-+ | +---+---+ |
+|     | |         |
++-+---+ | +---+ + |
+| |     | |     | |
+| | +---+ | +---+-+
+| |       |       |
+| +---+ +-+-+ +-+ |
+|     |   | | | | |
+| +-+ | + | +-+ | |
+|   | | | |     | |
++-+ | + | + +---+ |
+|   |   |   |     |
++---+---+---+-----+
+
+```
+
+## 해결 방법
+
+### 텍스트 압축
+
+먼저, 단순한 텍스트 압축 방법을 생각해볼 수 있다. 반복되는 문자를 "문자 + 반복 횟수" 로 나타내는 방법이다. 예를 들어, `-----` 라는 문자열을 `-3` 으로 나타내는 식이다. 하지만 단순히 이렇게 하는 경우 연속되지 않은 문자가 많고, 일단 전체적인 미로 크기가 크지 않을 경우 압축률이 낮은 문제가 있다.
+
+### 아이디어
+
+미로를 자세히 보면, 가로줄과 세로줄이 연결되는 부분마다 "+" 기호가 나타난다. 따라서 "+" 기호는 가로줄과 세로줄로부터 위치를 계산해낼 수 있다.
+
+또한, 테두리 부분은 항상 고정되어 있기 때문에 저장할 때 포함시키지 않아도 된다.
+
+```
+def save(data, filename):
+    header = data[0]
+    num_col, num_row = header.split()
+    body = data[1:] + [" "]
+
+    compressed = []
+    for idx, row in enumerate(body):
+        if idx == 0 or idx == (num_row * 2):
+            continue
+        temp = ""
+        pre = ":"
+        start = 0
+        count = 0
+        for jdx, char in enumerate(row):
+            if jdx == 0 or jdx == (num_col * 2):
+                continue
+
+            if pre == char:
+                count += 1
+            else:
+                if pre in ["-", "|"]:
+                    temp += f"{pre}{start}"
+                    if count > 1:
+                        temp += str(count)
+                start = jdx
+                count = 1
+                pre = char
+
+        compressed.append(temp)
+    compressed = header + "\n" + "\n".join(compressed)
+
+    with open(filename, "w") as file:
+        file.write(compressed)
+    return header, compressed
+
+```
+
+읽어들인 미로 데이터로부터 압축된 문자열을 생성하는 코드이다. 테두리를 제외하고, 가로줄과 세로줄의 위치와 반복 횟수만을 기록한다. 이때 반복 횟수가 1회인 경우는 횟수를 생략한다. 이렇게 생성된 압축 문자열은 다음과 같이 나오게 된다.
+
+```
+9 12
+|8|16
+-33-93|16
+|6|8|14|16
+-13-11|14|16
+|6|10|14|16
+-3-7-9-13
+|2|4|6|8|10|12
+|2-5|8-11-15
+|2|4|8|14
+|4-93-13
+|4|6|12|16
+-3|6-93-133
+|6|8
+-1-33|8-113
+|2|8|10|16
+|2-53|10-133-17
+|2|10
+-33-9-11-15
+|6|10|12|14|16
+-3|6|10-13|16
+|4|6|8|10|16
+-1|4|8-133
+|4|8|12
+-13-53-93-135
+
+```
+
+원본과 비교해보면 대략적인 압축률은 51% 이다.
+
+```
+$ ls -lAh | grep txt
+-rw-r--r--  1 user  staff   274B  3 17 17:58 compressed1.txt
+-rw-rw-r--@ 1 user  staff   531B  3 16 18:13 maze1.txt
+```
+
+이제 저장된 데이터로부터 복원을 수행해야 한다. 헤더로부터 비어 있는 미로를 생성하는 코드는 다음과 같다.
+
+```
+def initialize_maze(filename):
+
+    encoded = read(filename)
+
+    header = encoded[0]
+    num_col, num_row = list(map(int, header.split()))
+    body = encoded[1:]
+
+    # initialize
+    maze = []
+    for idx in range(num_row * 2 + 1):
+        if idx == 0 or idx == num_row * 2:
+            maze.append(["+"] + ["-" for _ in range(num_col * 2 - 1)] + ["+"])
+            continue
+        temp = []
+        for jdx in range(num_col * 2 + 1):
+            if jdx == 0 or jdx == num_col * 2:
+                temp.append("|")
+            else:
+                temp.append(" ")
+        maze.append(temp)
+
+    return body, maze
+
+```
+
+이제 비어 있는 미로에 가로줄과 세로줄을 추가한다. 비어 있는 한 줄을 입력 받아 처리하는 코드이다.
+
+```
+def decode_row(row):
+    max_col = 9 * 2 + 1
+    decoded_row = []
+    code = ""
+    nums = ""
+    index = None
+    for idx, char in enumerate(row):
+        if char in ["-", "|"] or idx == len(row) - 1:
+            if idx == len(row) - 1:
+                nums += char
+            if code:
+                if len(nums) == 1:
+                    # print("case 1")
+                    index = [int(nums), 1]
+                elif len(nums) == 2:
+                    if int(nums) < max_col:
+                        if decoded_row and decoded_row[-1][1][0] < int(nums):
+                            # print("case 2")
+                            index = [int(nums), 1]
+                        else:
+                            # print("case 3")
+                            index = [int(nums[0]), int(nums[1])]
+                    else:
+                        # print("case 4")
+                        index = [int(nums[0]), int(nums[1])]
+                elif len(nums) == 3:
+                    if int(nums[:2]) < max_col or int(nums[1:]) > max_col:
+                        # print("case 5")
+                        index = [int(nums[:2]), int(nums[2])]
+                    else:
+                        # print("case 6")
+                        index = [int(nums[0]), int(nums[1:])]
+
+                decoded_row.append((code, index))
+                code = ""
+                index = None
+                nums = ""
+            code = char
+        else:
+            nums += char
+
+    return decoded_row
+
+```
+
+압축 문자열로부터 원본 미로를 생성해 내야 하는데, 압축 문자열은 이렇게 생겼다.
+
+```
+|2-53|10-133-17
+```
+
+이를 해석해보면,
+
+* `|`가 2번째 위치부터 1번 반복
+* `-`가 5번째 위치부터 3번 반복
+* `|`가 10번째 위치부터 1번 반복
+* `-`가 13번째 위치부터 3번 반복
+* `-`가 17번째 위치부터 1번 반복
+
+과 같은데, 이를 해석하기 위한 부분이 케이스 1~6 부분이다.
+
+이제 + 기호를 추가하는 부분까지 합치면 아래와 같다.
+
+```
+def decode_maze(body, maze, result_filename):
+    for idx, row in enumerate(body):  # actual row number is (idx+1)
+        decoded_row = decode_row(row)
+
+        for code, index in decoded_row:
+            start = index[0]
+            end = index[0] + index[1]
+            maze[idx + 1][start:end] = [code for _ in range(start, end)]
+
+    for row in range(len(maze)):
+        for col in range(len(maze[0])):
+            try:
+                if maze[row - 1][col] == "|" and maze[row][col] != "|":
+                    maze[row][col] = "+"
+            except IndexError:
+                continue
+            try:
+                if maze[row][col - 1] == "-" and maze[row][col] != "-":
+                    maze[row][col] = "+"
+            except IndexError:
+                continue
+            try:
+                if maze[row][col + 1] == "-" and maze[row][col] != "-":
+                    maze[row][col] = "+"
+            except IndexError:
+                continue
+            try:
+                if maze[row + 1][col] == "|" and maze[row][col] != "|":
+                    maze[row][col] = "+"
+            except IndexError:
+                continue
+
+    with open(result_filename, "w") as file:
+        for row in maze:
+            file.write("".join(row) + "\n")
+
+```
+
+현재 위치의 상하좌우를 비교하고 "+" 기호로 대체하게 된다.
+
+전체 코드를 아래와 같이 실행하고 결과가 정확한지 테스트해볼 수 있다.
+
+```
+data = read("maze1.txt")
+body = data[1:]
+compressed_filename = "compressed1.txt"
+result_filename = "result.txt"
+
+header, compressed = save(data, compressed_filename)
+print(f"Compressed: {len(''.join(compressed))} byte")
+
+body, maze = initialize_maze(compressed_filename)
+decode_maze(body, maze, result_filename)
+
+
+# Test
+result_maze = read(result_filename)
+
+idx = 0
+for original, result in zip(data[1:], result_maze):
+    try:
+        assert original == result
+    except AssertionError:
+        print(f"Row {idx} is different: {original} {result}")
+        raise
+print("Test passed")
+
+```

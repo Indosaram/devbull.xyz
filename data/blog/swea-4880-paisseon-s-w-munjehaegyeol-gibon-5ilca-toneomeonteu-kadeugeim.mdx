@@ -1,0 +1,47 @@
+---
+title: "SWEA-4880 : [파이썬 S/W 문제해결 기본] 5일차 - 토너먼트 카드게임"
+images: ["https://images.unsplash.com/photo-1593642634627-6fdaf35209f4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T07:48:54.000Z"
+tags: ['codingtest', 'swea']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   SWEA-4880 : \[파이썬 S/W 문제해결 기본\] 5일차 - 토너먼트 카드게임
+
+# 풀이
+
+[병합정렬](https://1see-bull.tistory.com/entry/Python-%EC%A0%95%EB%A0%AC-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98-%EC%A0%95%EB%A6%AC%EB%B2%84%EB%B8%94-%EC%B9%B4%EC%9A%B4%ED%8C%85-%EC%84%A0%ED%83%9D-%ED%80%B5-%EC%82%BD%EC%9E%85-%EB%B3%91%ED%95%A9?category=804148)에서 아이디어를 얻어서 해결. 다만 카드가 홀수개인 경우, 카드를 반으로 나눌 때 왼쪽이 오른쪽보다 1개 더 많아야 해서 까다로웠다.
+
+```python
+def whowins(num1, num2):
+    if cards[num1] == cards[num2]:
+        return [min(num1, num2)]
+    elif abs(cards[num1]-cards[num2]) == 1:
+        return [num1] if cards[num1]>cards[num2] else [num2]
+    elif abs(cards[num1]-cards[num2]) == 2:
+        return [num1] if cards[num1]<cards[num2] else [num2]
+
+
+def divide(nums):
+    if len(nums) == 1:
+        return nums
+
+    middle = (len(nums)-1)//2+1
+    front = nums[:middle]
+    rear = nums[middle:]
+
+    front = divide(front)
+    rear = divide(rear)
+
+    return whowins(front[0], rear[0])
+
+T = int(input())
+for test_case in range(1, T + 1):
+    numcard = int(input())
+    cards = list(map(int, ''.join(input().split())))
+    nums = list(range(numcard))
+
+    print('#%d %d' % (test_case, divide(nums)[0]+1)) 
+```

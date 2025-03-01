@@ -1,0 +1,29 @@
+---
+title: "Leetcode - 607. Sales Person"
+images: ["None"]
+date: "2022-06-16T01:30:12.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/sales-person/)
+
+## 정답
+
+```
+SELECT name
+FROM SalesPerson
+WHERE sales_id NOT IN (
+    SELECT sales_id FROM Orders
+    WHERE com_id IN
+    (SELECT com_id from Company WHERE name = 'RED')
+)
+```

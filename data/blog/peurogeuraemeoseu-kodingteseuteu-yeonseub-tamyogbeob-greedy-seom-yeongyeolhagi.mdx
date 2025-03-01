@@ -1,0 +1,76 @@
+---
+title: "프로그래머스 : 코딩테스트 연습 - 탐욕법(Greedy) - 섬 연결하기"
+images: ["https://images.unsplash.com/photo-1519113617265-336e60587f81?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T09:34:32.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   코딩테스트 연습 - 탐욕법(Greedy) - 섬 연결하기
+-   [문제링크](https://programmers.co.kr/learn/courses/30/lessons/42861)
+
+# 풀이
+
+### 내가 푼 풀이
+
+[크루스칼 알고리즘](https://osb.onrender.com/python-keuruseukal-algorijeum-kruskal-algorithm)으로 풀었다. 처음에 공부할 때 [Union find](https://osb.onrender.com/python-habjibhab-cajgi-union-find-disjoint-set-munje/) 문제로부터 풀어나가는 걸 연습해서 먼저 unionset 클래스를 정의한 다음 문제를 해결했다.
+
+```python
+class unionset:
+    def __init__(self, numnodes):
+        self.parent = []
+        for i in range(numnodes+1):
+            self.parent.append(i)
+
+    def getParent(self, node):
+        if self.parent[node] == node:
+            return node
+        return self.getParent(self.parent[node])
+
+    def unionParent(self, node1, node2):
+        if node1 <  node2:
+            self.parent[node2] = self.parent[node1]
+        else:
+            self.parent[node1] = self.parent[node2] 
+
+def solution(n, costs):
+    numnodes = len(costs)
+    union = unionset(numnodes)
+    sortedNodes = sorted(costs, key=lambda x:x[2])
+
+    dist = 0
+    for node in sortedNodes:
+        parent1 = union.getParent(node[0])
+        parent2= union.getParent(node[1])
+        if parent1 != parent2:
+            union.unionParent(parent1, parent2)
+            dist += node[2]
+
+    return dist
+```
+
+### 다른 사람이 푼 풀이
+
+[재윤](http://blog.naver.com/jaeyoon_95/221872563653)님의 풀이이다. 크루스칼 알고리즘의 개념대로, cost를 정렬하고 cost가 짧은 순서대로 방문하며 모든 노드를 방문했는지를 체크한다. 훨씬 간결하게 잘 구현한 것 같다.
+
+그런데 이렇게 구현하면 시간복잡도가 $nlog(n)$이 되지 않나? 노드가 굉장히 많은 경우엔 오래 걸릴 것 같은데.. 그리고 connection 리스트에 중복 요소를 계속 넣어주기 때문에 set 연산을 해주어야 하는 점은 맘에 들지 않는다. 어떻게 개선할 수 있을까?
+
+```python
+def solution(n, costs):
+    answer = 0
+    costs.sort(key = lambda x: x[2])
+    connection = [costs[0][0]]
+    while len(connection) != n:
+        for i, cost in enumerate(costs):
+            if (cost[0] in connection) and (cost[1] in connection): continue
+            if (cost[0] in connection) or (cost[1] in connection):
+                answer += cost[2]
+                connection.append(cost[0])
+                connection.append(cost[1])
+                connection = list(set(connection))
+                costs.pop(i)
+                break
+    return answer
+```

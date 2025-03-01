@@ -1,0 +1,81 @@
+---
+title: "Leetcode - 105. Construct Binary Tree from Preorder and Inorder Traversal"
+images: ["https://images.unsplash.com/photo-1622506275734-5cf7e273ed4d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8YWxsfDE1fHx8fHx8Mnx8MTYyMjYwNzkzMA&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-03T01:57:23.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/)
+
+## 풀이
+
+처음에 제출한 코드는 TLE가 나왔다. 한 iteration에서 루트를 찾을 때 O(N), 각 inorder와 preorder 리스트를 좌/우로 만들 때 2\*O(N)이 걸린다.  전체 Time complexity는 O(N)이다. 최적화를 통해 통과되기는 했지만, 좋은 방법은 아니다.
+
+```
+class Solution:
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
+        def build_subtree(pre_list, in_list):
+            if not pre_list:
+                return None
+
+            root_val = pre_list[0]
+            root_index = in_list.index(root_val)
+
+            left_in_list = in_list[:root_index]
+            right_in_list = in_list[root_index + 1 :]
+
+            left_pre_list = pre_list[1 : len(left_in_list) + 1]
+            right_pre_list = pre_list[len(left_in_list) + 1 :]
+
+            return TreeNode(
+                root_val,
+                build_subtree(left_pre_list, left_in_list),
+                build_subtree(right_pre_list, right_in_list),
+            )
+
+        return build_subtree(preorder, inorder)
+```
+
+좀더 최적화된 재귀 풀이는 Solution 탭에 있다.
+
+```
+class Solution:
+    def buildTree(self, preorder: List[int], inorder: List[int]) -> TreeNode:
+
+        def array_to_tree(left, right):
+            nonlocal preorder_index
+            # if there are no elements to construct the tree
+            if left > right: return None
+
+            # select the preorder_index element as the root and increment it
+            root_value = preorder[preorder_index]
+            root = TreeNode(root_value)
+
+
+            preorder_index += 1
+
+            # build left and right subtree
+            # excluding inorder_index_map[root_value] element because it's the root
+            root.left = array_to_tree(left, inorder_index_map[root_value] - 1)
+            root.right = array_to_tree(inorder_index_map[root_value] + 1, right)
+
+            return root
+
+        preorder_index = 0
+
+        # build a hashmap to store value -> its index relations
+        inorder_index_map = {}
+        for index, value in enumerate(inorder):
+            inorder_index_map[value] = index
+
+        return array_to_tree(0, len(preorder) - 1)
+```

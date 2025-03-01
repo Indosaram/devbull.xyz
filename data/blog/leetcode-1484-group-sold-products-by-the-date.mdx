@@ -1,0 +1,28 @@
+---
+title: "Leetcode - 1484. Group Sold Products By The Date"
+images: ["None"]
+date: "2022-06-05T06:11:15.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/group-sold-products-by-the-date/)
+
+## 정답
+
+`CONCAT` 비슷한 기능이 있을 것 같아서 찾아봤더니 `GROUP_CONCAT` 이라는 게 있어서 사용했다. 해당 함수는 별도로 delimiter를 지정하지 않으면 기본값으로 `,` 로 각 원소를 이어 붙여준다.
+
+```
+SELECT sell_date, count(DISTINCT product) as num_sold, 
+GROUP_CONCAT(DISTINCT product ORDER BY product) AS products
+FROM Activities
+GROUP BY sell_date
+```

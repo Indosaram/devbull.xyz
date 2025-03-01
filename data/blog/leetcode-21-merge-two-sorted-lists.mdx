@@ -1,0 +1,39 @@
+---
+title: "Leetcode - 21. Merge Two Sorted Lists"
+images: ["https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDQxfHxzb3J0fGVufDB8fHx8MTY0NTk0ODg5Ng&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-02-27T08:01:01.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/merge-two-sorted-lists/)
+
+## 정답
+
+예전에 어떻게 이렇게 풀었는지 기억이 안나는 문제 ㅜㅜ 오히려 오랜만에 풀려고 하니까 더 어렵게 느껴졌다.
+
+이 문제에서 포인트는 어느 한 쪽의 연결리스트가 끝나면 그냥 나머지 리스트를 뒤에 붙여버리면 된다는 것이다. 이미 정렬이 되어 있는 리스트기 때문이다(중요)
+
+```
+class Solution:
+    def mergeTwoLists(self, l1: ListNode, l2: ListNode) -> ListNode:
+        head = cur = ListNode()
+        while l1 and l2:
+            if l1.val < l2.val:
+                cur.next = l1
+                l1 = l1.next
+            else:
+                cur.next = l2
+                l2 = l2.next
+            cur = cur.next
+        cur.next = l1 or l2
+        return head.next
+```

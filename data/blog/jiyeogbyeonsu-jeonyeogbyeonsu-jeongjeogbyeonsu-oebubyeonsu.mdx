@@ -1,0 +1,14 @@
+---
+title: "지역변수, 전역변수, 정적변수, 외부변수"
+images: ["https://images.unsplash.com/photo-1484036218807-91efe1baff2f?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T19:00:02.000Z"
+tags: ['cpp']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+|  | 생성 시점 | 소멸 시점 | 저장 위치 | 초기화 값 |
+| --- | :-: | :-: | :-: | :-: |
+| 지역 변수(Local) | 중괄호 내부 | 중괄호 탈출 | Stack | 쓰레기 값 |
+| 전역 변수(Global) | 프로그램 시작 | 프로그램 종료 | Data | 0 |
+| 정적 변수(Static) | 프로그램 시작 | 프로그램 종료 | Data | 0 |
+| 외부 변수(Extern) |  |  |  |  |

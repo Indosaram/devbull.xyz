@@ -1,0 +1,32 @@
+---
+title: "백준-2133 : 타일 채우기"
+images: ["https://images.unsplash.com/photo-1567863053904-2894d131aa26?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T09:01:28.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   백준-2133 : 타일 채우기
+-   [문제링크](https://www.acmicpc.net/problem/2133)
+
+# 풀이
+
+1.  처음에 아무 타일도 놓지 않는 경우의 수를 0으로 생각해서 계속 틀렸다.
+2.  길이 1인 경우의 수도 0으로 명시해줘야 한다.
+
+```python
+leng = int(input())
+
+memo = [0]*(leng+1)
+memo[0:3] = [1,0,3]
+
+summemo = 0
+for i in range(4, leng+1):
+    if i%2 ==0:
+        summemo += memo[i-4]
+        memo[i] = 3*memo[i-2]+ 2*summemo
+
+print(memo[leng])
+```

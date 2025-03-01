@@ -1,0 +1,50 @@
+---
+title: "프로그래머스 - 2021 Dev-Matching: 웹 백엔드 개발자(상반기) :  행렬 테두리 회전하기"
+images: ["https://images.unsplash.com/photo-1561117089-3fb7c944887f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDN8fGFycmF5fGVufDB8fHx8MTY0NTM0OTk3Nw&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-02-20T00:20:42.000Z"
+tags: ['codingtest', 'programmers']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://programmers.co.kr/learn/courses/30/lessons/77485#)
+
+## 정답
+
+```
+def rotate(matrix, query):
+    start = query[0:2]
+    end = query[2:]
+
+    top = [(start[0], y) for y in range(start[1], end[1] + 1)]
+    left = [(x, start[1]) for x in range(end[0] - 1, start[0], -1)]
+    right = [(x, end[1]) for x in range(start[0] + 1, end[0])]
+    bottom = [(end[0], y) for y in range(end[1], start[1] - 1, -1)]
+
+    old_boundary = top + right + bottom + left
+    new_boundary = [old_boundary[-1]] + old_boundary[:-1]
+
+    min_val = matrix[start[0] - 1][start[1] - 1]
+    new_matrix = [col[:] for col in matrix]
+
+    for pos1, pos2 in zip(old_boundary, new_boundary):
+        new_matrix[pos1[0] - 1][pos1[1] - 1] = matrix[pos2[0] - 1][pos2[1] - 1]
+        min_val = min(min_val, matrix[pos2[0] - 1][pos2[1] - 1])
+
+    return new_matrix, min_val
+
+
+def solution(rows, columns, queries):
+    matrix = [
+        [i + columns * j for i in range(1, columns + 1)] for j in range(rows)
+    ]
+    print(matrix)
+    result = []
+    for query in queries:
+        matrix, min_val = rotate(matrix, query)
+        result.append(min_val)
+
+    return result
+
+```

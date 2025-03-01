@@ -1,0 +1,30 @@
+---
+title: "백준-14852 : 타일 채우기 3"
+images: ["https://images.unsplash.com/photo-1573504816327-07f3bf7accac?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T09:03:18.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   백준-14852 : 타일 채우기 3
+-   [문제링크](https://www.acmicpc.net/problem/14852)
+
+# 풀이
+
+이 문제의 경우에는 길이 3 이상을 채우려고 할 때 특이 케이스가 매번 발생한다는 점을 주의해야 한다.
+
+```python
+leng = int(input())
+
+memo = [0]*(leng+1)
+memo[0:3] = [1, 2, 7]
+
+summemo = 0
+for i in range(3, leng+1):
+    summemo += memo[i-3]
+    memo[i] = (2*memo[i-1] + 3*memo[i-2] + 2*summemo)%1000000007
+
+print(memo[leng]) 
+```

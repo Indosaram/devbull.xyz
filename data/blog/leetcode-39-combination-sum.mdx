@@ -1,0 +1,60 @@
+---
+title: "Leetcode - 39. Combination Sum"
+images: ["None"]
+date: "2021-05-07T11:45:08.000Z"
+tags: ['None']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/combination-sum/)
+
+## 풀이
+
+내 풀이
+
+```
+class Solution:
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        def get_comb(tar: int, cands: List[int]):
+            combs = []
+            if tar in cands:
+                combs.append([tar])
+
+            for idx, cand in enumerate(cands):
+                if cand is not tar:
+                    for i in range(1, tar // cand + 1):
+                        comb = get_comb(tar - i * cand, cands[idx:])
+                        for com in comb:
+                            combs.append([cand] * i + com)
+
+            return combs
+
+        combinations = []
+        for r in get_comb(target, candidates):
+            if r not in combinations:
+                combinations.append(r)
+
+        return combinations
+```
+
+빠른 풀이
+
+```
+class Solution:
+    def combinationSum(self, candidates: List[int], target: int) -> List[List[int]]:
+        dp = [[] for _ in range(target + 1)]
+        dp[0].append([])
+        for c in candidates:
+            for i in range(c, target + 1):
+                for combo in dp[i-c]:
+                    dp[i].append(combo + [c])
+        return dp[target]
+```

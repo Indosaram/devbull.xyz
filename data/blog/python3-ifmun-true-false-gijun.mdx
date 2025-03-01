@@ -1,0 +1,38 @@
+---
+title: "Python3 if문 True/False 기준"
+images: ["https://images.unsplash.com/photo-1548611635-b6e7827d7d4a?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T12:28:31.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+C/C++과는 다르게 파이썬에서는 True나 Fals를 의미하는 객체들이 굉장히 다양하다. 효율적인 프로그래밍을 위해서는 객체별로 어떤 경우에 True나 False를 리턴하는지 알아두면 굉장히 좋은데, 예를 들어 어떠한 판별식에 `if isEmpty(list)`라고 적어도 되지만 `if list`라고 적어도 동일한 표현이 되기 때문이다. 물론 직관성이나 유지보수를 위해서는 앞의 경우처럼 적어두는 편이 훨씬 이해하기 쉬운 건 사실이다.
+
+# True
+
+`Bool True` 이거나  
+값이 있는 경우 : 10진수, 16진수, 2진수, 실수, 문자열 ...
+
+# False
+
+`Bool False` 이거나  
+`0, None, '', "", [], (), {}, set()`
+
+함수의 리턴값이 `None`이면 `False`이다.
+
+```python
+if True:
+    print('참')    # True는 참
+else:
+    print('거짓')
+
+if False:
+    print('참')
+else:
+    print('거짓')    # False는 거짓
+
+if None:
+    print('참')
+else:
+    print('거짓')    # None은 거짓
+```

@@ -1,0 +1,36 @@
+---
+title: "Leetcode -1126. Active Businesses"
+images: ["None"]
+date: "2023-02-11T01:12:28.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Problem
+
+[LeetCode - The World’s Leading Online Programming Learning Platform
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon.ico)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/active-businesses/description/)
+
+## Solution
+
+```
+WITH Average AS (
+    SELECT event_type, AVG(occurences) as occurences
+    FROM Events
+    GROUP BY event_type
+)
+
+SELECT business_id
+FROM (
+    SELECT business_id, COUNT(business_id) as counts FROM Events
+    JOIN Average ON Events.event_type = Average.event_type
+    WHERE Events.occurences > Average.occurences
+    GROUP BY business_id
+) AS Temp
+WHERE counts > 1
+```

@@ -1,0 +1,25 @@
+---
+title: "Leetcode - 183. Customers Who Never Order"
+images: ["None"]
+date: "2022-07-02T02:14:46.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/customers-who-never-order/)
+
+## 정답
+
+```
+SELECT name AS Customers
+FROM Customers
+WHERE id NOT IN (SELECT customerId FROM Orders)
+```

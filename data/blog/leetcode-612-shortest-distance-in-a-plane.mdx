@@ -1,0 +1,29 @@
+---
+title: "Leetcode - 612. Shortest Distance in a Plane"
+images: ["None"]
+date: "2022-09-28T02:09:49.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/shortest-distance-in-a-plane/)
+
+## 정답
+
+```
+SELECT ROUND(SQRT(
+    POW(P1.x - P2.x, 2) + POW(P1.y - P2.y, 2)
+    ),2) AS shortest
+FROM Point2D AS P1
+JOIN Point2D AS P2 ON P1.x != P2.x OR P1.y != P2.y
+ORDER BY shortest ASC
+LIMIT 1
+```

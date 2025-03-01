@@ -1,0 +1,124 @@
+---
+title: "2022년에 공부할 것들"
+images: ["https://images.unsplash.com/photo-1544640808-32ca72ac7f37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDl8fGxpYnJhcnl8ZW58MHx8fHwxNjQyOTI0MTEy&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-01-16T16:09:35.000Z"
+tags: ['dev-diary']
+---
+
+2021년에 이직한 다음에는 새로운 걸 공부하기보다는 예전에 하던 걸 좀더 깊게 파는 느낌으로 공부했었다. 물론 Mesos나 다른 Apache 서비스들에 대해서는 강제로 잘 알게 되었지만...
+
+그래서 올해는 새로운 것들을 많이 익혀보면서, 내가 실제 나의 웹 서비스 또는 앱 운영을 한다면 고려해볼만한 요소들을 골라서 리스트업 해봤다.
+
+2022-03-31 업데이트
+
+2022-05-20 업데이트
+
+
+## 언어
+
+### Java
+
+java... 이제는 해야 할 것 같다. 안하고 넘어가기엔 너무 많은 곳에서 자바를 쓰고 있다.
+
+### Typescript
+
+요즘은 타입스크립트 사용이 완전히 대세가 되었기 때문에 배워보려고 한다. React 나 Next에서도 많이 사용되고 있기도 하고.
+
+### Rust
+
+~~Rust도 요즘 인기가 높아지고 있는데 관심만 있다.~~
+
+업무상으로 Rust를 사용할 일이 생겨서 본격적으로 문법을 공부하고 있다. Rust 기반의 백엔드 프레임워크도 있어서 간단한 토이프로젝트를 Rust로 짜볼 생각이다.
+
+### Dart
+
+Dart는 Flutter로 크로스플랫폼 앱 개발을 하기 위해서 필요한 언어이다. C/Java와 비슷해서 배우기 쉽다는데 자바를 할 줄 모르는 나로서는 약간 생소하다. 최근 배운 Go 때문에 오히려 좀더 문법이 헷갈린다. 하지만 언어 자체는 굉장히 맘에 들고 재미있게 느껴진다.
+
+
+## 프레임워크
+
+### Spring
+
+자바를 배우는 이유가 사실 스프링 때문이다.
+
+### Next.js
+
+Next 역시 프론트 분야에서 정말 많은 인기를 끌고 있고, 그만큼 많은 회사에서 사용하고 있기 때문에 올 한해에는 넥스트를 중점적으로 공부해보고 싶다.
+
+### Remix
+
+넥스트의 강력한 경쟁자로 아직 정확하게 어떤 걸 할 수 있는지는 모르지만 많은 웹 개발자들이 2022년 계획에 리믹스를 넣어두고 있어서 나도 슬며시 넣어보았다!
+
+### Tailwind, Sass
+
+CSS 프레임워크들은 한번쯤 공부해둘 필요가 있어보여 넣어두었다.
+
+### Flutter
+
+일단 크로스플랫폼 앱 개발은 리액트 네이티브 보다 훨씬 성능이나 이식성 면에서 좋다고 느껴져서 플러터를 공부하기로 했다. Electron을 개인적으로 별로 좋아하지 않는데 같은 브라우저 백엔드이면서도 가볍게 데스크탑 앱 개발도 가능하기 때문에 플러터를 배워두면 쓸 일이 훨씬 많아 보인다.
+
+
+## 다른 스택들
+
+### Redis
+
+레디스의 장점은 무엇이고, 언제 레디스가 필요하고, 어떻게 구성하는게 효율적인지 궁금하다.
+
+### CDN / Edge function
+
+요즘에는 도커 컨테이너 없이 컨테이너를 제공하는 서비스라던지, 점점 전세계 단위로 제공하는 서비스가 많아지고 있는 것 같다. 그런 측면에서 공부해둬야 하는 부분이다.
+
+### 데이터베이스/SQL
+
+지금껏 데이터베이스 스키마 짤 줄 알고 SQL 쓸 줄 안다고 생각했는데 완전 오산이었다. Scalable하면서도 Robust한 데이터베이스 구성이 필요하고 그리고 효율적인 쿼리 작성하는 법도 다시 공부해야 할 것 같다.
+
+참고: 인프랩 postmortem
+
+[2022년 1월 100% 할인 이벤트 장애 부검
+
+안녕하세요 인프런의 향로입니다. 인프런 서비스는 2022년 1월 3일 ~ 17일까지 지속적으로 서비스를 사용할 수 없는, 역대급 장애가 발생했습니다. 이번 장애 기간동안 정말 많은 분들의 질책을 들으면서 반성을 했습니다. 특히 퇴근 후 1~2시간 공부밖에 못하시는 분들께서는 그날의 학습을 모두 포기하게 되는 경험을 드리게 되어서 더욱 복잡한 마음이 들었습니다. 이번 포스팅을 통해 왜 이렇게 오랜 기간 서버 장애가 발생했는지, 근본 원인이 해결 된 것은 맞는지 등의 의문을 해소하려고 합니다. 이런 장애 부검은 앞으로도 지속적으로 유지…
+
+![](https://tech.inflab.com/icons/icon-512x512.png?v=85c8af743e179883b18fef5acc3a66b0)posted by 향로(HyangLo),
+
+![](https://tech.inflab.com/header_with_bg.png)](https://tech.inflab.com/202201-event-postmortem/)
+
+### GitOps, DevOps (+MLOps)
+
+아무래도 빌드/배포 관련된 일을 하다보니 자연스럽게 관심이 가게 되는 분야인 것 같다. 우선순위가 높지는 않고 천천히 개념 정리해서 블로그 포스팅 하나 해볼 생각이다. 더불어 Github Action도 정리해서 포스팅할 계획.
+
+[GitHub Actions by Example
+
+GitHub Actions by Example is an introduction to the service through annotated examples.
+
+GitHub Actions by Example](https://www.actionsbyexample.com/)
+
+### 리눅스
+
+리눅스도 배울 게 한참 많다. 최근에 했던 것 중에 제일 헷갈리는데 `sed` 랑 `journalctl` 인데 옵션이 다양해서 아직 연습이 많이 필요할 것 같다.
+
+그 외에 Fundamental로는 리눅스 커널(cgroup, cfs, Rust porting?)과 네트워크 부분은 정말 중요하다고 다시금 느꼈다. 웹 서비스 자체가 마이크로서비스로 많이 넘어가는 추세기 때문에 더더욱 리눅스 활용을 잘 하는게 중요해지는 것 같다.
+
+### 데이터 인프라스트럭쳐
+
+### APM(DataDog, Prometheus,...)
+
+Centralized logging
+
+공부할게 왜이렇게 많은지..?ㅠㅠ
+
+
+## 사이드프로젝트
+
+작년에 gin-gonic과 쿠버네티스를 사용한 간단한 웹서비스를 하나 만들었었다. 올해에는 실제로 아이디어를 가지고 go 기반의 웹서비스 또는 앱 백엔드를 만들어 보려고 한다.
+
+go clean-architecture 패턴을 공부해볼 계획이다.
+
+[GitHub - bxcodec/go-clean-arch at v2
+
+Go (Golang) Clean Architecture based on Reading Uncle Bob’s Clean Architecture - GitHub - bxcodec/go-clean-arch at v2
+
+![](https://github.githubassets.com/favicons/favicon.svg)GitHubbxcodec
+
+![](https://repository-images.githubusercontent.com/93808874/0f2fe900-36b5-11ea-83df-fdc26f425564)](https://github.com/bxcodec/go-clean-arch/tree/v2)
+
+블록체인 프로젝트에서 기초 중의 기초인 dapp과 smart contract 관련 토이프로젝트를 진행할 계획이다. 그리고 시간이 되면 이더리움 코어 코드를 살펴보면서 오픈소스에 기여해볼 생각이다.

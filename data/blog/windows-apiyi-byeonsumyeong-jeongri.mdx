@@ -1,0 +1,28 @@
+---
+title: "Windows API의 변수명 정리"
+images: ["https://images.unsplash.com/photo-1542395765-761de4ee9696?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T19:00:38.000Z"
+tags: ['cpp']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Windows API의 윈도우 변수란?
+
+Windows API에서는 변수를 명명할 때 접두어를 통해 변수가 의미하고자 하는 바를 축약적으로 나타내고 있습니다. 예를 들어, `lpsz`라는 접두어가 붙은 `lpszMenuName` 은 Long Pointer(롱 포인터형) NULL Terminated (NULL 로 끝나는 문자열)형의 `MenuName`을 나타내는 변수입니다. 다시 말하면 `char*`형의 포인터 변수인데 종료 문자열이 `NULL`인 것입니다.
+
+### 접두어 목록
+
+이와 같은 접두어를 아래 표에 정리해 두었습니다.
+
+| 접두어 | 원래 말 | 의미 |
+| --- | --- | --- |
+| cb | Count of Bytes | 바이트 수 |
+| dw | double word | 부호없는 long형 정수 |
+| h | handle | 윈도우, 비트맵, 파일 등의 핸들 |
+| sz | NULL Terminated | NULL 종료 문자열 |
+| ch | Character | 문자형 |
+| a | Array | 배열 |
+| w | Word | 부호없는 정수형 |
+| i | Integer | 정수형 |
+| p, lp | Long Pointer | 포인터 형 |
+| b | Bool | 논리형 |

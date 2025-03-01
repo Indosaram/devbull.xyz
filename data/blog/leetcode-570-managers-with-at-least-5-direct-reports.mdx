@@ -1,0 +1,30 @@
+---
+title: "Leetcode - 570. Managers with at Least 5 Direct Reports"
+images: ["None"]
+date: "2022-07-27T10:43:12.000Z"
+tags: ['codingtest', 'leetcode']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/managers-with-at-least-5-direct-reports/)
+
+## 정답
+
+```
+SELECT name 
+FROM Employee
+WHERE id IN (
+    SELECT managerId
+    FROM Employee
+    GROUP BY managerId
+    HAVING COUNT(managerId) >= 5
+)
+```

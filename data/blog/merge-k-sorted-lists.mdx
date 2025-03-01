@@ -1,0 +1,37 @@
+---
+title: "Leetcode - 23. Merge k Sorted Lists"
+images: ["https://images.unsplash.com/photo-1436377991866-f9af228d2b47?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDZ8fG1lcmdlfGVufDB8fHx8MTYxODIyNjA3OQ&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-04-12T11:13:31.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+* 문제 : [](https://leetcode.com/problems/merge-k-sorted-lists/)
+
+## 답안
+
+먼저 노드 값을 가지고 정렬을 한 다음(여기서는 `heap` 을 이용), 순서대로 노드를 만들어 붙여주면 된다.
+
+```
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, val=0, next=None):
+#         self.val = val
+#         self.next = next
+import heapq
+
+class Solution:
+    def mergeKLists(self, lists: List[ListNode]) -> ListNode:
+        heap_ = []
+        for node in lists:
+            while node:
+                heapq.heappush(heap_, node.val)
+                node = node.next
+
+        start = res_node = ListNode()
+        while heap_:
+            res_node.next = ListNode(heapq.heappop(heap_))
+            res_node = res_node.next
+            
+        return start.next
+```

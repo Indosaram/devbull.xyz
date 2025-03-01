@@ -1,0 +1,42 @@
+---
+title: "백준-11726 : 2×n 타일링"
+images: ["https://images.unsplash.com/photo-1458682625221-3a45f8a844c7?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T08:58:45.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   백준-11726 : 2×n 타일링
+-   [문제링크](https://www.acmicpc.net/problem/11726)
+
+# 풀이
+
+먼저 재귀함수로 풀면 파이썬 내부에서 재귀함수 호출 스택을 초과하여 런타임 에러가 발생한다.
+
+```python
+leng = int(input())
+
+def tile(leng):
+    if leng == 1 or leng==2:
+        return leng
+    elif leng > 2:
+        return tile(leng-1)+tile(leng-2) %10007
+
+print(tile(leng))
+```
+
+Memoization으로 구현하면 된다.
+
+```python
+leng = int(input())
+
+memo = [0]*(leng)
+memo[0:2] = [1,2]
+
+for i in range(2, leng):
+    memo[i] = (memo[i-1]+memo[i-2])
+
+print(memo[leng-1]%10007)
+```

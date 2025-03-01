@@ -1,0 +1,26 @@
+---
+title: "Leetcode - 1890. The Latest Login in 2020"
+images: ["None"]
+date: "2022-05-26T01:22:11.000Z"
+tags: ['codingtest', 'leetcode']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/the-latest-login-in-2020/)
+
+## 정답
+
+```
+SELECT user_id, MAX(time_stamp) AS last_stamp
+FROM Logins
+WHERE time_stamp >= '2020-01-01'  AND time_stamp < '2021-01-01'
+GROUP BY user_id
+```

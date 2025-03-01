@@ -1,0 +1,79 @@
+---
+title: "SWEA-2105 : [모의 SW 역량테스트] 디저트 카페"
+images: ["https://images.unsplash.com/photo-1593642532744-d377ab507dc8?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T07:50:15.000Z"
+tags: ['codingtest', 'swea']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   SWEA-2105 : \[모의 SW 역량테스트\] 디저트 카페
+
+# 풀이-파이썬
+
+기본적인 백트래킹 문제이다. 다만 진행 방향이 바뀔 경우, 기존에 진행하던 방향으로는 더 이상 진행하지 못하는 부분을 구현하는 게 키포인트였다.
+
+```python
+stack = []
+his = set([])
+
+def isSafe(i, j):
+
+    if -1<i<M and -1<j<M:
+        if arr[i][j] in stack:
+            return 0
+
+        if visit[i][j] == 0:
+            return 1
+    return 0
+
+
+def search(a, b, prev):
+    global maxi
+
+    if [a,b]==start and 3<len(stack):
+        maxi = max(maxi, len(stack))
+        return
+    # 방향
+    dirs = [ [1,1], [-1,1], [-1,-1], [1,-1] ]
+
+    # 방향을 틀면 기존에 가던 방향으로는 못간다
+    for i, j in dirs:
+        if (i,j) not in his:
+            X = a+i
+            Y = b+j
+            if isSafe(X,Y):
+                visit[X][Y] = 1
+                stack.append(arr[X][Y])
+                if prev != (i,j):
+                    his.add(prev)
+                    search(X,Y, (i,j))
+                    his.remove(prev)
+                else:
+                    search(X,Y, prev)
+
+                visit[X][Y] = 0
+                stack.pop()
+        
+
+T = int(input())
+for test_case in range(1, T + 1):
+    maxi = 0
+    M = int(input())
+
+    arr = []
+    for i in range(M):
+        arr.append(list(map(int, input().split())))
+
+    visit = [ [0]*M for _ in range(M) ]
+    # 출발점
+    for a in range(M):
+        for b in range(M):
+            start = [a,b]
+            search(a, b, (1,1))
+
+    if maxi == 0:
+        maxi = -1
+    print("#%d %d" %(test_case, maxi)) 
+```

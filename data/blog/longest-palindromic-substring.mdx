@@ -1,0 +1,111 @@
+---
+title: "Leetcode - 5. Longest Palindromic Substring"
+images: ["https://images.unsplash.com/photo-1613572929676-7defd91738e3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MXwxMTc3M3wwfDF8c2VhcmNofDEyfHx3b3JkfGVufDB8fHw&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-02-22T10:37:36.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/longest-palindromic-substring/)
+
+## 답안
+
+### 브루트 포스 풀이
+
+```
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        s_len = len(s)
+        for leng in range(s_len, 0, -1):
+            for idx in range(s_len - leng + 1):
+                substring = s[idx : idx + leng]
+                if substring == substring[::-1]:
+                    return substring
+```
+
+### Center Expanding 풀이
+
+```
+class Solution:
+    def longestPalindrome(self, s: str) -> str:
+        def expand(left, right):
+            while left >= 0 and right <= len(s) and s[left] == s[right - 1]:
+                left -= 1
+                right += 1
+            return s[left + 1 : right - 1]
+
+        if len(s) < 2 or s == s[::-1]:
+            return s
+
+        result = ''
+        for i in range(len(s) - 1):
+            result = max(result, expand(i, i + 1), expand(i, i + 2), key=len)
+
+        return result
+
+```
+
+### DP 풀이
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/longest-palindromic-substring/discuss/900639/Python-Solution-%3A-with-detailed-explanation-%3A-using-DP)
+
+먼저 주어진 문자열 `s` 를 슬라이싱한 결과가 palindrome인지를 나타내는 `dp` 라는 2차원 리스트를 만든다. 이때 문자 한개는 반드시 palindrome이기 때문에 해당 리스트의 대각선 요소들은 모두 `True` 가 된다. 이때 슬라이싱은 항상 양의 방향으로, 즉 시작 인덱스보다 끝 인덱스가 큰 방향으로만 이루어지기 때문에 `dp` 리스트의 대각선 위쪽만 사용된다.
+
+다음으로는 palindrome 검사를 수행하는데, 이미 슬라이싱 결과를 리스트로 만들었으므로 리스트의 값을 이용한다. 이때 `s[i] == s[j]` 는 두 가지 케이스가 발생하는데,
+
+`j - i == 1` : 바로 옆의 두 원소를 비교하는 경우
+
+`dp[i + 1][j - 1]` : 찾고 있는 문자열 `s[i : j + 1]` 에서 좌우로 한칸씩 줄인 문자열 `s[i + 1 : j]` 가 palindrome인지 검사한다. 만일 palindrome이라면 주어진 문자열도 palindrome이 된다.
+
+```
+class Solution:
+    def longestPalindrome(self, s):
+        # build dp matrix
+        dp = [[0] * len(s) for _ in range(len(s))]
+        for i in range(len(s)):
+            dp[i][i] = True
+        longest_palindrome = s[0]
+
+        # find palindrome
+        for i in range(len(s) - 1, -1, -1):  # backward
+            for j in range(i + 1, len(s)):  # forward
+                if s[i] == s[j]:
+                    if j - i == 1 or dp[i + 1][j - 1]:
+                        dp[i][j] = True
+
+                        if len(longest_palindrome) < j - i:
+                            longest_palindrome = s[i : j + 1]
+
+        return longest_palindrome
+
+```
+
+dp를 사용했지만 조기 중단을 할 수 없어 실행 속도는 Brute force보다 느린 편이다. 좀더 개선이 필요해보인다.
+
+### Manacher algorithm
+
+[Longest palindromic substring - Wikipedia
+
+![](https://en.wikipedia.org/static/apple-touch/wikipedia.png)Wikimedia Foundation, Inc.Contributors to Wikimedia projects
+
+![](https://wikimedia.org/api/rest_v1/media/math/render/svg/6cd9594a16cb898b8f2a2dff9227a385ec183392)](https://en.wikipedia.org/wiki/Longest_palindromic_substring)[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/longest-palindromic-substring/discuss/3337/Manacher-algorithm-in-Python-O(n))

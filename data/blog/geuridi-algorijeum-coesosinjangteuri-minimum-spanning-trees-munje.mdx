@@ -1,0 +1,75 @@
+---
+title: "그리디 알고리즘, 최소신장트리(Minimum Spanning Trees) 문제"
+images: ["https://images.unsplash.com/photo-1548286031-7d5a74c78c3c?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T11:18:00.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+> 본 포스팅의 내용은 T아카데미 컴퓨터 알고리즘 기초 강의를 재구성한 것임을 밝힙니다.
+
+## 그리디 알고리즘
+
+그리디 알고리즘은 탐욕 알고리즘, 탐욕법이라고도 불리는 방법입니다. 또는 Myoptic Algorithm이라고도 불리는 방법이지요. 항상 최적해(Optimal Solution)을 보장하지는 않지만 특수한 경우 최적해를 찾을 수 있기 때문에 여러 방면에서 자주 적용되는 개념입니다.
+
+그리디 알고리즘을 다음과 같이 설명할 수 있습니다.
+
+-   현재 상황에서 가장 좋아 보이는 답을 선택
+-   작은 문제에서의 최적해가 전체 문제의 최적해가 될 것이라고 생각
+
+## 그리디 알고리즘과 동적 프로그래밍의 차이점
+
+### 그리디 알고리즘
+
+-   하위 문제를 풀기 전에 선택을 한다
+-   항상 하나의 문제만을 고려한다
+
+### 동적 프로그래밍(Dynamic Programming)
+
+-   하위 문제를 풀고 나서 선택을 한다
+-   동시에 여러 개의 하위 문제를 고려한다
+
+## 최소 신장 트리(Minimum Spanning Trees) 만들기
+
+### 가중 무방향성 그래프(Weighted Undirected Graph)
+
+![MST](https://res-4.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/MST.png)
+
+-   $G=(V,E)$
+-   간선 집합에 속하는 각 간선 $(u,v)$는 $w(u,v)$를 가진다.
+
+### 신장트리(Spanning Trees)
+
+트리가 그래프 G의 모든 정점을 포함할 때 그래프 G에 속하는 트리의 간선을 선택한 것
+
+### 최소 신장트리(Minimum Spanning Trees)
+
+#### 신장트리의 비용
+
+$$w(T) = \\sum\_{(u,v)\\subset T}{w(u,v)}$$
+
+#### 일반적인 최소신장트리 방법
+
+한번에 1개의 간선 $(u,v)$을 추가하고, $A\\cup (u,v)$가 최소 신장트리의 일부가 되는지 확인한다. 이때, Cyclic이 생성되지 않는 간선인 안전간선(Safe Edge)만 추가한다.
+
+### 프림 알고리즘(Prim's Algorithm)
+
+프림 알고리즘은 정점의 최선값을 선택해 문제를 해결합니다.
+
+1.  가장 순서가 빠른 노드부터 시작해 가장 비용이 작은 엣지를 연결한다.
+2.  이제 연결된 두 노드에 연결되어 있는 다른 간선 중 비용이 가장 작은 엣지를 연결한다.
+3.  이 과정을 반복한다.
+
+### 크루스칼 알고리즘(Kruskal's Algorithm)
+
+크루스칼 알고리즘은 간선의 가중치값을 정렬해 문제를 해결합니다.
+
+1.  엣지를 적은 비용 순으로 정렬한다.
+2.  가장 적은 비용의 엣지를 선택한다. 같은 비용의 엣지가 있다면 가장 순서가 빠른 노드부터 연결한다.
+3.  2를 반복한다.
+
+[크루스칼 알고리즘의 파이썬 구현](https://1see-bull.tistory.com/entry/Python-%ED%81%AC%EB%A3%A8%EC%8A%A4%EC%B9%BC-%EC%95%8C%EA%B3%A0%EB%A6%AC%EC%A6%98Kruskal-Algorithm)이 궁금하시면 링크를 참고하세요.
+
+## 참고자료
+
+-   [컴퓨터 알고리즘 기초 19강 탐욕 알고리즘 | T아카데미](https://www.youtube.com/watch?v=ZeZgP4vsUuw)

@@ -1,0 +1,173 @@
+---
+title: "Jamstack : Ghost, Gatsby, Netlify로 블로그 만들기(2)"
+images: ["https://images.unsplash.com/photo-1512429234305-12fe5b0b0f07?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-21T13:22:07.000Z"
+tags: ['set-up']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+> Jamstack 블로그 만들기 시리즈는 총 3편으로 구성되어 있습니다.
+> 1편 : [Jamstack 소개와 준비물](__GHOST_URL__/jamstack-ghost-gatsby-netlify-1/)
+> 2편 : [Ghost, Gatsby, Netlify로 Jamstack 블로그 구축하기](__GHOST_URL__/jamstack-ghost-gatsby-netlify-2/)
+> 3편 : [쾌적한 블로깅을 위한 몇 가지 세팅 방법 소개](__GHOST_URL__/jamstack-ghost-gatsby-netlify-3/)
+
+안녕하세요, 일시불입니다. 오늘은 드디어 Jamstack 사이트 구축을 해볼 건데요. 꽤나 복잡하고 헷갈리는 부분이 많습니다. 주의해서 따라오세요. 제가 모든 단계를 스크린샷과 함께 꼼꼼히 설명해드리고 있지만, 혹시나 막히는 부분이나 이해가 되지 않는 부분 있으시면 꼭 댓글로 남겨주세요. 최대한 빨리 피드백 하겠습니다.
+
+
+## 1단계 : Ghost를 Heroku 서버에 올리기
+
+먼저 우리의 Ghost를 Heroku에서 배포해 보겠습니다. 
+
+> 만일 느린 Heroku가 싫으신 분들 중 로컬에 리눅스 머신이 있으신 분들은 여기에 로컬로 설치하셔도 됩니다. 어차피 API를 통해서 Gatsby로 글을 보내주기 때문이거든요.
+
+여기 [링크](https://heroku.com/deploy?template=https://github.com/snathjr/ghost-on-heroku)를 클릭하시면 Ghost를 Heroku에 바로 설치하실 수 있습니다. 
+
+![howtobuild_jamstack_02_04](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_04.png)
+
+클릭하시면 위 사진처럼 화면이 출력되는데요. `App name`에 영문으로 홈페이지 이름을 적어주세요. 예를 들어 여기에 `adsense`라고 적으시면 웹사이트 주소가 `adsense.herokuapp.com`이 됩니다. 사실 이건 ghost 주소라서 우리가 글을 작성할 때만 접속할 주소기 때문에 크게 고민하지 않으셔도 됩니다.  그리고 지역은 그냥 미국으로 설정해 두시면 됩니다. 
+
+다른 설정은 건드릴 부분이 없고, `Config Vars` 부분에 `Required`라고 되어있는 부분 보이시나요? 여기는 두가지 방법이 있습니다.
+
+1. 도메인 구입을 안하실 분들 : 여기에 위에서 만들었던 `App namer`을 적으세요.
+2. 도메인을 구입하신 분들 : 여기에 도메인 주소를 적으세요.
+
+그 다음 화면 맨 아래로 내려보시면 `Deploy app`버튼이 있습니다. 이걸 클릭하시고 기다려 주세요. Heroku를 처음 사용하시는 분들은 이메일 인증, 전화번호 인증,  신용카드 정보 입력과 같은 단계를 거칠 수 있습니다.
+
+그러면 앱이 빌드되고 애드온이 설치되는 등의 작업이 자동으로 진행되는데, 약 3~4분정도 소요됩니다. 이때 설치되는 애드온은 총 3가지입니다. 
+
+1. Cloudinary : 클라우드 저장소로, 우리가 사진, 동영상 등을 블로그에 첨부하면 여기로 저장됩니다. 무료로 10기가까지 제공됩니다. 만일 아마존 S3 버킷을 가지고 계신 분들이라면 나중에 교체하실 수 있습니다.
+2. JawsDB : Mysql서버로 우리가 쓰는 글, 사용자 정보, 설정등이 여기에 저장됩니다.
+3. Mailgun : 구독자에게 메일을 보내거나 보내는 기능입니다. 저는 사용하지 않는데 외국에서는 메일링 서비스가 워낙 흔하다보니 들어가있는 옵션입니다.
+
+![howtobuild_jamstack_02_05](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_05.png)
+
+자 이제 우리의 ghost가 빌드되었을 것입니다. 화면의 Open app 버튼을 눌러 접속하면 기본 ghost화면이 나옵니다. 여기서 주소창에 우리 홈페이지 주소 마지막에 `/ghost`를 붙여서 접속합니다. 예를 들면 `adsense.herokuapp.com/ghost`처럼요. 
+
+이제 관리자로 회원가입 하시면 됩니다. 공동 저자를 추가하겠냐고 물어보는데 여기는 패스하세요. 그리고 이 창은 끄지 마시고 일단 다음 단계로 넘어가겠습니다.
+
+## 2단계 : Gatsby 설치하기
+
+아마 잠깐 홈페이지를 구경해 보셨으면 아시겠지만, Heroku는 상당이 느립니다. 그리고 30분 이상 방문자가 없으면 잠들어 버려서 다시 깨우는 데 한참 걸리는 문제가 있습니다. (이건 나중에 해결방법을 알려드릴겁니다.) 그리고 가끔 혼자서 죽어버려서 재부팅 해줘야 할 때가 있습니다. 그래서 우리는 Gatsby로 정적 사이트를 만들어서 다른 빠른 서버에 올리려고 하는 겁니다.
+
+![howtobuild_jamstack_02_06](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_06.png)
+
+Ghost는 한번에 쉽게 설치했는데, Gatsby는 조금 복잡합니다. 먼저 컴퓨터에 git을 설치해야 합니다. [설치 링크](https://git-scm.com/)로 가서 운영체제 맞는 버전을 다운받으세요. 이제 깃허브 계정을 쓸 때가 왔습니다. [TryGhost/gatsby-starter-ghost](TryGhost/gatsby-starter-ghost)로 접속하세요. 만일 제가 기본적인 것은 세팅해놓은 상태에서 시작하시고 싶으신 분들은 [제 Repository(저장소)](https://github.com/Indosaram/gatsby-starter-ghost-1seebull)를 이용하세요.
+
+> 시리즈를 다 적고 보니 Git을 왜 설치해야 하는지 설명을 안적었네요. 보통 github에서 파일을 수정하게 되면 로컬에서 Gatsby를 빌드해볼 수 없어서 디버깅하기가 어렵습니다. 그래서 로컬에 repository를 clone해서 수정한 다음 `gatsby develop`명령어를 사용해 로컬 빌드에서 잘 되는지 확인 후 다시 github에 코드를 올리는 과정을 거치게 되는데요. 이 부분은 나중에 자세히 설명하겠습니다.
+
+![howtobuild_jamstack_02_07](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_07.png)
+
+화면 상단의 `Fork`버튼을 눌러 내 저장소로 가져옵니다. 
+
+## 3단계 : Netlify로 배포하기
+
+![howtobuild_jamstack_02_09](https://res-1.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_09.png)
+
+Netlify로 접속해주세요.  화면 상단 우측에 있는 `New site from Git`의 버튼을 클릭해주세요.
+
+![howtobuild_jamstack_02_10](https://res-5.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_10.png)
+
+![howtobuild_jamstack_02_11](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_11.png)
+
+아까 저장했던 저장소를 선택해주세요.
+
+![howtobuild_jamstack_02_12](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_12.png)
+
+바로 화면 아래에 있는 `Deploy site`를 클릭합니다.
+
+![howtobuild_jamstack_02_13](https://res-5.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_13.png)
+
+설정이 끝나면 위 화면과 같은 상태인데요. 사이트 목록을 클릭해 들어갑니다. 
+
+![howtobuild_jamstack_02_14](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_14.png)
+
+정상적으로 빌드가 되었는지 내 사이트 주소를 클릭해 들어가봅니다.
+
+![howtobuild_jamstack_02_15](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_15.jpg)
+
+위 화면처럼 나오면 성공입니다!
+
+
+
+고생하셨습니다. 이제 절반정도 진행됐습니다. 지금까지
+
+- Heroku+Ghost
+- Gatsby
+- Netlify
+
+세가지를 세팅했는데요. 서로 연결해 주기만 하면 드디어 내 사이트를 볼 수 있습니다.
+
+
+
+## 4단계 : Ghost를 Gatsby와 Netlify와 연동하기
+
+### ghost - Gatsby 연동
+
+현재 Gatsby는 샘플 게시물을 보여주고 있는 상태입니다. 여기에 우리의 ghost를 연동해서 우리가 쓰는 글과 설정들이 Gatsby에 반영될 수 있도록 연동을 해줄겁니다. 먼저 아까 끄지 말라고 했던 ghost admin으로 돌아갑니다.
+
+
+
+![howtobuild_jamstack_02_16](https://res-1.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_16.png)
+
+메뉴 왼쪽에 Integration을 선택합니다.
+
+
+
+![howtobuild_jamstack_02_17](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_17.png)
+
+화면 아래의 `Add custom integration`을 클릭합니다.
+
+![howtobuild_jamstack_02_18](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_18.png)
+
+이름은 Gatsby로 입력하세요. 화면에 보시면 `Content API Key`하고 `API URL`이 있는데, 이걸 잠시 후에 쓸거니까 이 페이지를 닫지 마시고, 위치를 잘 기억해두세요. 그리고 마찬가지 방법으로 Netlify 라는 이름으로 integration을 하나 더 만들어주세요. 
+
+이제 아까 복사해두었던 깃허브 저장소로 돌아갑니다. 열린 페이지에서 보시면 `.ghost.json`이라는 파일이 있을거에요. 이걸 클릭해서 들어갑니다.
+
+```
+{
+  "development": {
+    "apiUrl": "https://adsense.herokuapp.com",
+    "contentApiKey": "abcdefg13456789123456789"
+  },
+  "production": {
+    "apiUrl": "https://adsense.herokuapp.com",
+    "contentApiKey": "abcdefg13456789123456789"
+  }
+}
+```
+
+아까 ghost에서 보았던 `Content API Key`하고 `API URL`를 여기에 복사해서 붙여넣으시면 됩니다. 
+
+### Gatsby - Heroku 연동
+
+![howtobuild_jamstack_02_19](https://res-4.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_19.png)
+
+다시 깃허브 저장소로 돌아갑니다. 목록에 `src`폴더가 있죠? 이제 여기서부터 폴더를 찾아서 들어갈거에요. `src -> utils -> siteConfig.js`로 들어가 파일을 열어주세요.
+
+여기에서 `siteUrl`이라고 된 부분을 바꿔줍니다.
+
+1. 도메인이 없으신 분들 : heroku app 이름을 적습니다. 예시 : https://adsense.herokuapp.com
+2. 도메인이 있는 분들 : 도메인 이름을 적어주세요.
+
+그 외에 부분은 자유롭게 바꾸시면 됩니다.
+
+### ghost - Netlify 연동
+
+![howtobuild_jamstack_02_20](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_20.png)
+
+ghost에서 글을 쓰거나 설정을 바꿨을 때 자동으로 Netlify에 연동된 Gatsby가 업데이트 되도록 Hook을 연결해주는 작업을 진행할 것입니다. Netlify로 다시 돌아갑니다. 상단 메뉴 중에서 `Settings`로 들어갑니다.
+
+![howtobuild_jamstack_02_21](https://res-4.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_21.png)
+
+좌측에서 `Build & Deploy`를 선택하고, 오른쪽에서 `Build hooks`메뉴에서 `Add build hook`버튼을 클릭합니다. 생성된 hook 주소를 복사합니다.
+
+![howtobuild_jamstack_02_22](https://res-1.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_22.png)
+
+그 다음에는 아까 ghost에서 만들었던 Netlify의 integration으로 들어갑니다. 여기서 아래 부분에 `Add webhook`을 클릭하세요. 여기서 `Event`에는 `Site changed (rebuild)`를 선택하시고, 아까 복사해두었던 `Target URL` 주소를 입력합니다.
+
+![howtobuild_jamstack_02_23](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/howtobuild_jamstack_02_23.png)
+
+이제 Netlify로 돌아가 Deploy 메뉴에서 화면 우측의 `Trigger deploy - Deploy site`를 눌러 내 사이트를 다시 빌드합니다. 빌드가 완료된 화면 좌측 상단의 링크를 누르면 홈페이지가 나오는 것을 확인하실 수 있습니다.
+수고하셨습니다! 이제 모든 설치가 끝났습니다. 굉장히 복잡하죠? 평소에 프로그래밍을 하시지 않는 분들에게는 다소 낯선 부분이 많았을 거에요! 혹시 따라하시다가 잘 안되는 부분이나 이해가 안되는 부분은 꼭 댓글로 남겨주세요 ☺
+
+내일은 기본적인 세팅 방법을 알려드리도록 하겠습니다.

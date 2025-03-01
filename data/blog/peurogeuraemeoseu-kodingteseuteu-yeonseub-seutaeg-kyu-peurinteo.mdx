@@ -1,0 +1,55 @@
+---
+title: "프로그래머스 - 코딩테스트 연습 - 스택/큐 - 프린터"
+images: ["None"]
+date: "2022-07-30T23:08:19.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://school.programmers.co.kr/learn/courses/30/lessons/42587)
+
+## 정답
+
+공간 복잡도 낮은 방법
+
+```
+def solution(priorities, location):
+    order = 1
+    max_p = max(priorities)
+
+    while priorities:
+        priority = priorities.pop(0)
+
+        if max_p == priority:
+            if location == 0:
+                return order
+            max_p = max(priorities)
+            order += 1
+        else:
+            priorities.append(priority)
+
+        if location == 0:
+            location = len(priorities) - 1
+        else:
+            location -= 1
+
+```
+
+간결한 방법
+
+```
+def solution(priorities, location):
+    queue =  list(enumerate(priorities))
+    order = 0
+    while queue:
+        cur = queue.pop(0)
+        if any(cur[1] < q[1] for q in queue):
+            queue.append(cur)
+        else:
+            order += 1
+            if cur[0] == location:
+                return order
+
+```

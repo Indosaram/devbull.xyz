@@ -1,0 +1,82 @@
+---
+title: "Leetcode - 200. Number of Islands"
+images: ["https://images.unsplash.com/photo-1619314399728-35931743d83e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8YWxsfDF8fHx8fHwyfHwxNjE5NTY4MDkx&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-04-28T00:51:20.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+* [](https://leetcode.com/problems/number-of-islands/)
+
+## 풀이
+
+```
+class Solution:
+    def numIslands(self, grid: List[List[str]]) -> int:
+        def is_safe(ddx, ddy):
+            return -1 < ddx < M and -1 < ddy < N and grid[ddx][ddy] == "1"
+
+        def search_island(start_point):
+            queue = [start_point]
+
+            dx = [1, -1, 0, 0]
+            dy = [0, 0, 1, -1]
+            while queue:
+                x, y = queue.pop(0)
+                for i in range(4):
+                    ddx = x + dx[i]
+                    ddy = y + dy[i]
+
+                    if is_safe(ddx, ddy):
+                        queue.append((ddx, ddy))
+                        grid[ddx][ddy] = 0
+
+        M = len(grid)
+        N = len(grid[0])
+
+        num_island = 0
+        for x in range(M):
+            for y in range(N):
+                if is_safe(x, y):
+                    search_island((x, y))
+                    num_island += 1
+
+        return num_island
+
+```
+
+나는 BFS(Queue)를 사용해서 풀었다. `is_safe` 함수를 사용해서 그리드 순회 시 가지치기를 하고, 또 큐에 다음 지점을 넣을 때도 이걸 이용해서 판단했다.
+
+처음에는 별도의 `visited` 라는 2D list를 선언해서 사용했는데 원래 그리드에 방문한 지점을 표시하는 방식으로 바꾸어 공간복잡도를 줄일 수 있었다.
+
+책에서는 백트래킹을 이용해서 DFS 방식으로 풀었다.
+
+```
+def numIsland(self, grid: List[List[str]]) -> int:
+    def dfs(i, j):
+        if (
+            i < 0
+            or i >= len(grid)
+            or j < 0
+            or j >= len(grid[0])
+            or grid[i][j] != '1'
+        ):
+            return
+
+        grid[i][j] = 0
+
+        dfs(i + 1, j)
+        dfs(i + 1, j)
+        dfs(i + 1, j)
+        dfs(i + 1, j)
+
+    count = 0
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            if grid[i][j] == '1':
+                dfs(i, j)
+                count += 1
+    return count
+```

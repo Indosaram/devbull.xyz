@@ -1,0 +1,121 @@
+---
+title: "VSCode 기본 터미널 Zsh+Oh-my-zsh로 바꾸는 법 Windows 10"
+images: ["https://images.unsplash.com/photo-1560762484-813fc97650a0?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-17T04:21:30.000Z"
+tags: ['set-up']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Windows에서 `zsh`를 쓸 수 있다고?😲
+
+몰랐는데 윈도우에 WSL을 설치해서 VSCode의 기본 쉘을 `zsh`로 바꿀 수 있다고 한다. 편하고 예쁜 `zsh`를 안 쓸 이유는 없기에 간단하게 설치해보았다.
+
+### WSL을 설치하자
+
+먼저 `zsh`는 리눅스 `bash`쉘에서만 동작하기 때문에 먼저 WSL을 설치한다. WSL을 설치하는 방법은 다른 포스팅이 많이 나와 있으니 금방 설치가 가능하다. 나는 Ubuntu 18.04로 설치했다.
+
+### `zsh` 설치
+
+그 다음은 WSL에서 `bash`를 실행한 후 `zsh`를 설치한다.
+
+```
+sudo apt-get install zsh
+
+```
+
+그 다음 `vi`를 실행시킨다.
+
+```
+nano ~/.bashrc
+
+```
+
+다음 명령어로 기본 쉘을 `zsh`로 변경한다. `bashrc`의 마지막 줄에 다음 라인을 입력하면 된다.
+
+```
+...
+
+if [ -t 1 ]; then
+  exec zsh
+fi
+
+```
+
+### 예쁜 걸 원한다면 `oh-my-zsh`
+
+그 다음 `zsh`사용을 편리하게 해주는 `oh-my-zsh`를 설치한다. 이때 `curl`을 사용하려면 `git`이 있어야 하므로 `git`이 없으면 설치한다.
+
+```
+sudo apt-get install git
+
+```
+
+다음을 입력해 `oh-my-zsh`를 설치한다.
+
+```
+curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
+
+```
+
+### 테마 설정
+
+테마에 어울리는 Powerline 폰트를 설치한다.
+
+> [Powerline Fonts 설치](https://github.com/powerline/fonts)
+
+요즘 대세 테마인 `agnoster` 테마로 바꾸어준다. 먼저 `vi`를 실행한다.
+
+```
+nano ~/.zshrc
+
+```
+
+`ZSH_THEME`부분을 찾은 다음, 아래와 같이 변경한다.
+
+```
+ZSH_THEME="agnoster"
+
+```
+
+기본 쉘이 `zsh`로 변경되고 테마도 변경된 것을 확인하였다. 반드시 기본 쉘이 변경된 것을 확인한 다음 진행해야 한다. 어디서 하나가 꼬이면 고치기가 힘드니 반드시 주의할 것.
+
+![wsl_zsh_howtoinstall](https://res-5.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/wsl_zsh_howtoinstall.png)
+
+### Syntax Highliter 설치하기
+
+올바른 명령어인지 확인해주는 Highlighter를 설치하자.
+
+```
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
+echo "source ${(q-)PWD}/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" >> ${ZDOTDIR:-$HOME}/.zshrc
+```
+
+저장소를 클론해주고 `~/.zshrc` 에 관련 내용을 추가해준다. 그리고 `source` 해주면 끝.
+
+```
+source ./zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+```
+
+### (optional) VS Code 기본 터미널 변경하기
+
+그 다음 VS Code의 터미널을 변경한다. 설정에 들어가 아래 그림의 빨간 부분을 클릭하면 `settings.json`을 수정할 수 있다.
+
+![wsl_zsh_howtoinstall_02](https://res-1.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/wsl_zsh_howtoinstall_02.png)
+
+settings.json에 들어가 아래 부분을 추가해준다.
+
+```
+"terminal.integrated.shell.windows": "C:\\Windows\\sysnative\\bash.exe",
+"terminal.integrated.shellArgs.windows": ["-c", "zsh"]
+"terminal.integrated.fontFamily": "Anonymous Pro for Powerline",
+
+```
+
+마지막 부분에서 폰트를 바꾸어주는 이유는 VS Code에서 쉘의 폰트가 깨져보이기 때문이다.
+
+여기서 원하는 폰트로 적용해주면 된다. 일부 폰트의 경우는 미리보기도 가능하다.
+
+![wsl_zsh_howtoinstall_01](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/wsl_zsh_howtoinstall_01.png)
+
+내 폰트는 `Droid Sans Mono for Powerline`이다. 그러면 VS code에서 `zsh`를 설치하기 끝.

@@ -1,0 +1,88 @@
+---
+title: "백준-1920 : 수 찾기"
+images: ["https://images.unsplash.com/photo-1502570149819-b2260483d302?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T08:48:59.000Z"
+tags: ['codingtest', 'baegjun']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   백준-1920 : 수 찾기
+-   [문제링크](https://www.acmicpc.net/problem/1920)
+
+# 풀이
+
+이진 트리 검색으로 구현
+
+```python
+numsrc = int(input())
+listsrc = list(map(int, input().split()))
+numtar = int(input())
+listtar = list(map(int, input().split()))
+
+
+class Node():
+    def __init__(self, data):
+        self.data = data
+        self.left = self.right = None
+
+
+class binSearch():
+    def __init__(self):
+        self.root = None
+
+    def insert(self, data):
+        self.root = self._ins_val(self.root, data)
+
+    def _ins_val(self, node, data):
+        if node == None:
+            node = Node(data)
+        else:
+            if data <= node.data:
+                node.left = self._ins_val(node.left, data)
+            else:
+                node.right = self._ins_val(node.right, data)
+        return node
+
+    def find(self, data):
+        return self._find_val(self.root, data)
+
+    def _find_val(self, node, data):
+        if node == None:
+            return 0
+        elif node.data == data:
+            return 1  # str(data) + ' is found'
+        else:
+            if data <= node.data:
+                return self._find_val(node.left, data)
+            else:
+                return self._find_val(node.right, data)
+
+
+bins = binSearch()
+for i in range(numsrc):
+    bins.insert(listsrc[i])
+
+for j in range(numtar):
+    print(bins.find(listtar[j]))
+```
+
+순차검색으로 풀면 시간초과가 나온다.
+
+```
+numsrc = int(input())
+listsrc = list(map(int, input().split()))
+numtar = int(input())
+listtar = list(map(int, input().split()))
+
+
+for i in range(numtar):
+    flag = 0
+    for j in range(numsrc):
+        if listsrc[j] == listtar[i]:
+            print(1)
+            flag = 1
+    if flag == 0:
+        print(0)
+```

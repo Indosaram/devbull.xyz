@@ -1,0 +1,32 @@
+---
+title: "Ubuntu+ VS Code + gcc 'undefined reference to' 에러 해결방법"
+images: ["https://images.unsplash.com/photo-1480506132288-68f7705954bd?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T18:51:01.000Z"
+tags: ['cpp']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Ubuntu + VScode + gcc
+
+우분투나 리눅스 환경에서 VS Code를 이용해서 `C/C++`를 컴파일하다가 오류가 발생하는 경우 해결방법을 소개한다. 이 증상은 다른 라이브러리를 사용할 때는 발생하지 않다가 `math.h` 헤더를 포함해서 컴파일하려고 하자 발생했다. undefined reference to 에러는 헤더를 제대로 참조하지 못하는 경우에 발생한다.
+
+![ubuntu_vscode_gcc_undefined_reference_error](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/ubuntu_vscode_gcc_undefined_reference_error.png)
+
+`math.h`에 들어있는 `pow`함수와 `sqrt`함수를 참조하지 못하고 있는 것을 알 수 있다. Windows에서 동일 환경에서 실행했을 때는 문제없이 컴파일되는 걸 보니 Ubuntu 문제라고 생각되어 해결 방법을 찾아보았다. 나는 Code Runner Extention을 이용해서 코드를 실행시키고 있기 때문에 `settings.json`에서 해당 extention의 설정을 변경해주었다.
+
+현재 `Go`를 사용해서 컴파일 할 때는 문제가 생기지 않아서 `C/C++`의 경우만 Execution Map을 설정해 주었다.
+
+```json
+// Code runner - ExcutionMap
+    "code-runner.executorMap": {
+        "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt -lm&& $dir$fileNameWithoutExt",
+        "cpp": "cd $dir && g++ -std=c++14 $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt"
+    },
+```
+
+이 부분을 추가해주면 정상적으로 실행되는 것을 알 수 있다. 여기서 내가 추가한 플래그는 `-lm`이다. `-l`플래그는 헤더 파일을 참조할 위치를 알려주는 플래그이고, `m`은 `math.h` 헤더를 가리킨다. 따라서 `math.h` 헤더를 정상적으로 참조하게 되므로 코드가 실행된다. 만일 내가 현재 불러오고 있는 함수의 헤더가 `math.h`가 아니라면 Execution Map에서 플래그를 `l${headername)`으로 변경해주면 된다. 다만 주의할 점은 `-l`플래그는 항상 커맨드 마지막에 입력해야 한다.  
+혹시 Code Runner를 사용하지 않는다면 단순히 커맨드로 컴파일 할 때 다음과 예제와 같이 입력하면 해결된다.
+
+```bash
+gcc test.c -o test -lm
+```

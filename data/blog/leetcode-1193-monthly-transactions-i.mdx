@@ -1,0 +1,34 @@
+---
+title: "Leetcode - 1193. Monthly Transactions I"
+images: ["None"]
+date: "2023-02-06T13:39:59.000Z"
+tags: ['None']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Problem
+
+[Monthly Transactions I - LeetCode
+
+Monthly Transactions I - Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon.ico)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/monthly-transactions-i/description/)
+
+## Solution
+
+```
+SELECT 
+    DATE_FORMAT(trans_date, "%Y-%m") AS month,
+    country, 
+    COUNT(id) AS trans_count, 
+    SUM(state = 'approved') AS approved_count, 
+    SUM(amount) AS trans_total_amount, 
+    SUM(CASE 
+            WHEN state = 'approved' THEN amount 
+            ELSE 0 
+        END) AS approved_total_amount
+FROM Transactions
+GROUP BY month, country
+```

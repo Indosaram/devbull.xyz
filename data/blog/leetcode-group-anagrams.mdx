@@ -1,0 +1,59 @@
+---
+title: "Leetcode - Group Anagrams #49"
+images: ["https://images.unsplash.com/photo-1478479405421-ce83c92fb3ba?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MXwxMTc3M3wwfDF8c2VhcmNofDh8fGdyb3VwfGVufDB8fHw&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-02-20T16:04:42.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+* 문제 : [](https://leetcode.com/problems/group-anagrams/)
+
+# 답안
+
+```
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        def get_hash(string):
+            hash_sum = 0
+            for char in string:
+                hash_sum += hash(char)
+            return hash_sum
+
+        strs_with_hash = [(word, get_hash(word)) for word in strs]
+        strs_sorted = sorted(strs_with_hash, key=lambda x: x[1])
+
+        result = []
+        hash_val = None
+        for tup in strs_sorted:
+            if hash_val != tup[1]:
+                result.append([tup[0]])
+                hash_val = tup[1]
+            elif hash_val == tup[1]:
+                result[-1].extend([tup[0]])
+
+        return result
+```
+
+같은 문자열의 재배치 결과인 애너그램을 찾는 문제기 때문에, 각 문자를 hash값으로 만든 다음 더해주면 같은 애너그램끼리는 같은 결과가 나올 것으로 생각했다. 그러나 hash값을 구하나, 문자열을 정렬하나 사실 여기서는 전체 문자열 길이가 길지 않기 때문에 시간 차이는 크지 않을 것이다(`word.length<100`).
+
+따라서 모범 답안은 다음과 같다.
+
+```
+from typing import Collection
+
+
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        anagrams = collections.defaultdict(list)
+
+        for word in strs:
+            anagrams[''.join(sorted(word))].append(word)
+
+        return anagrams.values()
+```
+
+`defaultdict` 하나만으로 엄청 깔끔하게 해결 가능하다.
+
+![](/static/images/2021/02/image.png)
+
+첫번째 열이 모범답안, 두번째 열이 내 답안이다. 리트코드 테이스케이스가 완벽하지 않아서 그런지는 몰라도 둘 다 시간이나 메모리 차이가 크지 않다.

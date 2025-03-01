@@ -1,0 +1,49 @@
+---
+title: "Leetcode - 238. Product of Array Except Self"
+images: ["https://images.unsplash.com/photo-1622838805759-a64754fca2c6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDd8fGFycmF5fGVufDB8fHx8MTY0NDYzMjA4NQ&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-02-12T02:07:03.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/product-of-array-except-self/)
+
+자기 자신을 제외하고 나머지 모든 배열 요소의 곱을 구하는 문제인데, 제한조건이 $O(n)$이다.
+
+## 정답
+
+제일 먼저 떠오르는 방법은 먼저 모든 배열 요소의 곱을 미리 구한 다음, 각 배열 요소로 나누면 자기 자신을 제외한 값을 구할 수 있다. 하지만 이 방법은 말이 안 되는게, 대부분의 프로그래밍 언어에서는 각 정수값의 타입이 `int32` 라는 문제 조건 때문에 사용해 풀  수 없는 방법이다. 그리고 배열 요소 값이 0이 가능하기 때문에 불가능하다.
+
+따라서 $O(n)$을 만족하려면 반드시 어떤 캐싱 방법을 사용해야 한다. 같은 연산을 반복하지 않기 위해서이다. 문제에서는 그런데 "Follow up"으로 $O(1)$ 공간을 사용해서 문제를 풀 수 있다고 힌트를 주고 있어서 더 킹받는다.
+
+> **Follow up:** Can you solve the problem in `O(1)` extra space complexity? (The output array **does not** count as extra space for space complexity analysis.)
+
+어떻게 메모리 하나만 가지고 풀 수 있는지를 모르겠어서, 결국에는 정답을 보게 됐는데 생각보다 간단한 아이디어였다.
+
+```
+class Solution:
+    def productExceptSelf(self, nums: List[int]) -> List[int]:
+        tmp = 1
+        result = []
+        for num in nums:
+            result.append(tmp)
+            tmp *= num
+
+        tmp = 1
+        for idx in range(len(nums) - 1, -1, -1):
+            result[idx] = result[idx] * tmp
+            tmp *= nums[idx]
+
+```
+
+그  변수에 곱의 값을 넣고, 결과 배열에서 사용하도록 하면 되는 것까지는 알았는데 결과 배열을 재사용한다는 생각을 못했다. 힌트에도 결과 배열은 공간복잡도에 포함되지 않는다고도 했는데 :(
+
+오랜만에 재밌는 문제였다!

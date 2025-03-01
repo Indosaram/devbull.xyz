@@ -1,0 +1,94 @@
+---
+title: "Leetcode - 104. Maximum Depth of Binary Tree"
+images: ["https://images.unsplash.com/photo-1453791052107-5c843da62d97?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDV8fHRyZWV8ZW58MHx8fHwxNjIyMTcwOTY5&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-28T02:17:47.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/maximum-depth-of-binary-tree/)
+
+## 풀이
+
+이진트리는 자식 노드가 2개인 특성 때문에 재귀적으로 풀이가 가능하다. 따라서 DFS 재귀로 구현했다.
+
+```
+class Solution:
+    def maxDepth(self, root: TreeNode) -> int:
+        def traverse(node, depth):
+            if node.left is None and node.right is None:
+                return depth
+
+            left_depth = right_depth = 0
+            if node.left is not None:
+                left_depth = traverse(node.left, depth + 1)
+            if node.right is not None:
+                right_depth = traverse(node.right, depth + 1)
+
+            return max(left_depth, right_depth)
+
+        depth = 0
+        if not root:
+            return depth
+        else:
+            return traverse(root, depth + 1)
+```
+
+이 문제는 BFS로도 풀 수 있다.
+
+```
+class Solution:
+    def maxDepth(self, root: TreeNode) -> int:
+        depth = 0
+
+        if root:
+            queue = []
+            depth = 1
+            if root.left is not None:
+                queue.append((root.left, 1))
+            if root.right is not None:
+                queue.append((root.right, 1))
+
+            while queue:
+                next, cur_depth = queue.pop(0)
+                if next.left is not None:
+                    queue.append((next.left, cur_depth + 1))
+                if next.right is not None:
+                    queue.append((next.right, cur_depth + 1))
+                depth = cur_depth + 1
+
+        return depth
+```
+
+BFS==queue 를 기억하자! 책에서는 `collections.deque` 를 사용해서 풀었다.
+
+```
+class Solution:
+    def maxDepth(self, root: TreeNode) -> int:
+        if root is None:
+            return 0
+
+        queue = collections.deque([root])
+        depth = 0
+
+        while queue:
+            depth += 1
+            for _ in range(len(queue)):
+                cur_root = queue.popleft()
+                if cur_root.left:
+                    queue.append(cur_root.left)
+                if cur_root.right:
+                    queue.append(cur_root.right)
+
+        return depth
+```
+
+dequeue가 list로 구현한 스택, 큐보다 항상 빠른 $O(1)$ 에 양방향 노드를 추출할 수 있기 때문에 효율적이고, `TreeNode` 를 바로 queue로 만들 수 있어서 간단하다. 코딩테스트에서는 이렇게 풀어도 좋겠지만 인터뷰에서는 dequeue 없이 풀어보라고 할 수 있으니 모든 풀이방법을 기억할 것!

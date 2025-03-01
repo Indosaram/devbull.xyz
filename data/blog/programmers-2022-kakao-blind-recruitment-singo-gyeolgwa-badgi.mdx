@@ -1,0 +1,32 @@
+---
+title: "프로그래머스 - 2022 KAKAO BLIND RECRUITMENT - 신고 결과 받기"
+images: ["https://images.unsplash.com/photo-1627024165011-6a9e2c4ea343?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDF8fHdhcm5pbmd8ZW58MHx8fHwxNjU2MjI3MTQy&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-06-26T07:04:22.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://programmers.co.kr/learn/courses/30/lessons/92334)
+
+## 정답
+
+```
+from collections import defaultdict
+
+def solution(id_list, report, k):
+    reports = defaultdict(list)
+    counts = defaultdict(int)
+    for reporter, reported in list(map(lambda x:x.split(), set(report))):
+        reports[reporter].append(reported)
+        counts[reported] += 1
+    
+    result = [0] * len(id_list)
+    for idx, id in enumerate(id_list):
+        for reported in reports[id]:
+            if counts[reported] >= k:
+                result[idx] += 1
+        
+    return result
+```

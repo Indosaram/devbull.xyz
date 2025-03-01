@@ -1,0 +1,58 @@
+---
+title: "프로그래머스 : 코딩테스트 연습 - 탐욕법(Greedy) - 단속카메라"
+images: ["https://images.unsplash.com/photo-1587316349360-875a718a0c0b?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T09:33:48.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+* 프로그래머스 : 코딩테스트 연습 - 탐욕법(Greedy) - 단속카메라
+* [문제링크](https://programmers.co.kr/learn/courses/30/lessons/42884)
+
+## 풀이
+
+### 완전탐색
+
+```
+def solution(routes):    
+    # 현재 진출지점에 카메라 설치
+    # 1. 다음 차량의 진출지점이 현재 카메라보다 앞에 있으면 다음 차량 진출지점으로 카메라 이동
+    # 2. 다음 차량의 진입지점이 현재 카메라보다 뒤에 있으면 새로운 카매라 설치
+    curr = 0
+    numcam = 0
+
+    routes = sorted(routes)
+    for route in routes:
+        if curr == 0:
+            curr = route[1]
+            numcam += 1
+        elif route[1] <= curr:
+            curr = route[1]
+        elif route[0] > curr:
+            numcam+=1
+            curr = route[1]
+
+    return numcam
+```
+
+### 탐욕법
+
+현재 위치 다음에 오는 단속 카메라만 생각하면 된다. 단속 카메라를 만난 경우는 해당 구간 마지막으로 현재 위치를 갱신하면서 위치를 이동시킨다.
+
+```
+def solution(routes):
+    routes = sorted(routes, key=lambda x: x[1])
+    curr = -30000
+
+    numcam = 0
+
+    for route in routes:
+        if curr < route[0]:
+            numcam += 1
+            curr = route[1]
+
+    return numcam
+
+```

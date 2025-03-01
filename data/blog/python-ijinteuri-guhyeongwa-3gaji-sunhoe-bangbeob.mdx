@@ -1,0 +1,28 @@
+---
+title: "[Python] 이진트리 구현과 3가지 순회 방법"
+images: ["https://images.unsplash.com/photo-1502945015378-0e284ca1a5be?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T11:15:26.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+1.  전위 순회(Preorder Traversal)
+    1.  먼저 자기 자신을 방문합니다.
+    2.  왼쪽 자식을 방문합니다.
+    3.  오른쪽 자식을 방문합니다.
+
+1-2-4-8-9-5-10-11-3-6-12-13-7-14-15
+
+1.  중위 순회(Inorder Traversal)
+    1.  먼저 왼쪽 자식을 방문합니다.
+    2.  자기 자신을 방문합니다.
+    3.  오른쪽 자식을 방문합니다.
+
+8-4-9-2-10-5-11-1-12-6-13-3-14-7-15
+
+1.  후위 순회(Postorder Traversal)
+    1.  왼쪽 자식을 방문합니다.
+    2.  오른쪽 자식을 방문합니다.
+    3.  자기 자신을 방문합니다.
+
+8-9-4-10-11-5-2-12-13-6-14-15-7-3-1

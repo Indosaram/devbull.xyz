@@ -1,0 +1,43 @@
+---
+title: "Leetcode - 424. Longest Repeating Character Replacement"
+images: ["https://images.unsplash.com/photo-1573160059602-81357cdd480f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDF8fGxvbmd8ZW58MHx8fHwxNjIzMjAxNjIx&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-09T01:12:15.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/longest-repeating-character-replacement/)
+
+## 풀이
+
+슬라이딩 윈도우 풀이
+
+```
+class Solution:
+    def characterReplacement(self, s, k):
+        max_freq = res = 0
+        count = collections.Counter()
+
+        left = right = 0
+
+        while right < len(s):
+            count[s[right]] += 1
+            max_freq = max(max_freq, count[s[right]])
+
+            if res < max_freq + k:
+                res += 1
+            else:
+                count[s[right - res]] -= 1
+                left += 1
+
+            right += 1
+        return res
+```

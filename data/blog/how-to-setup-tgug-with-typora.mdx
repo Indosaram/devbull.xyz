@@ -1,0 +1,30 @@
+---
+title: "How to setup tgug with Typora"
+images: ["https://images.unsplash.com/photo-1593720218746-e13e4a422a3b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDR8fGNvbmZpZ3xlbnwwfHx8fDE2MjI1MjE3NTY&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-01T04:28:53.000Z"
+tags: ['dev-diary']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Automatic upload
+
+You can set typora to upload all your images automatically. Go to setting panel, and choose "Image" tab.
+
+![Screenshot 2021-06-01 at 1.08.15 PM](/images/2021/06/Screenshot-2021-06-01-at-1.08.15-PM.png)
+
+First, in "When Insert..." menu, select a behavior for Typora to take when you insert an image. Choose "Upload Image". Next, you can set an uploading rule for local images and online images. Select every type you want. Leave other options as blank.
+
+After that, select "Custom Command" out of other 3rd party image uploaders. Now type your `tgug`'s path with `-f` flag. For example, mine is `/usr/local/bin/tgug`.
+
+It is recommended to test if all works well. Typora will provide filepaths for testing, so you can simply click "Test Uploader" button. You probably see the console output as below:
+
+```
+/Users/indo/.tgug 🎉 Upload Successful! https://devbull.xyz/content/images/2021/06/icon_512x512.png
+
+```
+
+## Manual upload
+
+If you don't want tgug to upload every images to your Ghost blog, in setting panel's `When Insert...` menu, choose "No special action".
+
+Whenever you want to upload an image, you can simply right click an image and click "Upload Image". Then tgug will do the job.

@@ -1,0 +1,40 @@
+---
+title: "SUSE 리눅스에서 Proxy 설정 위치"
+images: ["https://images.unsplash.com/photo-1542577195-d562c6698ff3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3wxMTc3M3wwfDF8c2VhcmNofDR8fHR1bm5lbHxlbnwwfHx8fDE3MDUzNjE5NjR8MA&ixlib=rb-4.0.3&q=80&w=2000"]
+date: "2024-01-15T23:36:08.000Z"
+tags: ['cloud']
+---
+
+리눅스 개발머신에서 Github Copilot을 설치하고 잘 쓰고 있었는데, 어느 날 갑자기 서버에 연결이 안된다고 오류가 뜨기 시작했다.
+
+```
+[DEBUG] [proxy-socket-factory] [2024-01-15T23:23:24.902Z] Attempting to establish connection to proxy
+[DEBUG] [proxy-socket-factory] [2024-01-15T23:23:24.913Z] Proxy socket connection error,getaddrinfo ENOTFOUND proxy
+[DEBUG] [proxy-socket-factory] [2024-01-15T23:23:27.970Z] Attempting to establish connection to proxy
+[DEBUG] [proxy-socket-factory] [2024-01-15T23:23:27.979Z] Proxy socket connection error,getaddrinfo ENOTFOUND proxy
+[ERROR] [default] [2024-01-15T23:23:27.985Z] Extension activation failed: "tunneling socket could not be established, cause=getaddrinfo ENOTFOUND proxy"
+```
+
+아니나 다를까, Extension 정보를 열어보니 프록시 환경변수가 살아있었다. "Show diagnostic"으로 다음 내용을 볼 수 있다.
+
+```
+## Environment
+
+- http_proxy: http://proxy:8080
+- https_proxy: http://proxy:8080
+- no_proxy: localhost, 127.0.0.1
+- SSL_CERT_FILE: n/a
+- SSL_CERT_DIR: n/a
+- OPENSSL_CONF: n/a
+```
+
+지긋지긋한 프록시 문제는 처음에 머신 세팅할 때 다 해결할 줄 알았는데, 왜 갑자기 설정이 부활했는지..🤯 덕분에 오랜만에 프록시 세팅을 어디서 하는지를 열심히 뒤져봤다.
+
+나 같은 경우는 `/etc/sysconfig/proxy` 경로에 프록시 설정이 있었고, 다음과 같이 관련 환경변수를 다 지워주면 된다. 그리고 ZSH 쉘로 동작하지 않는 프로그램은 재부팅을 해야만 적용이 되기 때문에 마지막으로 재부팅까지 해주면 된다.
+
+```
+http_proxy=
+https_proxy
+```
+
+이제 정상적으로 잘 돌아간다!

@@ -1,0 +1,26 @@
+---
+title: "Leetcode - 550. Game Play Analysis IV"
+images: ["None"]
+date: "2022-07-17T08:30:42.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/game-play-analysis-iv/)
+
+## 정답
+
+```
+SELECT ROUND(COUNT(A2.player_id)/COUNT(A1.player_id),2) AS fraction
+FROM (SELECT player_id, MIN(event_date) AS first_login FROM Activity GROUP BY player_id) AS A1
+LEFT JOIN Activity AS A2
+ON A1.player_id = A2.player_id AND A1.first_login +1 = A2.event_date
+```

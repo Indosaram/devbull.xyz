@@ -1,0 +1,83 @@
+---
+title: "[Python] 크루스칼 알고리즘(Kruskal Algorithm)"
+images: ["https://images.unsplash.com/photo-1515879218367-8466d910aaa4?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T09:35:44.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 크루스칼 알고리즘
+
+크루스칼 알고리즘이란 가장 적은 비용으로 주어진 노드를 모두 연결하는 문제입니다. 최소 비용 신장 트리를 만들기 위한 알고리즘으로 알려져 있습니다.
+
+이 문제를 해결하기 위해서는 먼저 [Union-Find 문제를 해결하는 방법](__GHOST_URL__/python-habjibhab-cajgi-union-find-disjoint-set-munje/)을 알아야 합니다.
+
+## 해결 코드
+
+이 문제는 3단계로 나누어 해결이 가능합니다.
+
+* 짧은 거리 순으로 간선을 정렬한다.
+* 이미 연결된 노드 사이의 길이는 더하지 않는다. == cyclic이 형성되면 안됨
+* Union-find 문제를 이용하여 부모 노드를 구한다.
+
+```
+# 방향성 없는 노드
+nodes = [[1, 7, 12], [4, 7, 13], [1, 5, 17], [3, 5, 20], [2, 4, 24], [
+    1, 4, 28], [3, 6, 37], [5, 6, 45], [2, 5, 62], [1, 2, 67], [5, 7, 73]]
+
+
+class unionset:
+    def __init__(self, numnodes):
+        self.parent = []
+        for i in range(numnodes+1):
+            self.parent.append(i)
+
+    def getParent(self, node):
+        if self.parent[node] == node:
+            return node
+        else:
+            return self.getParent(self.parent[node])
+
+    def union_parent(self, node1, node2):
+        if node1 < node2:
+            self.parent[node2] = node1
+        else:
+            self.parent[node1] = node2
+
+    def union_find(self, nodes):
+        for i in range(len(nodes)):
+            self.union_parent(self.getParent(
+                nodes[i][0]), self.getParent(nodes[i][1]))
+
+
+def kruskal(nodes, numnodes):
+    union = unionset(numnodes)
+    sortedNodes = sorted(nodes, key=lambda x: x[2])
+
+    dist = 0
+    result = []
+    # sort nodes w.r.t starting nodes
+    for j in sortedNodes:
+        v1 = union.getParent(j[0])
+        v2 = union.getParent(j[1])
+        if v1 != v2:
+            union.union_parent(v1, v2)
+            dist += j[2]
+            result.append(j)
+
+    return result, dist
+
+
+result, dist = kruskal(nodes, 7)
+print(result)
+print(dist)
+
+```
+
+실행 결과
+
+```
+[[1, 7, 12], [4, 7, 13], [1, 5, 17], [3, 5, 20], [2, 4, 24], [3, 6, 37]]
+123
+
+```

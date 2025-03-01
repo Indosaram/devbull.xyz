@@ -1,0 +1,242 @@
+---
+title: "Pulumi 시작하기(2) - 코드 작성 및 배포"
+images: ["https://images.unsplash.com/photo-1564865878688-9a244444042a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDJ8fGNvZGV8ZW58MHx8fHwxNjIwMjk1ODk2&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-06T10:11:00.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+> [Pulumi 시작하기(1) - Introduction](__GHOST_URL__/pulumi-tutorial-introduction/)  
+> [Pulumi 시작하기(2) - 코드 작성 및 배포](__GHOST_URL__/pulumi-tutorial-code-and-deploy/)  
+> [Pulumi 시작하기(3) - API Gateway v2 + Lambda 예제](__GHOST_URL__/pulumi-tutorial-apigateway-lambda/)  
+> [Pulumi 시작하기(4) - S3와 Lambda를 이용한 썸네일 추출기](__GHOST_URL__/pulumi-tutorial-s3-lambda/)
+
+## Pre-requisites
+
+### Install dependencies
+
+먼저 Pulumi를 패키지 매니저를 통해 설치한다.
+
+```
+# macOS
+brew install pulumi
+
+# Windows
+choco install pulumi
+
+# Linux
+curl -fsSL [](https://get.pulumi.com) | sh
+
+```
+
+언어별 런타임을 설치한다.
+
+```
+# TypeScript / JavaScript -> Install Node.js
+
+# Python -> pip
+
+# Go -> nil
+
+```
+
+### Configure AWS account with Pulumi
+
+Pulumi에서 AWS 계정 정보를 사용할 수 있도록 Access key와 secret access key를 시스템 환경 변수로 등록한다. 만일, 이미 `AWS CLI` 를 설정해놓은 경우 Pulumi에서 이 정보를 읽어올 수 있다.
+
+> AWS CLI의 credential 정보는 다음 경로에 저장되어 있다. `~/.aws/credentials`
+
+```
+# macOS
+export AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID> && export AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
+
+# Windows
+$env:AWS_ACCESS_KEY_ID = "<YOUR_ACCESS_KEY_ID>"; $env:AWS_SECRET_ACCESS_KEY = "<YOUR_SECRET_ACCESS_KEY>"
+
+# Linux
+export AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID> && export AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
+
+```
+
+## 예제 프로젝트
+
+### 예제 프로젝트 만들기
+
+예제 프로젝트는 파이썬을 사용해 진행한다. 예제 프로젝트에서 다루게 될 작업이 범위는 다음과 같다.
+
+* S3 버킷을 만들고 제거한다.
+* 버킷에 파일을 올리고 정적 사이트에 파일을 올린다(serve).
+
+새로운 파이썬 프로젝트를 생성하자. pulumi를 처음 사용한다면 로그인 토큰을 입력하거나, 브라우저에서 pulumi 계정으로 로그인이 필요하다.
+
+![image-20210430134744637](/images/2021/05/image-20210430134744637.png)
+
+```
+ mkdir quickstart && cd quickstart && pulumi new aws-python
+
+```
+
+예제 프로젝트는 프롬프트되는 모든 값을 기본으로 설정하고 넘어간다.
+
+### 예제 프로젝트 배포
+
+```
+import pulumi
+from pulumi_aws import s3
+
+# Create an AWS resource (S3 Bucket)
+bucket = s3.Bucket('my-bucket')
+
+# Export the name of the bucket
+pulumi.export('bucket_name',  bucket.id)
+
+```
+
+* `pulumi.export`를 통해 `bucket_name` 변수를 export하고 있다. 이 값을 나중에 pulumi cli에서 접근이 가능하다.
+
+```
+pulumi up
+
+```
+
+위 명령어를 입력하면 `__main__.py` 의 내용을 가지고 스택을 배포하게 된다.
+
+```
+Previewing update (dev):
+
+     Type                 Name            Plan
+ +   pulumi:pulumi:Stack  quickstart-dev  create
+ +   └─ aws:s3:Bucket     my-bucket       create
+
+Resources:
+    + 2 to create
+
+Do you want to perform this update?
+> yes
+  no
+  details
+
+```
+
+방향키를 이동해 `details` 를 선택하고 엔터를 누르면 각 스택의 자세한 정보가 나온다. 지금 설정을 `yes`를 선택해 AWS에 배포하고, 아까 export했던 `bucket_name`을 출력해보자.
+
+```
+$ pulumi stack output bucket_name
+my-bucket-dca4fa2
+
+```
+
+생성된 S3 버킷의 이름이 출력된다. AWS 콘솔에서 실제로 동일한 이름의 버킷이 생성되었음을 확인할 수 있다.
+
+![image-20210503190745484](/images/2021/05/image-20210503190745484.png)
+
+### 예제 프로젝트 수정 및 배포
+
+새로 생성된 S3 오브젝트에 정적 호스팅을 위한 파일을 추가한다. 이처럼 텍스트 파일을 생성하는 방법인 Heredoc에 대해 자세한 내용은 [관련 블로그](__GHOST_URL__/unix-python-heredoc/)를 참고하자.
+
+```
+cat <<EOT > index.html
+<html>
+    <body>
+        <h1>Hello, Pulumi!</h1>
+    </body>
+</html>
+EOT
+
+```
+
+그 다음으로는 버킷에 새로운 파일을 추가하는 내용을 `__main__.py` 에 추가한다.
+
+```
+bucketObject = s3.BucketObject(
+    'index.html',
+    bucket=bucket,
+    source=pulumi.FileAsset('index.html')
+)
+
+```
+
+그리고 `pulumi up` 명령어로 실제 버킷에 해당 내용을 업데이트한다. `yes`를 입력해 AWS에 변경사항을 배포한다. 배포가 완료되고 `aws s3 ls $(pulumi stack output bucket_name)` 명령어를 입력하면 실제로 버킷에 방금 만든 파일이 업로드된 것을 볼 수 있다.
+
+```
+2021-05-06 11:05:34         70 index.html
+
+```
+
+이제 이 파일을 Static page로 호스팅한다. 이를 위해서 해당 버킷의 속성을 `website`로 설정해주고, `index.html` 파일의 ACL(Access Control List, 접근권한) public으로 설정해준다.
+
+```
+#/usr/bin/python3
+bucket = s3.Bucket('my-bucket',
+    website=s3.BucketWebsiteArgs(
+        index_document="index.html",
+    ))
+
+bucketObject = s3.BucketObject(
+    'index.html',
+    acl='public-read',
+    content_type='text/html',
+    bucket=bucket,
+    source=pulumi.FileAsset('index.html'),
+)
+
+pulumi.export('bucket_endpoint', pulumi.Output.concat('http://', bucket.website_endpoint))
+
+```
+
+이제 `pulumi up`으로 배포하면,
+
+```
+View Live: https://app.pulumi.com/freedomzero91/quickstart/dev/updates/3
+
+     Type                    Name            Status      Info
+     pulumi:pulumi:Stack     quickstart-dev              
+ ~   ├─ aws:s3:Bucket        my-bucket       updated     [diff: +website]
+ ~   └─ aws:s3:BucketObject  index.html      updated     [diff: ~acl,contentType]
+ 
+Outputs:
+  + bucket_endpoint: "http://my-bucket-dca4fa2.s3-website-us-east-1.amazonaws.com"
+  - bucket_name    : "my-bucket-dca4fa2"
+
+Resources:
+    ~ 2 updated
+    1 unchanged
+
+Duration: 22s
+
+```
+
+`bucket_endpoint`로 `index.html`이 호스팅되는 것을 알 수 있다. 저 주소로 브라우저를 통해 접속해보자.
+
+```
+curl $(pulumi stack output bucket_endpoint)
+
+```
+
+또는 curl을 이용해서 응답을 볼 수도 있다.
+
+```
+$ curl http://my-bucket-dca4fa2.s3-website-us-east-1.amazonaws.com                                           
+<html>
+    <body>
+        <h1>Hello, Pulumi!</h1>
+    </body>
+</html>
+
+```
+
+### 예제 프로젝트 제거
+
+이제 실습에 사용한 프로젝트에 해당하는 모든 리소스를 제거해준다.
+
+```
+pulumi destroy
+
+```
+
+프로젝트 자체를 삭제하는 게 아니라 특정 스택에 해당하는 리소스만 삭제하려면 다음과 같다.
+
+```
+pulumi stack rm
+
+```

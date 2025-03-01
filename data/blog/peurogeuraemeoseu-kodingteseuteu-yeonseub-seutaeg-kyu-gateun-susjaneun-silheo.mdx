@@ -1,0 +1,27 @@
+---
+title: "프로그래머스 - 코딩테스트 연습 - 스택/큐 - 같은 숫자는 싫어"
+images: ["None"]
+date: "2022-07-30T22:01:47.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://school.programmers.co.kr/learn/courses/30/lessons/12906)
+
+## 정답
+
+```
+def solution(arr):
+    stack = []
+    result = [arr[0]]
+    for num in arr:
+        if stack:
+            curr = stack.pop()
+            if curr != num:
+                result.append(num)
+
+        stack.append(num)
+    return result
+```

@@ -1,0 +1,63 @@
+---
+title: "Leetcode - 121. Best Time to Buy and Sell Stock"
+images: ["https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDJ8fHN0b2NrfGVufDB8fHx8MTY0NDczNzUyMw&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-02-13T07:31:23.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/best-time-to-buy-and-sell-stock/)
+
+## 정답
+
+### 파이썬
+
+```
+class Solution:
+    def maxProfit(self, prices: List[int]) -> int:
+        left = 0
+        right = 1
+        profit = 0
+        
+        while right < len(prices):
+            if prices[right] - prices[left] > 0:
+                profit = max(profit, prices[right]-prices[left])
+            else:
+                left = right
+                
+            right += 1
+            
+        return profit
+```
+
+### 러스트
+
+```
+use std::cmp::max;
+
+impl Solution {
+    pub fn max_profit(prices: Vec<i32>) -> i32 {
+        let mut left = 0;
+        let mut profit = 0;
+
+        for right in 1..prices.len() {
+            if prices[right] - prices[left] > 0 {
+                profit = max(profit, prices[right] - prices[left]);
+            } else {
+                left = right;
+            }
+        }
+
+        profit
+    }
+}
+
+```

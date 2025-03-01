@@ -1,0 +1,166 @@
+---
+title: "Heroku 프리 티어 종료로 Koyeb로 이전한 후기"
+images: ["https://images.unsplash.com/photo-1610692507254-3bc16d2527ea?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDE0fHxjbG91ZHxlbnwwfHx8fDE2NjIxNjQyNzA&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-09-02T23:55:48.000Z"
+tags: ['dev-diary']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 굿바이 헤로쿠
+
+이번 주에 헤로쿠에서 프리 티어 운영을 아예 중단한다고 발표가 나왔다.
+
+[Heroku’s Next Chapter
+
+Back in May, I wrote (https://blog.heroku.com/we-heard-your-feedback) about my enthusiasm to be part of the Heroku story, and I remain just as...
+
+![](https://blog.heroku.com/images/apple-touch-icons/apple-touch-icon-152x152.png)HerokuBob Wise, Heroku General Manager and Salesforce EVP
+
+![](https://www.herokucdn.com/images/og.png)](https://blog.heroku.com/next-chapter)
+
+그동안 꽤 많은 사람들이 프리 티어를 이용해서 토이프로젝트를 하거나 간단한 앱을 배포하는 등 상당히 편하게 이용해 왔는데, 중단된다고 해서 매우 아쉬웠다. 나도 헤로쿠를 오랫동안 써온 입장에서 배포가 굉장히 편리해서 애용했었다. 다만 헤로쿠의 요금 체계가 조금 이상해서 (유료 dyno는 최소 $25부터 시작) 적극적으로 사용해 보지는 않고 서버를 직접 띄워야 하는 경우에는 [DigitalOcean](https://m.do.co/c/58a4cd24f491)을 주로 사용했다.
+
+사실 현재의 개발 블로그도 Ghost로 [DigitalOcean](https://m.do.co/c/58a4cd24f491)에서 셀프 호스팅 중이다.
+
+[DigitalOcean+Ghost 세팅하기 - 1
+
+오늘은 DigitalOcean에 Ghost 블로그를 설치하는 방법을 알아보려고 합니다. DigitalOcean은 세계에서 두번째로 큰 웹 호스팅 업체로 국내에서도 워드프레스와 같은 설치형 블로그를 운영하시는 분들이 많이 이용하고 있는 사이트입니다. 특히 Ghost에서 공식적으로 인증한 Ghost 호스팅 사이트입니다. 이런 점들 때문에 Ghost를 이용하시는 분들은 대부분 DigitalOcean에서 Ghost를 설치해 사용하시는 것 같습니다. 어떤 문제가 생겨서 해결하려고
+
+![](__GHOST_URL__/assets/icon-192x192.png?v=9ac8c53219)일시불 프로그래밍일시불
+
+![](https://images.unsplash.com/photo-1602387688969-82606117b9e9?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ)](__GHOST_URL__/digitalocean-ghost-setting/)
+> 만일 새로 [DigitalOcean](https://m.do.co/c/58a4cd24f491)을 사용해 보고자 하시는 분들은 아래 링크를 눌러서 가입하시면 100달러 무료 크레딧을 받으실 수 있습니다 🙇‍♂️
+
+[DigitalOcean – The developer cloud
+
+Helping millions of developers easily build, test, manage, and scale applications of any size – faster than ever before.
+
+![](https://m.do.co/_next/static/media/android-chrome-512x512.5f2e6221.png)Explore our products
+
+![](https://www.digitalocean.com/_next/static/media/social-share-default.e8530e9e.jpeg)](https://m.do.co/c/58a4cd24f491)
+
+그래서 Heroku 대체제를 몇 개 살펴봤는데, [해커뉴스의 추천 목록](https://news.ycombinator.com/item?id=32599398)도 참고했다.
+
+## 시도해본 대체제들
+
+### fly.io
+
+[Deploy app servers close to your users · Fly
+
+![](https://fly.io/phx/ui/images/favicon/apple-touch-icon-3e4c9ce127b5cd6f5516638d4bbf1dd5.png?vsn=d)
+
+![](https://fly.io/phx/ui/images/livebeats-4fa2c8aa83838b17b5190c9058107baa.png?vsn=d)](https://fly.io/)
+
+예전에 "Run docker without docker" 라는 캐치프레이즈로 잠깐 살펴봤던 서비스인데, 한마디로 Edge server에서 컨테이너를 실행시켜주는 서비스이다.
+
+fly도 프리 티어가 존재하고, 아래와 같은 무료 리소스를 제공한다.
+
+* Up to 3 shared-cpu-1x 256mb VMs
+* 3GB persistent volume storage (total)
+* 160GB outbound data transfer
+
+다 좋은데 무조건 배포를 Docker 이미지로만 해야 한다. 로컬 소스 혹은 Github 레포를 가지고 배포할 수도 있기는 한데, 아직 많이 매끄럽지는 못하다. 깃헙 레포로 배포를 해보다가 잘 안돼서 그냥 포기했다.
+
+참고로 프리 티어를 이용하려면 반드시 신용카드를 등록해야 하는 단점이 있다.
+
+### render
+
+[Cloud Application Hosting for Developers | Render
+
+Render is a unified cloud to build and run all your apps and websites with free TLS certificates, global CDN, private networks and auto deploys from Git.
+
+![](https://render.com/icons/icon-512x512.png?v=4ab9a3fc5e06e2253bb579a9609a1ecc)Cloud Application Hosting for Developers | Render
+
+![](https://render.com/og-img.png)](https://render.com/)
+
+예전에 netlify 대체제로 잘 이용했었던 서비스로, 정적 사이트를 호스팅해주거나 크론 잡 서버를 돌린다던지 여러 가지 편리한 기능이 많은 것이 장점이다. 마찬가지로 프리 티어 웹 서버를 제공하는데, 헤로쿠처럼 서버가 사용되지 않으면 15분 후에 동면 모드(sleep)로 진입한다. 재부팅에는 30초가 소요되기 때문에 조금 불편하다. 게다가 한 달에 400시간까지밖에 가동이 되지 않고(정적 사이트와 시간을 공유합니다), 리소스도 공유 CPU 1개에 램 256MB로 굉장히 박하기 때문에 결국 사용하지 않게 되었다.
+
+### koyeb
+
+사실 별 기대를 안 하고 들어갔던 서비스인데 굉장히 완성도가 높고 중단시간이 없어서 굉장히 만족스러웠다. 리소스는 render와 마찬가지로 CPU 1개와 램 256MB, 대역폭 100GB를 제공하지만, 한 달에 5달러 크레딧을 무료로 주기 때문에 0.4달러만 더 내면 좀더 좋은 조건에서 사용이 가능하다.
+
+[Simple pricing for all your projects
+
+Koyeb is a developer-friendly serverless platform to deploy apps globally. No-ops, servers, and infrastructure management.
+
+![](https://www.koyeb.com/static/favicon/apple-touch-icon.png)Simple pricing for all your projects
+
+![](https://www.koyeb.com/static/images/illustrations/og/koyeb-home.png)](https://www.koyeb.com/pricing)
+
+도커 이미지로도 배포가 가능하지만, 도커 이미지 없이 바로 레포에서 배포가 가능해서 굉장히 편리하다. 특히 헤로쿠처럼 `Procfile` 기반으로 배포가 가능해서 기존에 헤로쿠를 쓰던 사람이면 정말 편하게 이전이 가능하다.
+
+결론적으로, koyeb로 이전하기로 결정했다.
+
+## Koyeb에서 서버 배포해보기
+
+먼저 Koyeb에 가입을 해야 하는데, Github  계정으로 가입해두면 바로 레포지터리에서 소스코드를 불러와 배포할 수 있어서 매우 편리하다.
+
+[Dashboard
+
+Koyeb is a developer-friendly serverless platform to deploy apps globally. No-ops, servers, and infrastructure management.
+
+![](https://app.koyeb.com/favicon.ico)Koyeb
+
+![](https://app.koyeb.com/static/images/illustrations/og/koyeb-home.png)](https://app.koyeb.com/auth/signup)
+
+회원가입 후에는 아래와 같이 대시보드로 이동하게 되는데, 여기서 "Create App" 버튼을 클릭한다.
+
+![](/static/images/2022/09/koyeb-1.png)
+
+여기서 Github 또는 Docker를 선택할 수 있다. GitHub의 경우는 깃헙 레포지터리를 바로 불러오는 방법이고, Docker를 선택하면 Docker Hub에 있는 이미지를 가지고 서버를 구성하게 된다.
+
+![](/static/images/2022/09/koyeb-3.png)
+
+깃허브를 선택하면 깃허브 앱을 설치하라고 하는데, 단순히 깃헙과 Koyeb를 연동하는 작업이다.
+
+![](/static/images/2022/09/koyeb-2-1.png)
+
+연동을 마친 다음 원하는 레포 이름을 입력하는데 "사용자명/레포명" 식으로 입력하면 된다. 그리고 나는 main 브랜치에서 배포할 거라서 별도 설정을 안했지만 브랜치도 변경이 가능하다.
+
+![](/static/images/2022/09/koyeb-2-2.png)
+
+그리고 앱에서 사용할 이름을 입력하는데, 이 이름은 나중에 서버 도메인으로 사용된다. 즉 "앱 이름-사용자명.koyeb.app" 과 같이 주소가 생성된다.
+
+![](/static/images/2022/09/koyeb-2.png)
+
+그 다음은 배포 환경 설정을 할 수 있는데, 환경변수를 넣거나 노출할 포트를 변경할 수 있다. 나는 3000번 포트를 공개해야 해서 이 부분을 수정했다.
+
+![](/static/images/2022/09/koyeb-5.png)
+
+마지막으로 인스턴스 갯수와 타입을 고를 수 있는데 프리 티어를 이용하려면 아무것도 바꾸지 않으면 된다. 그리고 아래 부분에서 서비스 이름을 넣을 수 있는데 이건 여러 개의 앱을 배포했을 때 쉽게 앱들을 찾을 수 있는 라벨이라고 생각하면 된다.
+
+![](/static/images/2022/09/koyeb-4.png)
+
+모든 설정을 마치고 나면 깃헙으로부터 소스코드를 체크아웃 해와서 빌드를 시작하는데, koyeb에서 지원하는 런타임 환경이면 별도로 런타임을 명시하지 않아도 알아서 빌드가 시작된다. 현재는 노드, 고, 파이썬, 자바 등 대부분의 런타임을 지원하고 있는데 전체 목록은 아래 링크에서 확인할 수 있다.
+
+[How we build from Git
+
+Everything you need to know about our build system.
+
+![](https://www.koyeb.com/static/favicon/apple-touch-icon.png)How we build from Git
+
+![](https://og-image-koyeb.vercel.app/How%20we%20build%20from%20Git.png?theme=dark)](https://www.koyeb.com/docs/apps/build-from-git#supported-languages)
+
+빌드가 완료된 후에는 헤로쿠처럼 `Procfile` 에 있는 커맨드를 가지고 서버가 실행된다. 아래와 같이 공개 URL을 클릭하면 실제 서버 주소로 이동이 가능하다.
+
+![](/static/images/2022/09/koyeb-6.png)
+
+### 대시보드 살펴보기
+
+koyeb에서는 실행 중인 인스턴스의 리소스 사용량을 모니터하는 도구와 런타임 로그를 쉽게 볼 수 있는 도구, 그리고 인스턴스에 접속해 커맨드를 사용할 수 있는 도구를 제공한다.
+
+아래 화면과 같이 CPU, 메모리 그리고 응답속도를 간단하게 볼 수 있다.
+
+![](/static/images/2022/09/image.png)
+
+런타임 로그도 인스턴스별로 구분되어 나오기 때문에 디버깅이 매우 편리할 것 같다.
+
+![](/static/images/2022/09/image-1.png)
+
+콘솔은 사용해보지는 않았지만 인스턴스 컨테이너에 직접 연결해 명령어를 날릴 수 있는 셸을 제공하는 것 같다.
+
+![](/static/images/2022/09/image-2.png)
+
+## 마치며
+
+몇년 전과 다르게 클릭 몇 번만으로 간단하게 서비스를 배포할 수 있는 서비스들이 정말 많아졌다. 서비스들마다 제공하는 프리 티어가 다르고, 인터페이스가 조금씩 달라서 자기에게 맞는 걸 선택하는 게 좋을 것 같다. 가장 유명하고 널리 사용되던 헤로쿠가 프리 티어를 종료함에 따라서 개발자들은 새로운 방황을 시작하게 되었는데, 이로 인해서 관련 서비스들이 더 발전하는 계기가 되었으면 좋겠다.

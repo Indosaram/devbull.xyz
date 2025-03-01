@@ -1,0 +1,41 @@
+---
+title: "Failed to convert a NumPy array to a Tensor (Unsupported object type float)."
+images: ["https://images.unsplash.com/photo-1515248137880-45e105b710e0?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-29T07:27:59.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+책을 보면서 공부하다가 오류가 나서 찾아보았다. 그런데 책의 예제에서도 잘 돌아간다고 되어있는데 아마 텐서플로우 2.0으로 올라오면서 Keras의 Type이 더 Strict하게 작용하는 것 같다.
+
+```
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+<ipython-input-4-5080757e5123> in <module>
+     41 
+     42 # 모델 실행
+---> 43 model.fit(X, Y, epochs=200, batch_size=5)
+     44 
+     45 # 결과 출력
+```
+
+model.fit을 실행하는 부분에서 오류가 발생했고, 콘솔 맨 아래에 출력된 메세지는
+
+```
+Failed to convert a NumPy array to a Tensor (Unsupported object type float).
+```
+
+였다. 구글링 해도 별 도움이 안되었는데 입력 리스트의 형변환을 float으로 해주니 제대로 실행이 되었다.
+
+```
+X = dataset\[:,:60\]
+```
+
+을
+
+```
+
+X = dataset\[:,:60\].astype(float)
+```
+
+으로 수정한다.

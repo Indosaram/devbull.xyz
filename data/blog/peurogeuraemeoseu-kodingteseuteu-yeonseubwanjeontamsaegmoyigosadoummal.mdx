@@ -1,0 +1,63 @@
+---
+title: "프로그래머스 : 코딩테스트 연습 - 완전탐색 - 모의고사"
+images: ["https://images.unsplash.com/photo-1434030216411-0b793f4b4173?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MXwxMTc3M3wwfDF8c2VhcmNofDF8fHRlc3R8ZW58MHx8fA&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-02-12T11:45:45.000Z"
+tags: ['codingtest', 'programmers']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+* 프로그래머스 : 코딩테스트 연습 - 완전탐색 - 모의고사
+
+# 예전 풀이
+
+코딩 공부 처음 시작했을때 풀이.
+
+```
+def solution(answers):
+    lenans = len(answers)
+    giveups = [
+        [1, 2, 3, 4, 5],
+        [2, 1, 2, 3, 2, 4, 2, 5],
+        [3, 3, 1, 1, 2, 2, 4, 4, 5, 5],
+    ]
+
+    results = []
+    for giveup in giveups:
+        picks = giveup * (lenans // len(giveup) + 1)
+        result = 0
+        for i in range(lenans):
+            result += 1 if picks[i] == answers[i] else 0
+        results.append(result)
+
+    answer = []
+    winner = max(results)
+    i = 1
+    for result in results:
+        if result == winner:
+            answer.append(i)
+        i += 1
+    return answer
+```
+
+이건 오늘 새로 푼 풀이. 코드가 좀 더 깔끔해지긴 했는데 전체 구조는 얼추 비슷하게 푼 것 같다. 다른 사람들이 푼 풀이도 봤는데 이중 for 문 대신 `answer_types` 를 리스트 3개로 나누어서 for문 하나에서 if문 세개로 처리한 사람도 있었다. if문으로 처리하는게 더 빠르겠지만 난 이중 포문으로 하는 게 더 깔끔해 보여서 이렇게 함.
+
+```
+def solution(answers):
+    answer_types = [
+        [1, 2, 3, 4, 5],
+        [2, 1, 2, 3, 2, 4, 2, 5],
+        [3, 3, 1, 1, 2, 2, 4, 4, 5, 5],
+    ]
+
+    scores = [0, 0, 0]
+    for type_idx, ans_type in enumerate(answer_types):
+        ans_type_len = len(ans_type)
+        for idx, ans in enumerate(answers):
+            if ans == ans_type[idx % ans_type_len]:
+                scores[type_idx] += 1
+
+    max_score = max(scores)
+    return [idx + 1 for idx, score in enumerate(scores) if score == max_score]
+```

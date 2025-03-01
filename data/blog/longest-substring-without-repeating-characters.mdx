@@ -1,0 +1,52 @@
+---
+title: "Leetcode - 3. Longest Substring Without Repeating Characters"
+images: ["https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wxfDF8YWxsfDF8fHx8fHwyfHwxNjE4ODc5MDg5&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-04-20T00:34:03.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+* [](https://leetcode.com/problems/longest-substring-without-repeating-characters/)
+
+## 풀이
+
+처음에는 2중 루프로 풀었다.
+
+```python
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        record = 0
+        for i in range(len(s)):
+            for j in range(i, len(s)):
+                substring = s[i:j+1]
+                if len(substring) == len(set(substring)):                                  
+                    record = max(record, len(substring))
+                else:
+                    break
+        return record
+```
+
+별 생각 없이 모든 경우의 수를 다 따지면 쉽게 풀 수 있다. 다만 시간복잡도가 $O(nlogn)$, 최악의 경우 $O(n^2)$이 된다.
+
+투 포인터로 풀면 더 간단하다.
+
+```python
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        used = {}
+        head = -1
+        record = 0
+        
+        for idx, char in enumerate(s):
+            if char in used and head <= used[char]:
+                head = used[char]
+            else:
+                record = max(record, idx - head)
+            used[char] = idx
+            
+        return record
+```
+
+다만 중복된 문자를 받을 경우 head를 어디에 둬야하는지 생각을 잘 해야 한다.

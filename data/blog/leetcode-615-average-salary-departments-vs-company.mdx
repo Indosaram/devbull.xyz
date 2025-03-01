@@ -1,0 +1,41 @@
+---
+title: "Leetcode - 615. Average Salary: Departments VS Company"
+images: ["None"]
+date: "2022-09-07T11:35:00.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/average-salary-departments-vs-company/)
+
+## 정답
+
+temp 테이블을 하나 만들고, 여기서 구한 평균을 이용해 `CASE` 문을 사용했다.
+
+```
+SELECT Salary.pay_month, department_id,
+        CASE
+            WHEN amount > average_amount THEN "higher"
+            WHEN amount = average_amount THEN "same"
+            ELSE "lower"
+        END AS comparison
+FROM (
+    SELECT DATE_FORMAT(pay_date, '%Y-%m') AS pay_month, AVG(amount) AS amount, department_id
+    FROM Salary
+    JOIN Employee ON Salary.employee_id = Employee.employee_id
+    GROUP BY department_id, pay_month
+) AS Salary
+JOIN (
+    SELECT DATE_FORMAT(pay_date, '%Y-%m') AS pay_month, AVG(amount) as average_amount
+    FROM Salary
+    GROUP BY pay_month
+    ) AS Monthly ON Salary.pay_month = Monthly.pay_month
+```

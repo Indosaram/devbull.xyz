@@ -1,0 +1,31 @@
+---
+title: "1바이트가 8비트인 이유 (The reason why 1Byte equals to 8bit)"
+images: ["https://images.unsplash.com/photo-1559676819-f2e5979217bd?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-17T03:44:21.000Z"
+tags: ['programming']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 진공관에서부터 시작된 이진(binary)의 역사
+
+최초의 컴퓨터라고 불리는 에니악(ENIAC)이 개발되었을 때에는 진공관을 이용하여 0과 1을 표현하였고, 각 진공관을 연결하는 전선들의 배열을 바꿔주면서 계산하는 방식이었다. 전자공학이 발달함에 따라 트랜지스터를 거쳐 최초의 상업용 마이크로프로세서인 Intel 4004까지 발전하게 되었다.
+
+## 바이트의 도입 배경
+
+컴퓨터는 미국에서 주로 발전한 기계인데, 처음 컴퓨터를 통해 문자를 나타내기 위한 규약인 ASCII(American Standard Code for Information Interchange)도 알파벳을 포함한 미국에서 사용하기 위한 문자들을 표현하기 위해 만든 것이었다. 이때 ASCII의 총 문자수가 공백을 포함하여 128자였기 때문에 7bit 만으로 모든 문자를 표현하는 것이 가능했다. 7비트를 바이너리로 표현하면
+
+```
+111 1111
+```
+
+이므로 2^7 = 128이 되어 128자를 표현할 수 있는 것이다. 여기에 오류 검출을 위한 패리티 비트(Parity bit) 1개를 추가하여 8비트를 최소의 연산 단위인 바이트로 정했다는 설이 가장 유력하다.
+
+## 현재 바이트의 단위는?
+
+처음에는 마이크로프로세서의 제조사마다 1바이트를 정한 규약이 저마다 달라서 6비트 컴퓨터도 시장에 나온 적이 있지만, 어느 순간부터 1 옥텟(Octet)인 8비트는 1바이트로 정하게 되었다. 
+
+
+![NES - Mini with Mario Kart (Side View)](https://images.unsplash.com/photo-1591462391941-8e7b33fc4604?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ)
+<small>Photo by <a href="https://unsplash.com/@ravipalwe?utm_source=ghost&utm_medium=referral&utm_campaign=api-credit">Ravi Palwe</a> / <a href="https://unsplash.com/?utm_source=ghost&utm_medium=referral&utm_campaign=api-credit">Unsplash</a></small>
+
+위 사진은 세계에서 가장 유명한 콘솔 게임기인 [닌텐도 패미컴(NES)](http://namu.wiki/w/%ED%8C%A8%EB%B0%80%EB%A6%AC%20%EC%BB%B4%ED%93%A8%ED%84%B0)이다. 8비트 게임기로 생동감 넘치는 컬러 화면과 뛰어난 게임성을 지닌 작품들로 오랫동안 사랑받은 게임기다. 이처럼 8비트 단위는 역사적으로도 굉장히 의미가 있는 숫자다. 현재는 CPU의 처리 성능이 급격하게 향상되어 16비트, 32비트를 지나 CPU의 최소 처리 단위가 64비트까지 증가하게 된 것이다.

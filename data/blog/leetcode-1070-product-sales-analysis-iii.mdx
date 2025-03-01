@@ -1,0 +1,29 @@
+---
+title: "Leetcode - 1070. Product Sales Analysis III"
+images: ["None"]
+date: "2022-10-08T01:25:54.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/product-sales-analysis-iii/description/)
+
+## 정답
+
+```
+SELECT Sales.product_id, first_year, quantity, price
+FROM Sales
+JOIN (
+    SELECT product_id, MIN(year) as first_year
+    FROM Sales
+    GROUP BY product_id
+) as Temp ON Sales.year = Temp.first_year AND Sales.product_id = Temp.product_id
+```

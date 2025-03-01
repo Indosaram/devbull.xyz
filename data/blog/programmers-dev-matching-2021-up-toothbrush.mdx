@@ -1,0 +1,95 @@
+---
+title: "프로그래머스 - 2021 Dev-Matching: 웹 백엔드 개발자(상반기) :  다단계 칫솔 판매"
+images: ["https://images.unsplash.com/photo-1625834319124-345137437603?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDV8fHRvb3RoYnJ1c2h8ZW58MHx8fHwxNjQ1MzQxNjU3&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-02-20T07:04:35.000Z"
+tags: ['codingtest', 'programmers']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://programmers.co.kr/learn/courses/30/lessons/77486)
+
+## 정답
+
+재귀 방식으로 해결하려고 했는데 스택 호출 한계에 걸려서 틀리게 된다.
+
+```
+import math
+
+PRICE = 100
+tree = {}
+
+
+def share(person, profit):
+    current = tree[person]
+    charge = math.floor(profit * 0.1)
+    current["profit"] += profit - charge
+
+    if current["referer"] == "-":
+        return
+
+    share(current["referer"], charge)
+
+
+def solution(enroll, referral, seller, amount):
+    result = []
+    try:
+        for person, referer in zip(enroll, referral):
+            tree[person] = {"referer": referer, "profit": 0}
+
+        for person, amount_ in zip(seller, amount):
+            share(person, amount_ * PRICE)
+
+        for person in enroll:
+            result.append(tree[person]["profit"])
+    except Exception as exc:
+        print(exc)
+    return result
+```
+
+어쩔 수 없이 반복으로 고쳐서 풀이했다. 이때 한가지 실수한게 `charge` 가 0이면 더이상 반복하지 않아도 되는데 이걸 놓쳐서 시간초과가 났었다 .
+
+```
+import math
+
+PRICE = 100
+tree = {}
+
+
+def share(person, profit):
+    current = tree[person]
+
+    charge = math.floor(profit * 0.1)
+    current["profit"] += profit - charge
+
+    if current["referer"] == "-" or charge == 0:
+        return
+
+    next_referer = [(current["referer"], charge)]
+
+    while next_referer:
+        person, profit = next_referer.pop(0)
+        current = tree[person]
+
+        charge = math.floor(profit * 0.1)
+        current["profit"] += profit - charge
+
+        if current["referer"] == "-" or charge == 0:
+            return
+
+        next_referer.append((current["referer"], charge))
+
+
+def solution(enroll, referral, seller, amount):
+    result = []
+    for person, referer in zip(enroll, referral):
+        tree[person] = {"referer": referer, "profit": 0}
+
+    for person, amount_ in zip(seller, amount):
+        share(person, amount_ * PRICE)
+
+    for person in enroll:
+        result.append(tree[person]["profit"])
+    return result
+```

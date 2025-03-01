@@ -1,0 +1,30 @@
+---
+title: "Leetcode - 1795. Rearrange Products Table"
+images: ["None"]
+date: "2022-05-28T01:27:13.000Z"
+tags: ['codingtest', 'sql']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/rearrange-products-table/)
+
+## 정답
+
+이 문제의 문제점은 바로 `store#` 컬럼의 존재다. 보통은 이렇게 별도 컬럼을 두기보다 `store` 같은 공통 컬럼을 만들어놓기 때문에 피벗 자체를 할 일이 별로 없다. 그래서 store 갯수가 3개 이상인 경우를 굳이 생각해 보지도 않아도 될 것 같다.
+
+```
+SELECT product_id, 'store1' AS store, store1 AS price FROM Products WHERE store1 IS NOT NULL
+union all 
+SELECT product_id, 'store2' AS store, store2 AS price FROM Products WHERE store2 IS NOT NULL
+union all 
+SELECT product_id, 'store3' AS store, store3 AS price FROM Products WHERE store3 IS NOT NULL
+
+```

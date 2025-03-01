@@ -1,0 +1,56 @@
+---
+title: "Leetcode - 78. Subsets"
+images: ["https://images.unsplash.com/photo-1621161890466-b6361c8960e6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8YWxsfDh8fHx8fHwyfHwxNjIxMjk2ODU4&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-17T04:20:00.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/subsets/)
+
+## 풀이
+
+```
+class Solution:
+    def subsets(self, nums):
+        memo = [[] for _ in range(len(nums) + 1)]
+        memo[-1] = [[nums[-1]]]
+        for idx, num in enumerate(reversed(nums)):
+            if idx == 0:
+                continue
+            subtree = [[]]
+            for ii in range(idx + 1):
+                if memo[len(nums) - ii]:
+                    subtree.extend(memo[len(nums) - ii])
+
+            memo[len(nums) - (idx + 1)] = [[num] + node for node in subtree]
+
+        res = [[]]
+        for mem in memo:
+            res += mem
+        return res
+```
+
+Dynamic programming으로 풀었다. nested list로 만드는 게 좀 맘에 안든다.
+
+코드를 좀더 간결하게 고쳐보면,
+
+```
+class Solution:
+    def subsets(self, nums):
+        memo = [[]]
+        for num in nums:
+            memo += [[num] + node for node in memo]
+
+        return memo
+```
+
+의외로 필요없는 부분이 많았다.

@@ -1,0 +1,57 @@
+---
+title: "백준-15686 : 치킨 배달"
+images: ["https://images.unsplash.com/photo-1426869981800-95ebf51ce900?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T09:20:44.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   백준-15686 : 치킨 배달
+-   [문제링크](https://www.acmicpc.net/problem/15686)
+
+# 풀이
+
+itertools를 안쓰면.. 조금 어려울 수도 있겠다.
+
+```python
+import itertools
+
+def selStore(numStore):
+    mini = 2**31
+
+    # numStore만큼 고르는 조합
+    combs = itertools.combinations(store, numStore)
+
+    for comb in combs:
+        mini = min(mini, finddist(comb))
+
+    return mini
+
+
+def finddist(comb):
+    dst = []
+    for ho in house:
+        temp = 2**31
+        for store in comb:
+            temp = min(temp, abs(ho[0]-store[0]) + abs(ho[1]-store[1]))
+
+        dst.append(temp)
+    
+    return sum(dst)
+
+
+size, numStore = map(int, input().split())
+house = []
+store = []
+for i in range(size):
+    city = list(map(int, input().split()))
+    for j, ele in enumerate(city):
+        if ele == 1:
+            house.append([i, j])
+        elif ele == 2:
+            store.append([i, j])
+
+print(selStore(numStore)) 
+```

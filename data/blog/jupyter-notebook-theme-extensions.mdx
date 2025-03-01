@@ -1,0 +1,89 @@
+---
+title: "Jupyter notebook 테마 및 확장기능(nbextensions) 설치 방법"
+images: ["https://images.unsplash.com/photo-1545156521-77bd85671d30?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDN8fHBsYW5ldHxlbnwwfHx8fDE2MTk2OTE0ODU&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-04-29T09:06:33.000Z"
+tags: ['set-up']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+파이썬을 개발하다 보면 정말 많이 쓰는 게 주피터 노트북(Jupyter notebook)이다. 인터프리터 언어의 특징을 정말 잘 살린 도구로, 파이썬 셸을 사용해도 되지만 코드를 저장해놓고 동일한 내용을 실행한다던가, 조금씩 내용을 바꿔가면서 테스트 하기에 정말 좋아서 개발할 때는 없으면 굉장히 불편해졌다.
+
+## (optional) Jupyter notebook 환경변수 설정
+
+셸에서 `jupyter` 명령어를 찾을 수 없는 경우, 셸의 `rc` 파일에 아래 내용을 추가한다. 예를 들어 `zsh` 이라면, `nano ~/.zshrc` 와 같이 편집기를 사용하면 된다.
+
+```
+export PATH="/home/master/.local/bin:$PATH"
+```
+
+변경 내용을 적용하기 위해 `source ~/.zshrc` 를 해주는 것도 잊지 말자.
+
+## 테마 설치
+
+주피터 노트북의 밋밋한 디자인을 조금 더 예쁘게 사용할 수 있는 `jupyterthemes` 를 사용하면 코드의 가독성도 더 좋아진다.
+
+[dunovank/jupyter-themes
+
+Custom Jupyter Notebook Themes. Contribute to dunovank/jupyter-themes development by creating an account on GitHub.
+
+![](https://github.githubassets.com/favicons/favicon.svg)GitHubdunovank
+
+![](https://opengraph.githubassets.com/bf4c6313c0c03465e5a4cd56d2c2871cfe6d13f8db5641cef5616701e7559423/dunovank/jupyter-themes)](https://github.com/dunovank/jupyter-themes)
+
+`pip` 을 이용해 설치가 가능하다.
+
+```
+pip3 install jupyterthemes
+```
+
+그 다음 셸에서 `jt` 명령어로 실행이 가능하다. 명령어에 대한 자세한 설명은 [여기](https://github.com/dunovank/jupyter-themes#command-line-usage)를 참고하자.
+
+```
+jt -t monokai -f droidmono -fs 14 -nf droidsans -nfs 14 -ofs 12 -cellw 90%
+```
+
+나 같은 경우는
+
+* -t : monokai 테마
+* -f : droidmono 폰트
+* -fs : 폰트 사이즈 14
+* -nf / nfs : 노트북 폰트 / 사이즈
+* -ofs : 출력 폰트 사이즈
+* -cellw : 셀 너비 90%
+
+![](/static/images/2021/04/image-1.png)
+
+셀 너비같은 경우는 주피터 노트북의 기본 셀 너비가 화면 너비보다 좁아서 코드 줄바꿈이 너무 자주 되는 문제가 있어서 설정했다. 전체 화면의 90%까지 확장이 되는 것을 확인할 수 있다.
+
+![](/static/images/2021/04/image-2.png)
+
+위와 같이 설정했을때의 결과!
+
+## 확장기능(nbextensions) 설치
+
+노트북을 사용하면서 불편했던 점은 작성하는 코드가 포맷팅이 되지 않는다는 것이다. 그런데 VSCode에서 사용하고 있는 파이썬 포맷터인 `black` 을 주피터 노트북에 설치할 수 있는 방법이 있다.
+
+먼저 주피터 확장 기능을 설치해준다.
+
+```
+pip3 install jupyter_nbextensions_configurator jupyter_contrib_nbextensions
+jupyter nbextensions_configurator enable --user
+jupyter contrib nbextension install --user
+```
+
+그리고 설치하길 원하는 확장 기능을 다운받는다.
+
+```
+jupyter nbextension install https://github.com/drillan/jupyter-black/archive/master.zip — user
+jupyter nbextension enable jupyter-black-master/jupyter-black
+```
+
+노트북을 재시작하면 확장 기능이 적용되고, `Ctrl + B` 버튼을 누르면 자동으로 포매팅이 되는 걸 볼 수 있다.
+
+### 노트북에서 확장 기능이 보이지 않을 때
+
+노트북 최신 버전에서 확장 기능 탭이 보이지 않는 경우가 있다. 이럴 경우 `localhost`[`:8888/nbextensions`](http://10.120.20.57:8889/nbextensions) 로 접속한다. 주소나 포트가 다른 경우는 `localhost:8888` 부분을 바꿔주면 된다.
+
+![](/static/images/2021/04/image-3.png)
+
+화면 좌측 위의 `disable configuration ~` 부분의 체크박스를 해제하고, 사용하길 원하는 확장 기능이 체크되어 있는지 확인한다.

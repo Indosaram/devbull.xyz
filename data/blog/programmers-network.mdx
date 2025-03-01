@@ -1,0 +1,40 @@
+---
+title: "프로그래머스 - 깊이/너비 우선 탐색(DFS/BFS) -네트워크"
+images: ["None"]
+date: "2022-10-28T13:11:14.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://school.programmers.co.kr/learn/courses/30/lessons/43162#)
+
+## 정답
+
+```
+def solution(n, computers):
+    visited = [0 for _ in range(n)]
+    networks = 0
+
+    for node in range(n):
+        if not visited[node]:
+            queue = [node]
+            visited[node] = 1
+
+            while queue:
+                curr = queue.pop(0)
+
+                for next_node in range(n):
+                    if (
+                        not visited[next_node]
+                        and computers[curr][next_node] == 1
+                    ):
+                        visited[next_node] = 1
+                        queue.append(next_node)
+
+            networks += 1
+
+    return networks
+
+```

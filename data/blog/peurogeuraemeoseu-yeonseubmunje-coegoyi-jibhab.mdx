@@ -1,0 +1,32 @@
+---
+title: "프로그래머스 - 연습문제 -최고의 집합"
+images: ["None"]
+date: "2022-10-28T13:09:32.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://school.programmers.co.kr/learn/courses/30/lessons/12938)
+
+## 정답
+
+아이디어가 없으면 풀 수 없는 문제 ㅜㅜ 결국 답을 보고 풀었다.
+
+```
+def solution(n, s):
+    quotion = s // n
+    remainder = s % n
+
+    if not quotion:
+        return [-1]
+
+    answer = [quotion for _ in range(n - remainder)]
+
+    for _ in range(remainder):
+        answer.append(quotion + 1)
+
+    return answer
+
+```

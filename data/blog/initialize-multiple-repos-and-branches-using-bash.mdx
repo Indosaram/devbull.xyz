@@ -1,0 +1,40 @@
+---
+title: "여러 레포를 쉽게 초기화하기 by bash"
+images: ["https://images.unsplash.com/photo-1597092451116-27787c07901d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDJ8fGFyY2hpdmV8ZW58MHx8fHwxNjIyMTc3Nzc4&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-28T04:52:25.000Z"
+tags: ['dev-diary']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 셸 스크립트로 자동화하기
+
+셸 스크립트는 정말 알수록 편하고, 공부할수록 어렵다. 오늘은 정말 기초적인 `for` 문법을 사용해 여러개의 레포지터리를 초기화하고, 각각의 레포에 추가 브랜치를 만들어 초기화하는 스크립트를 작성했다.
+
+## 코드
+
+```
+# Transverse through repo's names
+for REPO in "repo1" "repo2" "repo3"; do
+  # Go to each repo's directory
+  cd "$REPO"
+  # Initialize
+  git init
+  git remote add origin git@github.com:example/"$REPO".git
+  git add .
+  git commit -am "initial commit"
+  git push -u origin master
+
+  # Create multiple branches and push each of them
+  for BRANCH in "dev" "proto" "test" "prod"; do
+    git checkout "$BRANCH"
+    git push -u origin "$BRANCH"
+  done
+  # Get out
+  cd ..
+done
+
+```
+
+셸 스크립트로 짜지 않으면, 일일히 각 레포 폴더에 들어가 `git init`... 등 명령어를 치고, 여러 개의 브랜치를 생성하고 각각 또 푸시해줘야 하는데.. 생각만 해도 끔찍하다. 지금은 레포 갯수도 적고 브랜치 갯수도 몇개 되지 않아서 손으로 해도 할만하지만, 만일 갯수가 10개, 100라면?
+
+요즘 여러모로 셸 스크립트로 자동화해둔게 많아서 너무 편리하고 뿌듯하다🤩

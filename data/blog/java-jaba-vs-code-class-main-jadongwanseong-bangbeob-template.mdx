@@ -1,0 +1,36 @@
+---
+title: "[Java 자바] VS Code Class, main 자동완성 방법 template"
+images: ["https://images.unsplash.com/photo-1528660544347-95a93c58e424?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T12:01:08.000Z"
+tags: ['codingtest', 'java']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+VS Code에서도 Eclipse처럼 `Class`나 `main`을 간편하게 작성할 수 있다. 다만 새로운 자바 파일을 만든 다음 단축어를 직접 타이핑해야 하는 번거로움이 있다.  
+먼저
+
+```java
+public class $Classname {}
+```
+
+을 입력하려면, 편집기에 `class`를 입력하면 아래와 같은 토글 메뉴가 나타난다.
+
+![java_vscode_autocomplete_01](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/java_vscode_autocomplete_01.png)
+  
+`class`라고 쓰여진 토글 메뉴 중 아래의 사각형 아이콘을 클릭하면 Template이 나타난다. 커서로 이동한 다음 스페이스바나 엔터를 눌러도 된다.
+
+![java_vscode_autocomplete_02](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/java_vscode_autocomplete_02.png)
+  
+다음으로,
+
+```java
+public static void main(String[] args) {}
+```
+
+을 입력하려면 마찬가지로 편집기에 `main`을 입력한 다음 토글 메뉴에서 `main`을 선택하면 된다.
+
+![java_vscode_autocomplete_03](https://res-4.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/java_vscode_autocomplete_03.png)
+  
+아직까지 한 번에 이 코드를 다 입력하는 방법은 찾지 못했다.
+
+![java_vscode_autocomplete_04](https://res-5.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/java_vscode_autocomplete_04.png)

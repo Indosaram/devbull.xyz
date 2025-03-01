@@ -1,0 +1,30 @@
+---
+title: "Leetcode - 1084. Sales Analysis III"
+images: ["None"]
+date: "2022-06-09T00:54:31.000Z"
+tags: ['codingtest', 'sql']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/sales-analysis-iii/)
+
+## 정답
+
+```
+SELECT Product.product_id, product_name
+FROM Product
+JOIN (SELECT product_id, MIN(sale_date) as min_date, MAX(sale_date) as max_date
+      FROM Sales GROUP BY product_id
+     ) As NewSales
+ON Product.product_id = NewSales.product_id
+WHERE NewSales.min_date BETWEEN '2019-01-01' AND '2019-03-31'
+AND NewSales.max_date BETWEEN '2019-01-01' AND '2019-03-31'
+```

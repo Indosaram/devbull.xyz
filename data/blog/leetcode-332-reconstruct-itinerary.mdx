@@ -1,0 +1,65 @@
+---
+title: "Leetcode - 332. Reconstruct Itinerary"
+images: ["https://images.unsplash.com/photo-1621273898430-1c430f134f8d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8YWxsfDN8fHx8fHwyfHwxNjIxMjk2ODU4&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-18T11:23:28.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## **문제**
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/reconstruct-itinerary/)
+
+## **풀이**
+
+처음에 그래프를 어떻게 구성해야 될지 전혀 감을 못 잡았다. 결국 풀지 못했다. 이 문제는 DFS와 순회 두 가지 방법으로 풀이가 가능하다.
+
+```
+from collections import defaultdict
+
+class Solution:
+    def findItinerary(self, tickets: List[List[str]]) -> List[str]:
+        graph = defaultdict(list)
+        for a, b in sorted(tickets):
+            graph[a].append(b)
+            
+        route = []
+        def dfs(key):
+            while graph[key]:
+                dfs(graph[key].pop(0))
+            route.append(key)
+            
+        dfs("JFK")
+        
+        return route[::-1]
+        
+```
+
+DFS는 간단한데 순회 방법은 이해하기가 어려웠다.
+
+```
+from collections import defaultdict
+
+class Solution:
+    def findItinerary(self, tickets: List[List[str]]) -> List[str]:
+        graph = defaultdict(list)
+        for a, b in sorted(tickets):
+            graph[a].append(b)
+            
+        route, stack = [], ["JFK"]
+        while stack:
+            while graph[stack[-1]]:
+                stack.append(graph[stack[-1]].pop(0))
+            route.append(stack.pop())
+        
+        return route[::-1]
+        
+```
+
+방문 경로는 `stack` 에 넣어놓고,  다 방문한 다음 `route`에는 순서대로 넣어준다고 생각하면 된다.

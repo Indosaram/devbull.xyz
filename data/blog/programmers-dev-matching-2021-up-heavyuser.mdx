@@ -1,0 +1,32 @@
+---
+title: "프로그래머스 - 2021 Dev-Matching: 웹 백엔드 개발자(상반기) : 헤비 유저가 소유한 장소"
+images: ["https://images.unsplash.com/photo-1490644658840-3f2e3f8c5625?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDE4fHxidWlsZGluZ3xlbnwwfHx8fDE2NDUzMTY1MTE&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-02-20T00:21:11.000Z"
+tags: ['codingtest', 'sql']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://programmers.co.kr/learn/courses/30/lessons/77487)
+
+## 정답
+
+```
+SELECT * FROM PLACES
+WHERE HOST_ID IN (SELECT HOST_ID FROM PLACES GROUP BY HOST_ID HAVING count(*) >= 2)
+ORDER BY ID
+```
+
+`EXISTS` 를 사용한 방법
+
+```
+SELECT * FROM PLACES P1
+WHERE EXISTS (
+    SELECT HOST_ID FROM PLACES P2
+    WHERE P1.HOST_ID = P2.HOST_ID
+    GROUP BY HOST_ID
+    HAVING COUNT(ID) >= 2
+)
+ORDER BY ID ASC;
+```

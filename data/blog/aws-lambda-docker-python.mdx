@@ -1,0 +1,96 @@
+---
+title: "AWS Lambda + Docker + Python 설정하기"
+images: ["https://images.unsplash.com/photo-1595587637401-83ff822bd63e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDN8fGRvY2tlcnxlbnwwfHx8fDE2MTU4NzM4NDg&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-03-16T05:48:41.000Z"
+tags: ['aws']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 1. Prerequisites
+
+### Pull lambda docker image
+
+```
+docker pull lambci/lambda:build-python3.8
+
+```
+
+`lambci/lambda`는 로컬에서 AWS Lambda 환경을 "에뮬레이션"한다. 완전히 동일한 버전은 아니다. 파이썬 라이브러리 설치 경로는 다음 둘 중 하나여야 한다.
+
+* `python`
+* `python/lib/python3.8/site-packages(site directories)`
+
+패키지 설치 및 레이어 생성은 다음 명령어를 수행한다.
+
+```
+docker run -v "$PWD":/var/task "lambci/lambda:build-python3.8" /bin/sh -c "pip install -r requirements.txt -t libs; exit"
+
+```
+
+### Login to AWS
+
+`awscli` 설치
+
+```
+pip install awscli
+
+```
+
+AWS에 로그인 설정. Access Key는 `ecr_pusher` 계정 정보를 수령해 입력한다.
+
+```
+$ aws configure
+AWS Access Key ID [None]: Access key ID
+AWS Secret Access Key [None]: Secret access key
+Default region name [None]: ap-northeast-2
+Default output format [None]:
+
+```
+
+컨테이너에 대한 버전 관리는 AWS의 Elastic Container Repository(ECR)을 이용한다. 위에서 설정한 로그인 정보를 이용해 AWS ECR 레포에 로그인한다.
+
+```
+aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ECR_REPO_URI
+```
+
+## 2. Build docker image
+
+### 도커 빌드
+
+`Dockerfile` 이용 도커 빌드
+
+`$TAG`는 실제 사용할 태그 이름(e.g. `lambda_test:1.0`)으로 변경.
+
+```
+docker build -t $TAG
+
+```
+
+### 로컬 도커 테스트
+
+도커 실행
+
+```
+docker run -p 9000:8080 $TAG
+
+```
+
+다른 터미널에서 `json` 타입의 페이로드와 함께 요청 전송
+
+```
+curl -XPOST "<http://localhost:9000/2015-03-31/functions/function/invocations>" -d '{}'
+
+```
+
+### 도커 배포
+
+```
+docker tag $TAG $ECR_REPO_URI
+docker push $ECR_REPO_URI
+
+```
+
+## 3. TO-DOs
+
+* 빌드 / 배포 자동화 스크립트
+* Lambda 이미지 자동 선택 스크립트

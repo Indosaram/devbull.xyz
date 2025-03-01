@@ -1,0 +1,84 @@
+---
+title: "Linux timeout 명령어와 Kill signal"
+images: ["https://images.unsplash.com/photo-1541480601022-2308c0f02487?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDJ8fGNsb2NrfGVufDB8fHx8MTYzMDA2NDk2MA&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-08-27T11:49:10.000Z"
+tags: ['programming']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## `timeout`이란?
+
+특정 커맨드를 실행하고 지정된 수행시간(`DURATION`) 동안 끝나지 않을 경우 종료(kill)시킨다. 사실은 종료시킨다기보다는 지정된 시그널을 프로세스에 보낸다는 것이 더 정확하지만, 일반적으로 `SIGTERM` 을 이용해 종료시키기 때문에 이렇게 설명이 되어있는 것 같다.
+
+> 참고로 `kill` 커맨드도 실제로 kill을 하지는 않고 시그널을 보낼 뿐이다. 그래서 `kill -9 pid` 와 같이 kill signal을 옵션으로 줘야 프로세스가 종료된다.
+
+## 사용법
+
+`timeout` 커맨드의 셸에서의 사용 방법은 다음과 같다.
+
+```
+$ timeout [OPTION] DURATION COMMAND [ARG]
+
+```
+
+옵션은 여러가지가 있는데 주로 `-s` 또는 `--signal` 옵션을 사용한다. 프로세스가 종료될 때 어떤 신호를 보낼지 결정할 수 있기 대문이다. manpage의 시그널 옵션에 관한 설명은 다음과 같다.
+
+```
+  -s, --signal=SIGNAL
+                 specify the signal to be sent on timeout;
+                   SIGNAL may be a name like 'HUP' or a number;
+                   see 'kill -l' for a list of signals
+
+```
+
+여기서 `SIGNAL` 은 시스템에 지정되어 있는 시그널을 의미하는데, 이는 다음 섹션에서 자세하게 알아본다. 일반적으로 `9` 또는 `KILL` 을 시그널로 주어 프로세스를 종료시킨다.
+
+`DURATION` 은 실수형(float) 숫자로 일, 시, 분, 초를 각각 d, h, m, s를 suffix로 시간을 표기하게 된다. 아래 예제에서는 `0.0001d` 를 사용했다.
+
+```
+$ timeout 0.0001d ping localhost # 0.0001d ~ 8.64s
+
+```
+
+![image-20210827115206571](/images/2021/08/image-20210827115206571.png)
+
+다만 여러 suffix를 함께 사용할 수 없기 때문에 실수형 숫자와 suffix를 잘 계산해서 적어야 한다.
+
+## SIGNAL
+
+시그널은 운영체제마다 약간씩 다르게 정의되어 있다. 하지만 대체로 POSIX.1-1990 표준에 정의된 시그널은 대부분 공통으로 사용하고 있다. 아래 표는 그 중 일부다. 이외에도 POSIX.1-2001 또는 그 외의 시그널들을 모두 확인하고 싶다면 터미널에서 `man 7 signal` 을 입력하면 매뉴얼을 볼 수 있다.
+
+| 번호 | 이름 | 설명 | 기본 처리 |
+| --- | --- | --- | --- |
+| 1 | SIGHUP(HUP) | 터미널에서 Hang up이 감지되거나작업 중인 프로세스가 종료될 경우 | 종료 |
+| 2 | SIGINT (INT) | 키보드 인터럽트 (Ctrl + C) | 종료 |
+| 3 | SIGQUIT(QUIT) | 키보드 종료 (Ctrl + ) | 코어 덤프 |
+| 4 | SIGILL(ILL) | 잘못된 명령 | 코어 덤프 |
+| 5 | SIGTRAP(TRAP) | trace(추적), breakpoint(중지점)에서 TRAP 발생 | 코어 덤프 |
+| 6 | SIGABRT (ABRT) | `abort(3)` 의 Abort 시그널 | 코어 덤프 |
+| 8 | SIGFPE | 부동소수점 에러 | 코어 덤프 |
+| 9 | SIGKILL (KILL) | Kill 시그널 | 종료 |
+| 11 | SIGSEGV | 메모리 참조 에러 | 코어덤프 |
+| 15 | SIGTERM (TERM) | Termination 시그널 | 종료 |
+| 17 | SIGSTOP | 프로세스 정지 | 종료 |
+
+이 중 `SIGKILL`과 `SIGSTOP` 은 caught, blocked, ignored가 될 수 없다.
+
+위에서 `timeout` 의 시그널 옵션을 숫자 또는 이름으로 줄 수 있다고 했는데, 위 표의 숫자 또는 이름 중 하나를 선택해 입력하면 된다.
+
+```
+$ timeout --signal=9 1 ping localhost
+$ timeout --signal=SIGKILL 1 ping localhost
+PING localhost (127.0.0.1): 56 data bytes
+64 bytes from 127.0.0.1: icmp_seq=0 ttl=64 time=0.041 ms
+[1]    18314 killed     timeout --signal=SIGKILL 1 ping localhost
+
+```
+
+마지막으로 `SIGKILL`과 `SIGTERM` 에 관한 재미있는 만화가 있어 첨부한다.
+
+![img](/images/2021/08/main-qimg-2a4ea61270f9ba5eed3c294e3af5511e.png)
+
+## Reference
+
+* [](https://turnoff.us/geek/signals/)

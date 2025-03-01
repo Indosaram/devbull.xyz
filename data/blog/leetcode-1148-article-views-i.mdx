@@ -1,0 +1,22 @@
+---
+title: "Leetcode - 1148. Article Views I"
+images: ["None"]
+date: "2022-06-09T00:59:54.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://leetcode.com/problems/article-views-i/submissions/)
+
+## 정답
+
+```
+SELECT author_id as 'id'
+FROM Views
+WHERE author_id = viewer_id
+GROUP BY author_id
+ORDER BY author_id
+
+```

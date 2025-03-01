@@ -1,0 +1,41 @@
+---
+title: "Leetcode - 56. Merge Intervals"
+images: ["https://images.unsplash.com/photo-1589666606904-b01a2b7f522a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDEzfHxpbnRlcnZhbHN8ZW58MHx8fHwxNjQ5NTgwMzU5&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-04-10T08:44:16.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/merge-intervals/)
+
+## 정답
+
+```
+class Solution:
+    def merge(self, intervals: List[List[int]]) -> List[List[int]]:
+        intervals = sorted(intervals, key=lambda x: x[0])
+        result = []
+        
+        while intervals:
+            left, right = intervals.pop(0)
+            
+            if not result:
+                result.append([left, right])
+            else:
+                pre = result[-1]
+                if pre[0] <= left <= pre[1]:
+                    result[-1] = [min(left, pre[0]), max(right, pre[1])]
+                else:
+                    result.append([left, right])
+
+        return result
+
+```

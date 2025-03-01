@@ -1,0 +1,73 @@
+---
+title: "Windows10에 WSL2 + Docker Desktop 설치하기"
+images: ["https://images.unsplash.com/photo-1558544956-15f3c317e06a?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T11:32:50.000Z"
+tags: ['set-up']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# WSL2 설치
+
+먼저 아래 단계를 따라서 Windows 10에 WSL 버전2를 설치한다. 본격적으로 도커를 설치하기 전에 다음 사항을 반드시 시행했는지 확인해야 한다. 하나라도 되어있지 않으면 중간에 에러가 발생한다.
+
+### 로컬 윈도우 머신에 Windows 10이 설치되어 있고, 2004 또는 이후 버전인지 확인
+
+![wsl_docker_01](https://res-1.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/wsl_docker_01.png)
+
+나의 윈도우 버전을 확인하는 방법은 cmd나 powershell에서 `winver`를 입력하면 된다.
+
+### WSL 기능 활성화 및 WSL2 기능 활성화
+
+만일 처음으로 WSL을 설치하는 사용자라면 [아래 내용](https://docs.microsoft.com/en-us/windows/wsl/install-win10)을 차근차근 따라해 WSL을 설치하자. 그리고 나서 커널을 WSL2버전으로 업데이트하면 된다.
+
+### WSL 설치
+
+Powershell을 관리자 권한으로 실행한 다음 아래 명렁어를 입력한다.
+
+```
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+```
+
+### WSL2로 업데이트
+
+가상 머신 플랫폼 기능을 활성화 해준다. 아래 명령어를 Powershell에 입력한 다음 컴퓨터를 **재부팅**한다.
+
+```
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+```
+
+재부팅이 되었다면 아래 명령어를 입력해 이후에 설치할 리눅스 배포판의 기본 버전을 WSL2로 설정한다.
+
+```
+wsl --set-default-version 2
+```
+
+Windows 10 2004 이후 버전을 설치했다면 여기까지 오류가 발생해서는 안된다. 마지막으로 [리눅스 커널 업데이트 패키지](https://docs.microsoft.com/windows/wsl/wsl2-kernel)를 설치한다. `.msi`파일을 설치한 다음, 원하는 리눅스 배포판을 [마이크로소프트 스토어](https://aka.ms/wslstore)에서 다운받는다. 필자는 Ubuntu 20.04LTS를 추천한다. 배포판이 다운로드되면 리눅스를 한번 실행시켜 초기 설정을 완료한다.
+
+## WSL 설치 중 문제 발생
+
+[마이크로소프트 공식 문서](https://docs.microsoft.com/en-us/windows/wsl/troubleshooting)에 각 유형 별 트러블슈팅이 안내되어 있으니 참고하자. 만일 공식 문서를 이해하기 어렵거나, 다른 문제가 발생할 경우 댓글로 문제를 남겨주시면 해결을 도와드리겠습니다.
+
+# Docker download
+
+## 설치하기 전 주의점
+
+WSL2에 도커를 설치하기 전에 반드시 알아야 하는 점이 있다. 현재(2020년 7월 28일 기준) WSL2에서는 GPU를 지원하지 않고 있다. 다시 말해, Nvidia-Docker2를 사용할 수 없다는 것이다. 이를 해결하기 위해서는 Widows Insider 프로그램에 가입해서 최신 Windows 베타 버전을 설치해야 한다. Preview 버전인 만큼 오류도 많고 불안정하다. 필자의 경우는 Chromium 기반 앱(구글 크롬, 브레이브 브라우저, 엣지, 타이포라 등)에서 한글 입력이 정상적으로 되지 않는 오류가 발생했다.
+
+만일 이런 과정이 불편하다면 당분간 WSL2를 이용해 GPU를 사용한 개발은 잠시 접어두는 게 좋겠다. 하지만 굳이 로컬에서 GPU를 쓰지 않고 개발만 하는 용도라면 이번 WSL2업데이트는 리눅스 네이티브 커널을 윈도우와 호환해 사용할 수 있다는 점에서 정말 매력적이라고 생각한다.
+
+## WSL2에 도커 설치하기
+
+![wsl_docker_02](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/wsl_docker_02.png)
+
+![wsl_docker_03](https://res-5.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/wsl_docker_03.png)
+
+위 과정을 정상적으로 완료했다면 다음은 드디어 도커를 설치할 수 있다. [Docker Docs](https://docs.docker.com/docker-for-windows/wsl/)에서 Docker Desktop Stable을 다운로드하고 설치한다. 설치가 완료되면 재부팅 하라고 하니 클린 설치를 위해 재부팅을 수행한다.
+
+![wsl_docker_04](https://res-2.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/wsl_docker_04.png)
+
+재부팅 후 Docker Desktop 실행을 실행한다. 그 다음 설정에서 General 탭의 `Use the WSL 2 based engine` 에 체크되어 있는지 확인한다.
+
+이제 Docker가 정상적으로 실행된다. 설치 확인을 위해 `docker run hello-world`를 입력해보자.
+
+이제 모든 단계가 완료되었다.

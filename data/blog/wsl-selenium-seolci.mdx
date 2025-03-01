@@ -1,0 +1,43 @@
+---
+title: "WSL Selenium 설치"
+images: ["https://images.unsplash.com/photo-1593642703055-4b72c180d9b5?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-29T07:28:52.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+### Install selenium
+
+`pip3 install selenium`
+
+Add apt installation key  
+`wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -`
+
+패키지 다운로드
+
+`wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb`
+
+패키지 설치
+
+`sudo dpkg -i google-chrome-stable_current_amd64.deb`
+
+chromedriver 경로 생성
+
+```
+ mkdir /usr/bin/chromedriver
+ cd /usr/bin/chromedriver
+```
+
+### chromedriver 다운로드 및 압축 해제
+
+[https://chromedriver.chromium.org/downloads](https://chromedriver.chromium.org/downloads)
+
+C드라이브에 해당 폴더 생성
+
+Python 예제 파일
+
+```python
+from selenium import webdriver
+
+driver = webdriver.Chrome("/mnt/c/chromedriver/chromedriver.exe")
+```

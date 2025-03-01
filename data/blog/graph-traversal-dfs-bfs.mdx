@@ -1,0 +1,90 @@
+---
+title: "그래프 탐색 - DFS와 BFS"
+images: ["https://images.unsplash.com/photo-1610547189313-1fbea2dcd059?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDN8fG5vZGVzfGVufDB8fHx8MTYyMzkwODkzNg&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-19T12:20:38.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## DFS
+
+자료형 : 스택
+
+구현 : 재귀, 백트래킹
+
+한 사람이 미로를 빠져나감
+
+### Pre-order traversal
+
+1. Visit node
+2. Traverse left
+3. Traverse right
+
+```
+preorder(node)
+	if node == null then return
+	visit(node)
+	preorder(node.left)
+  preorder(node.right)
+
+```
+
+### In-order traversal
+
+1. Traverse left
+2. Visit node
+3. Traverse right
+
+```
+inorder(node)
+	if node == null then return
+	inorder(node.left)
+	visit(node)
+	inorder(node.right)
+
+```
+
+### Post-order traversal
+
+1. Traverse left
+2. Traverse right
+3. Visit node
+
+```
+postorder(node)
+	if node == null then return
+	postorder(node.left)
+	postorder(node.right)
+	visit(node)
+
+```
+
+## BFS
+
+자료형 : 큐
+
+여러 사람이 서로 다른 길로 미로를 빠져나감
+
+### Level-order traversal
+
+```
+levelorder(root)
+	q <- empty queue
+	q.enqueue(root)
+	while (not q.isEmpty())
+		node <- q.dequeue()
+		visit(node)
+		if (node.left != null)
+			q.enqueue(node.left)
+    if (node.right != null)
+    	q.enqueue(node.right)
+
+```
+
+### 다익스트라 알고리즘
+
+시간복잡도 : $O(^2)$, 우선순위 큐 사용시 $O(V+E)$, 모든 정점이 출발지에서 도달 가능하면 $O(E\log(V))$
+
+## Reference
+
+* Tree traversal : [MIchael Sambol](https://www.youtube.com/channel/UCzDJwLWoYCUQowF_nG3m5OQ)

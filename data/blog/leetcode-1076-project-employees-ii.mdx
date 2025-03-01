@@ -1,0 +1,34 @@
+---
+title: "Leetcode - 1076. Project Employees II"
+images: ["None"]
+date: "2022-10-09T02:50:08.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/project-employees-ii/description/)
+
+## 정답
+
+```
+SELECT project_id
+FROM (
+    SELECT project_id, COUNT(*) as count FROM Project
+    GROUP BY project_id
+) AS Temp1
+WHERE count IN (
+    SELECT MAX(count)
+    FROM (
+        SELECT COUNT(*) as count FROM Project
+        GROUP BY project_id
+    ) AS Temp2
+)
+```

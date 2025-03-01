@@ -1,0 +1,216 @@
+---
+title: "01-Probability and Random Variables: A Review (3/5)"
+images: ["https://images.unsplash.com/photo-1599059920009-895e1c48c4b9?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-09-03T06:52:13.000Z"
+tags: ['estimation']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 상관(Correlation)
+
+### 직교성(Orthogonality)
+
+두 확률변수 X, Y의 곱의 기대값은 특수한 결과가 나온다. 일반적으로 $E[XY]$는 다음과 같은데,  
+$$  
+E[XY]=\int\_{-\infty}^{\infty}{xyf\_{XY}(x,y)}dxdy  
+$$  
+만일 X, Y가 독립이라면  
+$$  
+E[XY]=\int\_{-\infty}^{\infty}{xf\_{X}(x)}dx\int\_{-\infty}^{\infty}{yf\_{Y}(y)}dy=E[X]E[Y]  
+$$  
+와 같이 구할 수 있게 된다. 다시 말해서 곱의 기대값과 기대값의 곱이 같다면 두 확률변수는 독립인 것이다. 그리고 이런 경우를 상관 관계가 없다(Uncorrelated)고 말한다. 만일 $E[XY]=0$이라면, X, Y는 서로 직교(Orthogonal)한다고 말한다.
+
+### 공분산(Covariance)
+
+X, Y의 공분산은 다음과 같이 정의한다.  
+$$  
+\text{Cov}(X,Y)=E[(X-m\_X)(Y-m\_Y)]  
+$$  
+이제 상관계수(Correlation coefficient)를 다음과 같이 정의한다.  
+$$  
+\rho=\dfrac{Cov(X,Y)}{\sqrt{Var(X)Var(Y)}}  
+$$  
+상관계수는 $-1\leq\rho\leq1$의 범위를 가지며, 두 확률변수의 상관도를 측정하는 값이다. 따라서 $\rho=1$이면 두 확률변수는 같은 확률변수이고, $\rho=-1$이면 두 확률변수는 완전히 반대 방향(maximum negative correlation)이다. 마지막으로 $\rho=0$이면 위에서 본 것처럼 두 확률변수는 상관 관계가 없다.
+
+Y=X  
+$$  
+\rho=\frac{E[(X-m\_X)(X-m\_X)]}{\sqrt{E[X-m\_x]^2\cdot E[X-m\_x]^2}}=1  
+$$
+
+Y=-X  
+$$  
+\rho=\frac{E[(X-m\_X)(-X+m\_X)]}{\sqrt{E[X-m\_x]^2\cdot E[-X+m\_x]^2}}=-1  
+$$
+
+$E[XY]=E[X]E[Y]$  
+$$  
+\begin{aligned}  
+E[(X-m\_X)(Y-m\_Y)]&=E[XY-m\_XY-m\_YX+m\_Xm\_Y]\\\  
+&=E[XY]-m\_XE[Y]-m\_YE[X]+m\_Xm\_Y\\\\\  
+&=m\_Xm\_Y-m\_Xm\_Y-m\_Ym\_X+m\_Xm\_Y=0\\\  
+\therefore\rho=0  
+\end{aligned}  
+$$
+
+## 두 확률 변수의 합
+
+$X, Y$를 서로 독립인 정규확률변수라고 가정하자. $X, Y$ 모두 평균은 0이며, 공분산은 각각 $\sigma\_X^2$, $\sigma\_Y^2$이다. 이때 $Z=X+Y$를 만족하는 $Z$의 확률밀도함수를 구하고 싶다. 일단 X, Y의 확률밀도함수는 다음과 같다.  
+$$  
+f\_X(x)=\frac{1}{\sqrt{2\pi}\sigma\_X}e^{-x^2/2\sigma\_X^2}\\\  
+f\_Y(y)=\frac{1}{\sqrt{2\pi}\sigma\_Y}e^{-y^2/2\sigma\_Y^2}  
+$$  
+각각을 푸리에 변환을 시켜주면,  
+$$  
+\mathbb F[f\_X]=e^{-\sigma\_X^2w^2/2}\\\  
+\mathbb F[f\_Y]=e^{-\sigma\_Y^2w^2/2}\\\  
+$$  
+위 식과 같다. 이제 푸리에 변환한 두 함수를 곱하면  
+$$  
+\mathbb F[f\_X]F[f\_Y]=e^{-(\sigma\_X^2+\sigma\_Y^2)w^2/2}  
+$$  
+와 같다. 다시 푸리에 역변환을 하면  
+$$  
+\begin{aligned}  
+f\_Z(z)&=\mathbb F^{-1}[e^{-(\sigma\_X^2+\sigma\_Y^2)w^2/2}]\\\  
+&=\frac{1}{\sqrt{2\pi(\sigma\_X^2+\sigma\_Y^2)}}e^{-z^2/2(\sigma\_X^2+\sigma\_Y^2)}  
+\end{aligned}  
+$$  
+과 같다. 이때 Z의 분산은 다음을 만족하게 된다.  
+$$  
+\sigma\_Z^2=\sigma\_X^2+\sigma\_Y^2  
+$$  
+위 과정에서, 두 정규확률변수를 더한 결과도 정규확률변수가 됨을 알 수 있다.
+
+## 확률변수의 변환(Transformation of Random Variables)
+
+시스템 분석에서는 종종 입력과 출력을 수학적 변환을 가지고 비교하는 경우가 많다. 예를 들면 어떤 함수,  
+$$  
+y=g(x)  
+$$  
+같은 경우는 입력 x를 함수 $g()$를 통해 변환하는 과정이다. 이제 이 개념을 확장해 입력과 출력을 어떤 확률변수라고 가정한다. 우리가 알고 싶은 것은 확률밀도함수를 알고 있는 $X$에 대해 출력 $Y$의 확률밀도함수이다. $g(x)$가 일대일 대응함수인 경우, 역함수를 구하면  
+$$  
+x=h(y)  
+$$  
+라고 놓을 수 있다.
+
+x와 y가 일대일 대응관계이기 때문에  
+$$  
+P(x\leq X \leq x+dx)=P(y\leq Y \leq y+dy)  
+$$  
+와 같은 관계가 성립해야 한다. 다시 말하면 x가 dx만큼 이동한 부분과 y가 dy만큼 이동한 부분의 확률은 같아야 한다는 것이다. 이로부터
+
+$$  
+\begin{eqnarray}  
+\int\_x^{x+dx}f\_X(u)du=  
+\left{\begin{array}{ll}  
+\displaystyle\int\_y^{y+dy}f\_Y(u)du,\text{ for }dy \text{ positive}\-\displaystyle\int\_y^{y+dy}f\_Y(u)du,\text{ for }dy \text{ negative}  
+\end{array}\right .  
+\end{eqnarray}  
+$$
+
+와 같이 나타낼 수 있다. 위 식은 아래와 같이 정리가 가능하다.  
+$$  
+f\_X(x)dx=f\_Y(y)|dy|  
+$$  
+여기서 $dx$가 양수라고 가정하면 $x=h(y)$이므로  
+$$  
+f\_Y(y)=\left|\frac{dy}{dx}\right|f\_X(h(y))=|h'(y)|f\_X(h(y))  
+$$  
+와 같이 나타낼 수 있다. 이렇게 수식으로만 보면 이해가 잘 되지 않으니 간단한 선형변환 예제를 살펴보자.
+
+### 예제1
+
+확률변수 X가 $N(0,\sigma\_X^2)$를 만족할 때, 아래와 같은 선형변환을 생각해보자.  
+$$  
+y=Kx  
+$$  
+여기서 $|dx/dy|$를 구하면,  
+$$  
+\left|\frac{dx}{dy}\right|=\left|\frac{1}{K}\right|  
+$$  
+이므로 위에서 구했던 방법으로 $f\_Y(y)$를 구할 수 있다.  
+$$  
+\begin{aligned}  
+f\_Y(y)&=\left|\frac{dy}{dx}\right|f\_X(h(y))\\\  
+&=\frac{1}{K}\cdot\frac{1}{\sqrt{2\pi}\sigma\_X}\exp\left[-\frac{\displaystyle\left(\frac{y}{K}\right)^2}{2\sigma\_X^2}\right]\\\  
+&=\frac{1}{\sqrt{2\pi(K\sigma\_X)^2}}\exp\left[-\frac{y^2}{2(K\sigma\_X)^2}\right]  
+\end{aligned}  
+$$  
+따라서 평균이 0인 확률변수 X를 선형변환할 경우 스케일팩터 K만큼만 분산이 커진 정규분포로 변환되는 것을 알 수 있다. 다시 말하면 정규성(Normality)가 보존된다.
+
+### 예제2
+
+비선형 변환의 경우도 동일하게 살펴보자. 이전 포스팅에서 다루었던 원반에 다트를 던지는 경우를 생각해보자. 원판 위에 2차원 좌표를 설정하면 다음과 같이 다트가 맞을 위치를 표현할 수 있다.  
+$$  
+f\_{XY}(x,y)=\frac{1}{2\pi\sigma^2}e^{-(x^2+y^2)/2\sigma^2}  
+$$  
+이전 포스팅에서 다루었듯이 이 경우는 이변수 정규확률밀도 함수로, 각 확률변수가 정규확률변수이면서 서로 독립인 경우이다. 우리가 구하고 싶은 것은 극좌표계 $r, \theta$로 나타낸 다트 위치의 확률밀도함수이다. 참고로 극좌표계는  
+$$  
+\begin{aligned}  
+r=\sqrt{x^2+y^2},\ \ & r\geq 0\\\  
+\theta=tan^{-1}\frac{y}{x}, \ \ & 0\leq \theta \le 2\pi  
+\end{aligned}  
+$$  
+와 같다. 이제 X, Y로 나타낸 이변수 확률밀도함수를 $r, \theta$로 나타내면  
+$$  
+\begin{aligned}  
+\iint f\_{R\Theta}(r,\theta)drd\theta &= \iint f\_{XY}(x,y)dxdy\\\  
+&=\iint f\_{XY}(x(r,\theta), y(r,\theta))  
+\left|J\left(\frac{x,y}{r,\theta}\right)\right|drd\theta  
+\end{aligned}  
+$$  
+과 같다. 이때 자코비안은  
+$$  
+J\left(\frac{x,y}{r,\theta}\right)=Det  
+\begin{bmatrix}  
+\dfrac{\partial x}{\partial  r} & \dfrac{\partial y}{\partial  y} \\\  
+\dfrac{\partial x}{\partial  \theta} & \dfrac{\partial y}{\partial  \theta}  
+\end{bmatrix}  
+$$  
+과 같다.  
+$$  
+x=r\cos{\theta}\\\  
+y=r\sin{\theta}  
+$$  
+이므로  
+$$  
+J\left(\frac{x,y}{r,\theta}\right)=Det  
+\begin{bmatrix}  
+\cos{\theta} & \sin{\theta}\\\  
+-r\sin{\theta} & r\cos{\theta}  
+\end{bmatrix}=r  
+$$  
+과 같이 계산된다.
+
+$$  
+\begin{aligned}  
+f\_{R\Theta}(r,\theta)&=r\frac{1}{2\pi\sigma^2}\exp\left[-\frac{(r\cos{\theta})^2+(r\sin{\theta})^2}{2\sigma^2}\right]\\\  
+&=\frac{r}{2\pi\sigma^2}e^{-r^2/2\sigma^2}\\\  
+\end{aligned}  
+$$
+
+이제 Joint 확률밀도함수를 $r, \theta$에 대해서 적분해 Marginal 확률밀도함수를 구할 수 있다. 자코비안을 원래 적분식 안에 대입하고 정리한다.
+
+$$  
+\begin{aligned}  
+f\_{R}(r)&=\int^{2\pi}*{0}{f*{R\Theta}(r,\theta)}d\theta\\\  
+&=\frac{r}{2\pi\sigma^2}e^{-r^2/2\sigma^2}\int\_{0}^{2\pi}d\theta \\\  
+&=\frac{r}{\sigma^2}e^{-r^2/2\sigma^2}  
+\end{aligned}  
+$$
+
+그리고
+
+$$  
+\begin{aligned}  
+f\_{\Theta}(\theta)&=\int^{\infty}*{0}{f*{R\Theta}(r,\theta)}dr\\\  
+&=\left{\begin{array}{ll}  
+\frac{1}{2\pi},&\ 0\leq \theta \leq 2\pi \\\  
+0,&\ \text{otherwise}  
+\end{array}\right.  
+\end{aligned}  
+$$
+
+여기서 $f\_R(r)$은 Rayleigh density function이며 그래프는 아래와 같이 그려진다.
+
+![image-20200907185635673](/images/2020/09/image-20200907185635673.png)

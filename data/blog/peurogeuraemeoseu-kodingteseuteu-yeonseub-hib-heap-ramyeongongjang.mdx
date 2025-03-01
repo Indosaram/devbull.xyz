@@ -1,0 +1,37 @@
+---
+title: "프로그래머스 : 코딩테스트 연습 - 힙(Heap) - 라면공장"
+images: ["https://images.unsplash.com/photo-1587029622793-f51e81058f2d?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T09:26:37.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   프로그래머스 : 코딩테스트 연습 - 힙(Heap) - 라면공장
+
+# 풀이
+
+레벨2 치고는 굉장히 어려웠고 3시간 정도 걸린 것 같다. 힙을 안쓰고 풀다가 너무 코드가 길어져서 처음부터 다시 생각하다보니 시간이 길게 소요됐다.
+
+공급 가능한 날짜를 힙에 넣어주고 그 다음번 탐색에서는 넣은 대상을 찾지 않게 하는 방법에 대한 아이디어가 떠오르지 않아서 1시간 정도 걸린 것 같다.
+
+```python
+import heapq
+
+def solution(stock, dates, supplies, k):
+    answer = 0
+    idx = 0
+    heap = []
+    while stock < k:
+        for i in range(idx, len(dates)):
+            if dates[i] <= stock:
+                heapq.heappush(heap, -supplies[i])
+                idx += 1
+            else:
+                break
+        stock -= heapq.heappop(heap)
+        answer += 1
+
+    return answer 
+```

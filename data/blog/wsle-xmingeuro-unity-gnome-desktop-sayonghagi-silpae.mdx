@@ -1,0 +1,52 @@
+---
+title: "WSL에 Xming으로 Unity / Gnome Desktop 사용하기(실패)"
+images: ["https://images.unsplash.com/photo-1593642532009-6ba71e22f468?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-17T04:01:38.000Z"
+tags: ['set-up']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+WSL(Winodws Subsystem for Linux)은 드디어 윈도우 환경에서 리눅스 환경의 개발을 가능하게 해준 획기적인 기능이다. MS 스토어에서 원하는 Distro를 앱으로 다운받기만 하면 무려 윈도우 네이티브로 제공되는 리눅스 가상머신을 사용할 수 있기 때문이다. 나는 가장 인기있는 리눅스 Distro인 Ubuntu 18.04 LTS를 설치해 사용중이다.
+
+![wsl_xming_gnome_desktop_01](https://res-4.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/wsl_xming_gnome_desktop_01.png)
+WSL은 CLI(Command Line Interface)환경으로 유닉스나 리눅스 환경에 익숙하지 않은 사용자들에게는 큰 고통을 준다. 왜냐하면 실행해봤자 시꺼먼 커맨드 창만 나타날 뿐 우리에게 익숙한 바탕화면, 즉 GUI는 표시되지 않기 때문이다. 이번 포스팅에서는 WSL에서 바탕화면, 즉 Desktop을 표시하는 방법에 대해서 설명하겠다.
+
+## VcXsrv 설치
+
+가장 먼저 해야 할 일은 Host인 윈도우즈에 Client인 리눅스의 화면을 송출하게끔 설정하는 것이다. 이는 Xserver를 경유해서 많이 이루어지는데, Xserver를 무료로 호스팅할 수 있는 프로그램이 바로 VcXsrv이다.
+
+[VcXsrv 설치 : Sourceforge](https://sourceforge.net/projects/vcxsrv/)
+
+
+![wsl_xming_gnome_desktop_02](https://res-1.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/wsl_xming_gnome_desktop_02.png)
+
+
+VcXsrv을 설치한 다음 실행시키면 다음 화면이 나오는데, One large windows를 선택하고 Display Number는 0으로 둔다. 이는 WSL에서 기본 디스플레이를 0번으로 세팅할 것이기 때문이다.
+
+![wsl_xming_gnome_desktop_03](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/wsl_xming_gnome_desktop_03.png)
+
+Start no client 옵션으로 설정하고 다음부터는 계속 다음을 눌러 진행한다.
+
+다음으로는 가장 많이 사용되고 있는 데스크탑 환경인 Gnome과 현재 우분투 Distro에서 정식 사용하기 시작한 Unity 두가지를 설치하겠다.
+
+## Gnome 설치하기
+
+![wsl_xming_gnome_desktop_04](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/wsl_xming_gnome_desktop_04.png)
+
+리눅스 데스크탑 환경으로 가장 유명한 것은 Gnome이다. 우분투 과거 버전들과 페도라가 현재 사용중인 환경이기도 하다. 심플하면서도 편리하게 사용이 가능하기 때문에 기본으로 다른 환경이 설치되어 있는 경우 Gnome으로 재설치하는 경우도 많다.
+
+설치를 위해 WSL에서 다음 명령어를 입력한다.
+
+```
+sudo apt-get update && sudo apt-get install ubuntu-desktop
+```
+
+설치가 되었다면 vi를 실행해 ~./bashrc 마지막 부분에 다음을 입력한다.
+
+```
+export DISPLAY=:0
+```
+
+sudo /etc/init.d/dbus start
+
+## Unity 설치하기

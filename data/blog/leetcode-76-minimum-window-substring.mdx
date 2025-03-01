@@ -1,0 +1,125 @@
+---
+title: 'Leetcode - 76. Minimum Window Substring'
+images:
+  [
+    'https://images.unsplash.com/photo-1516575355332-d2934104e253?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDIwfHx3aW5kb3d8ZW58MHx8fHwxNjIzMDY2MjQ2&ixlib=rb-1.2.1&q=80&w=2000',
+  ]
+date: '2021-06-08T00:18:27.000Z'
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[](https://leetcode.com/problems/minimum-window-substring/solution/)
+
+## 풀이
+
+### 내 풀이
+
+아직 투 포인터 풀이가 익숙하지 않은 것 같다. 아래 코드로 제출했을 때 TLE가 나온다. 시간 복잡도가 $O(k\*n\log{n})$ 이므로 문자열 `t` 가 긴 경우 타임아웃이 발생한다.
+
+```python
+class Solution:
+    def minWindow(self, s: str, t: str) -> str:
+        res = ""
+        for i in range(len(s)):
+            if len(res) > 0:
+                k = i + len(res)
+            else:
+                k = len(s)
+
+            for j in range(i, k):
+                if all(
+                    val == 0
+                    for val in (
+                        collections.Counter(t) - collections.Counter(s[i : j + 1])
+                    ).values()
+                ):
+                    if len(res) == 0 or len(res) > j - i + 1:
+                        res = s[i : j + 1]
+
+        return res
+```
+
+### 투 포인터
+
+Window를 딕셔너리로 저장하는 아이디어. 매번 Window 전체에 대해 딕셔너리를 만들어주지 않아도 된다. 시간복잡도 $O(k+n)$ . 다만 최악의 경우 모든 스트링을 순회해야 하므로 $O(k+2\*n)$ 이 된다.
+
+```python
+class Solution:
+    def minWindow(self, s, t):
+        dict_t = Counter(t)
+        required = len(dict_t)
+
+        l, r = 0, 0
+        formed = 0
+        window_counts = {}
+        ans = float("inf"), 0, -1
+
+        while r < len(s):
+            character = s[r]
+            window_counts[character] = window_counts.get(character, 0) + 1
+
+            if character in dict_t and window_counts[character] == dict_t[character]:
+                formed += 1
+
+            # Contract window
+            while l <= r and formed == required:
+                character = s[l]
+                if r - l + 1 < ans[0]:
+                    ans = (r - l + 1, l, r)
+
+                window_counts[character] -= 1
+                if character in dict_t and window_counts[character] < dict_t[character]:
+                    formed -= 1
+
+                l += 1
+
+            r += 1
+        return s[ans[1] : ans[2] + 1]
+```
+
+### Optimized sliding window
+
+고정시간 $O(n+n'+k)$ 에 완료할 수 있는 알고리즘이다. 여기서 $n'$ 는 `t` 에 있는 모든 문자를 제거한 `s` 의 길이다.
+
+```python
+class Solution:
+    def minWindow(self, s, t):
+
+        dict_t = Counter(t)
+        required = len(dict_t)
+        filtered_s = [(i, char) for i, char in enumerate(s) if char in dict_t]
+
+        l, r = 0, 0
+        formed = 0
+        window_counts = {}
+
+        ans = float("inf"), 0, -1
+
+        while r < len(filtered_s):
+            character = filtered_s[r][1]
+            window_counts[character] = window_counts.get(character, 0) + 1
+
+            if window_counts[character] == dict_t[character]:
+                formed += 1
+
+            while l <= r and formed == required:
+                character = filtered_s[l][1]
+
+                end = filtered_s[r][0]
+                start = filtered_s[l][0]
+                if end - start + 1 < ans[0]:
+                    ans = (end - start + 1, start, end)
+
+                window_counts[character] -= 1
+                if window_counts[character] < dict_t[character]:
+                    formed -= 1
+                l += 1
+
+            r += 1
+        return s[ans[1] : ans[2] + 1]
+```
+
+이 풀이의 핵심은 모든 문자열을 검사하는게 아닌 필터링된 문자열만 검색해서 시간복잡도를 낮추는 것이다.

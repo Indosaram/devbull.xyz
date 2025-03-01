@@ -1,0 +1,111 @@
+---
+title: 'LaTex 기호, 특수기호 정리'
+images:
+  [
+    'https://images.unsplash.com/photo-1523800503107-5bc3ba2a6f81?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ',
+  ]
+date: '2020-08-17T03:12:09.000Z'
+tags: ['programming']
+---
+
+LaTex는 문자를 코드로 입력해야 하는 특성상 자주 쓰지 않는 기호는 자주 까먹기 마련이다. 그래서 자주 쓰지 않는 기호도 쉽게 찾을 수 있도록 정리표를 만들어 보았다. LaTeX 특수문자 카테고리별로 있으니 검색해보세요.
+
+## LaTex 그리스 문자
+
+LaTex 그리스 문자를 소문자와 대문자로 나누어 정리했습니다.
+
+### 소문자
+
+| α \alpha  | β \beta | γ \gamma | δ \delta | ϵ \epsilon |
+| --------- | ------- | -------- | -------- | ---------- |
+| ζ \zeta   | η \eta  | θ \theta | ι \iota  | κ \kappa   |
+| λ \lambda | μ \mu   | ν \nu    | ξ \xi    | o \omicron |
+| π \pi     | ρ \rho  | σ \sigma | τ \tau   | υ \upsilon |
+| ϕ \phi    | χ \chi  | ψ \psi   | ω \omega |            |
+
+### LaTex 대문자
+
+| A \Alpha  | B \Beta | Γ \Gamma | Δ \Delta | E \Epsilon |
+| --------- | ------- | -------- | -------- | ---------- |
+| Z \Zeta   | H \Eta  | Θ \Theta | I \Iota  | K \Kappa   |
+| Λ \Lambda | M \Mu   | N \Nu    | Ξ \Xi    | O \Omicron |
+| Π \Pi     | P \Rho  | Σ \Sigma | T \Tau   | Υ \Upsilon |
+| Φ \Phi    | X \Chi  | Ψ \Psi   | Ω \Omega |            |
+
+## LaTex 괄호
+
+LaTex에서는 다양한 괄호 표현을 제공하고 있는데요. 특히 인라인 수식에서 `{` 나 `}`은 수식으로 취급되기 때문에 백슬래시 \\를 반드시 넣어주셔야 합니다.
+
+| | | ⟨ \langle | ⟩ \rangle |
+| | \vert | ∥ \Vert | / \/ |
+| ∖ \backslash | ⌊ \lfloor | ⌋ \rfloor | ⌈ \lceil |
+| ⌉ \rceil | ⌞ \llcorner | ⌟ \lrcorner | ⌜ \ulcorner |
+| ⌝ \urcorner | |
+
+## LaTex 집합 기호
+
+집합의 포함 관계를 나타내기 위한 여러 가지 기호입니다. 원래는 더 많은 종류의 기호가 있는데, 자주 사용하는 녀석들만 추려 보았습니다.
+
+| ⊂ \subset            | ⊃ \supset             | ∩ \cap           | ∪ \cup               |
+| -------------------- | --------------------- | ---------------- | -------------------- |
+| ⋐ \Subset            | ⋑ \Supset             | ⋒ \Cap           | ⋓ \Cup               |
+| ⊏ \sqsubset          | ⊐ \sqsupset           | ⊓ \sqcap         | ⊔ \sqcup             |
+| ◃ \triangleleft      | ▹ \triangleright      | △ \vartriangle   | ▽ \triangledown      |
+| ◂ \blacktriangleleft | ▸ \blacktriangleright | ▴ \blacktriangle | ▾ \blacktriangledown |
+
+## LaTex 부등호
+
+LaTex 부등호 역시 자주 쓰는 특수문자만 골랐습니다.
+
+| $<$    | $>$    | ≮ \nless | ≯ \ngtr |
+| ------ | ------ | -------- | ------- |
+| ≤ \leq | ≥ \geq | ≰ \nleq  | ≱ \ngeq |
+
+## LaTex 관계 기호
+
+LaTex에서는 관계 기호도 다양한데, 주로 쓰는 논리 표현만 골랐습니다.
+
+| = =      | ≠ \neq       | ≐ \doteq         | ≑ \doteqdot     |
+| -------- | ------------ | ---------------- | --------------- |
+| ≡ \equiv | ≢ \not\equiv | ≒ \fallingdotseq | ≓ \risingdotseq |
+| ∼ \sim   | ≈ \approx    |                  |                 |
+
+## LaTex 기타 기호
+
+LaTex의 여러 특수문자 중 제가 자주 사용하는 것만 골랐습니다. 여러분이 자주 쓰는 문자인데 목록에 없는 경우 댓글로 남겨주시면 추가하겠습니다.
+
+| × \times  | − -        | ± \pm        | ∓ \mp      |
+| --------- | ---------- | ------------ | ---------- |
+| ⊥ \pert   | ⊤ \top     | ∖ \setminus  | ∠ \angle   |
+| ∞ \infty  | ∝ \propto  | ∴ \therefore | ∵ \because |
+| ∀ \forall | ∂ \partial | ∅ \emptyset  |            |
+
+## LaTex 점 기호
+
+LaTex에서 은근히 쓸 데가 많은 점 기호입니다. 특히 \\cdot이나 \\cdots같은 경우는 벡터나 급수 표현에 자주 쓰이죠.
+
+| ⋅ \cdot  | ∘ \circ  | ∙ \bullet | ⋅ \centerdot |
+| -------- | -------- | --------- | ------------ |
+| ⋯ \cdots | ⋮ \vdots | ⋱ \ddots  | … \ldots     |
+
+## LaTex 화살표
+
+몰랐는데 LaTex에 화살표도 종류가 정말 많더라구요...ㅎㅎ
+
+| ← \leftarrow          | → \rightarrow         | ↑ \uparrow          | ↓ \downarrow           |
+| --------------------- | --------------------- | ------------------- | ---------------------- |
+| ⇐ \Leftarrow          | ⇒ \Rightarrow         | ⇑ \Uparrow          | ⇓ \Downarrow           |
+| ↼ \leftharpoonup      | ⇀ \rightharpoonup     | ↿ \upharpoonleft    | ⇃ \downharpoonleft     |
+| ↽ \leftharpoondown    | ⇁ \rightharpoondown   | ↾ \upharpoonright   | ⇂ \downharpoonright    |
+| ⇇ \leftleftarrows     | ⇉ \rightrightarrows   | ⇈ \upuparrows       | ⇊ \downdownarrows      |
+| ⟵ \longleftarrow      | ⟶ \longrightarrow     | ↰ \Lsh              | ↱ \Rsh                 |
+| ⟸ \Longleftarrow      | ⟹ \Longrightarrow     | ↢ \leftarrowtail    | ↣ \rightarrowtail      |
+| ↩ \hookleftarrow     | ↪ \hookrightarrow    | ↞ \twoheadleftarrow | ↠ \twoheadrightarrow   |
+| ⇋ \leftrightharpoons  | ⇌ \rightleftharpoons  | ↶ \curvearrowleft   | ↷ \curvearrowright     |
+| ⇆ \leftrightarrows    | ⇄ \rightleftarrows    | ↺ \circlearrowleft  | ↻ \circlearrowright    |
+| ⇚ \Lleftarrow         | ⇛ \Rrightarrow        | ↫ \looparrowleft    | ↬ \looparrowright      |
+| ↔ \leftrightarrow    | ⇔ \Leftrightarrow     | ↚ \nleftarrow       | ⇍ \nLeftarrow          |
+| ⟷ \longleftrightarrow | ⟺ \Longleftrightarrow | ↛ \nrightarrow      | ⇏ \nRightarrow         |
+| ↕ \updownarrow       | ⇕ \Updownarrow        | ↮ \nleftrightarrow  | ⇎ \nLeftrightarrow     |
+| ↦ \mapsto             | ⟼ \longmapsto         | ⇝ \rightsquigarrow  | ↭ \leftrightsquigarrow |
+| ↙ \swarrow           | ↘ \searrow           | ↖ \nwarrow         | ↗ \nearrow            |

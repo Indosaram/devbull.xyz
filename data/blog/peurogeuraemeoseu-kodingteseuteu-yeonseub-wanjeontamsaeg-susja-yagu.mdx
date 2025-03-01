@@ -1,0 +1,48 @@
+---
+title: "프로그래머스 : 코딩테스트 연습 - 완전탐색 - 숫자 야구"
+images: ["https://images.unsplash.com/flagged/photo-1571358607210-1691cb0ea07c?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T09:29:28.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+# 문제
+
+-   프로그래머스 : 코딩테스트 연습 - 완전탐색 - 숫자 야구
+
+# 풀이
+
+완전탐색 방법으로, 가능한 3자리 수를 `itertools.permutation`을 이용해 모두 생성해준다. 생성 결과는 튜플이므로 문자열로 변환한 다음 `game`함수로 넣어주어 해당 숫자의 게임 결과를 판별한다. 게임 결과가 일치할 경우 `result`값을 1증가시켜준다.
+
+```python
+import itertools
+
+def game(comb, baseball):
+    strcomb = str(comb)
+
+    result = 0
+    for base in baseball:
+        # num. combination
+        sub = [0, 0]
+        for num1, num2 in list(zip(str(base[0]), strcomb)):
+            if num1 == num2:
+                sub[0]+=1             
+            elif num1 in strcomb:
+                sub[1]+=1
+
+        if sub == base[1:]:
+            result += 1
+
+    if result == len(baseball):
+        return 1
+    else:
+        return 0
+
+def solution(baseball):
+    combs = itertools.permutations(range(1,10),3)
+    result = 0
+    for comb in combs:
+        result += game(''.join(list(map(str,comb))), baseball)
+
+    return result 
+```

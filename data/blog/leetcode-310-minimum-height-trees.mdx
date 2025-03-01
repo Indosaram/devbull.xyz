@@ -1,0 +1,89 @@
+---
+title: "트리의 무게중심 (Leetcode - 310. Minimum Height Trees)"
+images: ["https://images.unsplash.com/photo-1603518146582-0638bc96dd54?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDJ8fGNlbnRlcnxlbnwwfHx8fDE2MjI1MTMwMTk&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-01T02:03:10.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+> 이 글은 리트코드에 게시된 문제와 해설을 재편집하였음을 밝힙니다.   
+> 원문 : [](https://leetcode.com/problems/minimum-height-trees/solution/)
+
+## 트리의 정의
+
+트리(Tree)는 순환 구조(Cyclic)가 없는 그래프 자료형이다. 다시 말해 어떤 노드에서 출발해 다시 자기 자신으로 되돌아올 수 없는 단방향 그래프이다. 트리가 가지는 중요한 특징 중 하나는 재귀(Recursive)다. 자기 자신도 트리고, 부모와 자식도 모두 트리다.
+
+## 트리의 무게중심 구하기
+
+### 무게중심과 최소높이트리
+
+트리의 무게중심이란 해당 노드에서 출발했을 때 모든 노드를 최소 높이(Height)로 순환할 수 있는 구조다.
+
+![Courtesy of Leetcode](/images/2021/06/310_example.png)
+
+위 그림에서 보듯이 노드 1을 루트로 두면 다른 모든 노드를 높이 1로 순환이 가능하다. 하지만 다른 노드를 루트로 잡을 경우, 높이는 2가 된다. 따라서 노드 1이 트리의 무게중심이 되며, 이때 이 트리를 최소높이트리(MST, Minimum height tree)라고 부른다.
+
+### 무게중심을 구하는 방법
+
+그럼 이런 트리의 무게중심은 어떤 방법으로 구할 수 있을까? 가장 간단한 방법은 트리에서 리프 노드를 제거해 나가는 것이다. 위 그림에서 리프 노드는 0, 2, 3이다. 이를 모두 제거하고 나면 노드 1만 남게 된다. 만일 노드 0, 2, 3에 자식 노드가 있더라도 계속해서 리프 노드를 제거해 나가면 결과적으로는 무게중심만 남게 된다.
+
+### 트리 무게중심은 1개 아니면 2개다
+
+아래 그림을 보자.
+
+![courtesy of leetcode](/images/2021/06/310_1_2_centroids.png)
+
+첫 번째 경우는 노드가 짝수개일 경우다. 이때 모든 리프 노드를 제거한다면 무게중심은 2개가 된다. 두 번째 경우는 노드가 홀수개일 경우다. 이 경우는 무게중심이 1개다. 잘 생각해보면 이를 벗어나는 경우가 없다는 것을 알 수 있다.
+
+## 파이썬 구현
+
+이제 최소높이트리 문제는 트리의 무게중심을 구하는 것과 같다는 결론을 내렸으니 파이썬으로 알고리즘을 구현해본다. 리트코드 솔루션을 최적화해봤다.
+
+```
+class Solution:
+    def findMinHeightTrees(self, n: int, edges: List[List[int]]) -> List[int]:
+
+        # base cases
+        if n <= 2:
+            return [i for i in range(n)]
+
+        # Build the graph with the adjacency list
+        neighbors = [[] for i in range(n)]
+        for start, end in edges:
+            neighbors[start].append(end)
+            neighbors[end].append(start)
+
+        # Initialize the first layer of leaves
+        leaves = [i for i in range(n) if len(neighbors[i]) == 1]
+
+        # Trim the leaves until reaching the centroids
+        remaining_nodes = n
+        while remaining_nodes > 2:
+            remaining_nodes -= len(leaves)
+            new_leaves = []
+            # remove the current leaves along with the edges
+            for leaf in leaves:
+                # the only neighbor left for the leaf node
+                neighbor = neighbors[leaf].pop()
+                # remove the only edge left
+                neighbors[neighbor].remove(leaf)
+                
+                if len(neighbors[neighbor]) == 1:
+                    new_leaves.append(neighbor)
+
+            # prepare for the next round
+            leaves = new_leaves
+
+        # The remaining nodes are the centroids of the graph
+        return leaves
+```
+
+## 다시 풀어본다면
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/minimum-height-trees/discuss/76052/Two-O(n)-solutions)

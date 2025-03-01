@@ -1,0 +1,32 @@
+---
+title: "systemd 서비스 - Unit 의존성"
+images: ["https://images.unsplash.com/photo-1498050108023-c5249f4df085?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDN8fHN5c3RlbXxlbnwwfHx8fDE2Njc5NjUzMTM&ixlib=rb-4.0.3&q=80&w=2000"]
+date: "2022-11-09T03:35:23.000Z"
+tags: ['dev-diary']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+최근 회사에서 새로운 systemd 서비스를 만들었다. SUSE 리눅스를 쓰고 있어서 RPM 패키지를 빌드해서 저장소에 올리고, 개발 환경에 배포해서 테스트도 잘 진행되었다.
+
+이제 다음 과정은 새로운 OS 이미지 버전에 systemd 서비스를 올리는 것이다. 우리 회사는 OS 이미지부터 직접 빌드해서 사용하고 있어서, systemd 서비스를 시작 서비스로 등록한 다음 이미지를 만들었다. 그리고 개발 환경에 새로운 이미지로 머신을 재부팅했다. 별 문제가 없을 것이라고 생각했는데 역시나 문제가 생겼다.
+
+이 systemd 서비스는 docker daemon과 통신하면서 작업을 수행하는데,  따라서 systemd 서비스가 작동하려면 `docker.service`가 이미 작동 중이어야만 한다. 이를 미처 생각지 못하고 systemd 유닛에서 docker daemon server로 API 요청을 보내고 있어서 오류가 발생한 것이다.
+
+이미 소스코드 상에서 서비스 실행 시 docker daemon과 통신이 되지 않으면 10초를 대기하도록 되어 있어서 이 시간을 늘리려고 했는데, 팀 리드가 대신 systemd unit에 의존성을 넣으면 된다고 조언을 해줘서 이 방향으로 갔다.
+
+결론적으로 RPM spec 파일에 다음과 같은 코드 두 줄을 추가했다.
+
+```
+BindsTo=docker.service
+After=docker.service
+```
+
+`Requires` , `BindsTo`와 `After` 가 굉장히 비슷한 의미를 가지고 있어서 헷갈렸는데 정리하자면 각각의 특징은 다음과 같다.
+
+* `Requires` - 의존성 서비스가 먼저 실행되고, 만일 의존성 서비스가 실패하면 실행하지 않음
+* `After` - 의존성 서비스가 먼저 실행된 다음, 의존성 서비스의 실패 여부와 상관없이 실행
+* `BindsTo` - `Requires`보다 훨씬 강력한 의존성. 의존성 서비스가 먼저 시작되고 현재 서비스도 실행되고 있지만, 만일 의존성 서비스가 나중에 종료되면 현재 서비스도 함께 종료됨
+
+전체 Unit 옵션에 대한 레퍼런스는 다음을 참고했다.
+
+[systemd.unit](https://www.freedesktop.org/software/systemd/man/systemd.unit.html#Requires=)

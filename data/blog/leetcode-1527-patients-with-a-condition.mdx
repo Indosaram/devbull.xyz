@@ -1,0 +1,27 @@
+---
+title: "Leetcode - 1527. Patients With a Condition"
+images: ["None"]
+date: "2022-06-05T06:09:52.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/patients-with-a-condition/)
+
+## 정답
+
+regex로 풀면 간단한 거라는 생각은 했는데 생각보다 안 풀렸던 문제. 왜냐하면 정규식 앞에 `\` 를 하나 더 붙여야 해서이다.
+
+```
+SELECT *
+FROM Patients
+WHERE conditions REGEXP '\\bDIAB1'
+```

@@ -1,0 +1,43 @@
+---
+title: "Rust's Deref coercion"
+images: ["None"]
+date: "2024-02-09T02:03:09.000Z"
+tags: ['None']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+Let me add explanation later 🙃
+
+```
+use std::ops::Deref;
+
+#[derive(Debug)] 
+struct Test {
+   hi: String
+}
+
+impl Deref for Test {
+    type Target = String;
+    
+    fn deref(&self) -> &Self::Target {
+        &self.hi
+    }
+}
+
+fn extract<T>(test: T) 
+where
+    T: Deref<Target=String> 
+{
+    // Deref coercion happens here
+    let unwrapped: &String = &test; 
+    println!("{:?}", unwrapped);
+}
+
+fn main() {
+   let test = Test { 
+       hi: "hello".to_string() 
+   };
+   
+   extract(test); 
+}
+```

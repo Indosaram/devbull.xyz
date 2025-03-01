@@ -1,0 +1,116 @@
+---
+title: "VS Code with WSL(Ubuntu 18.04) C/C++ 설정 - gcc, gdb  설정"
+images: ["https://images.unsplash.com/photo-1540630387975-98b9630cc103?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T18:53:45.000Z"
+tags: ['set-up']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+VS Code에서 자꾸 설정 관련으로 꼬여서 블로그에 기록해두었다가 그대로 사용해야겠다. 리눅스는 어떨 땐 되고 어떨 된 안되고 할 때가 너무 많아서.. 잘 됐던 세팅을 저장해 두었다가 재설치 시 그대로 따라하는 게 좋다.
+
+# C/C++ 설치
+
+먼저 WSL에서 `c/c++` 를 설치해준다.
+
+```
+sudo apt-get install gcc gdb g++
+```
+
+# C/C++ Extention 설치
+
+VS Code에서 C/C++ 관련 Extention을 설치한다.
+
+![vscode_with_wsl_gcc_gdb_setup_01](https://res-1.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/vscode_with_wsl_gcc_gdb_setup_01.png)
+
+
+설치한 다음 `CRTL+SHIFT+P`를 눌러 `C/C++ : Edit configuration (UI)`를 찾는다.
+
+![vscode_with_wsl_gcc_gdb_setup_02](https://res-3.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/vscode_with_wsl_gcc_gdb_setup_02.png)
+
+다음과 같이 설정을 바꾸어준다.
+
+![vscode_with_wsl_gcc_gdb_setup_03](https://res-1.cloudinary.com/hwrfsjit3/image/upload/q_auto/v1/ghost-blog-images/vscode_with_wsl_gcc_gdb_setup_03.png)
+# tasks.json
+
+소스를 빌드하는 데 필요한 설정이다. 다음과 같이 입력한다. 만일 해당 파일이 없으면 해당 디렉토리의 `.vscode`폴더 하위에 새로 만들어도 되고, `CTRL+SHIFT+B`를 누르면 해당 파일을 수정하라고 하는데 여기에 입력해도 된다.
+
+컴파일러가 gcc-7이 아니고 g++인 경우 맞춰서 경로명을 수정한다.
+
+```
+{
+	"tasks": [
+		{
+			"type": "shell",
+			"label": "gcc-7 build active file",
+			"command": "/usr/bin/g++",
+			"args": [
+				"-g",
+				"${file}",
+				"-o",
+				"${fileDirname}/${fileBasenameNoExtension}"
+			],
+			"options": {
+				"cwd": "/usr/bin"
+			},
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		}
+	],
+	"version": "2.0.0"
+}
+```
+
+# launch.json
+
+`gdb` 디버거를 사용하기 위한 설정으로 역시 아래와 같이 입력하면 된다. 역시 해당 파일이 없으면 해당 디렉토리의 `.vscode`폴더 하위에 생성해주면 된다.
+
+```
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "gcc-7 build and debug active file",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${fileDirname}/${fileBasenameNoExtension}",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "gdb에 자동 서식 지정 사용",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "gcc-7 build active file",
+            "miDebuggerPath": "/usr/bin/gdb"
+        }
+    ]
+}
+```
+
+## Code Runner 설정
+
+```
+"code-runner.executorMap": {
+
+        "javascript": "node",
+        "java": "cd $dir && javac $fileName && java $fileNameWithoutExt",
+        "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+        "cpp": "cd $dir && g++ $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+        "objective-c": "cd $dir && gcc -framework Cocoa $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt",
+        "python": "python -u",
+    },
+    "code-runner.runInTerminal": true
+```
+
+만일 위처럼 따라했는데 빌드하거나 디버깅 하는 데 문제가 있다면 댓글로 남겨주세요~

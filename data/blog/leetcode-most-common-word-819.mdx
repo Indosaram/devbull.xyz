@@ -1,0 +1,86 @@
+---
+title: "Leetcode - Most Common Word #819"
+images: ["https://images.unsplash.com/photo-1561651188-d207bbec4ec3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MXwxMTc3M3wwfDF8c2VhcmNofDF8fHdvcmR8ZW58MHx8fA&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-02-20T15:22:56.000Z"
+tags: ['codingtest', 'leetcode']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+* 문제 : [](https://leetcode.com/problems/most-common-word/)
+
+# 답안
+
+문제를 풀면서 고민한 건
+
+1. Tokenize를 한 다음 preprocessing을 할 것인가?
+2. Preprocessing을 한 다음 Tokenize를 할 것인가?
+
+였는데, tokenize와 preprocessing을 동시에 하도록 정규식을 구성했다. count 하는 걸 어떻게 구현할까 하다가 Dictionary로 구현했는데, 메모리 효율성 면 그리고 최대빈도의 Word를 찾기 위해 sort를 해주는 과정에서 비용이 많이 드는 단점이 있다.
+
+```
+class Solution:    
+    def tokenizer(self,paragraph):
+        punctuations = "[!?',;. ]+"
+        return re.split(punctuations, paragraph)
+    
+    def mostCommonWord(self, paragraph: str, banned: List[str]) -> str:            
+        paragraph=self.tokenizer(paragraph.lower())
+        
+        counter = {}
+        for word in paragraph:
+            if word in banned:
+                continue
+                
+            if word in counter.keys():
+                counter[word] += 1
+            else:
+                counter[word] = 1
+
+        return sorted(counter.items(), key=lambda x: x[1], reverse=True)[0][0]
+```
+
+마지막 부분을 sort하지 않고 이렇게 수정하면 더 효율적이다.
+
+```
+class Solution:    
+    def tokenizer(self,paragraph):
+        punctuations = "[!?',;. ]+"
+        return re.split(punctuations, paragraph)
+    
+    def mostCommonWord(self, paragraph: str, banned: List[str]) -> str:            
+        paragraph=self.tokenizer(paragraph.lower())
+        
+        counter = {}
+        for word in paragraph:
+            if word in banned:
+                continue
+                
+            if word in counter.keys():
+                counter[word] += 1
+            else:
+                counter[word] = 1
+
+        return max(counter.items(), key=lambda x: x[1])[0]
+
+```
+
+그리고 `collections` 의 `Counter` 를 사용하면 if문도 없앨 수 있다.
+
+```
+import collections
+import re
+from typing import List
+
+
+class Solution:
+    def mostCommonWord(self, paragraph: str, banned: List[str]) -> str:
+        words = [
+            word
+            for word in re.sub(r'[^\w]', ' ', paragraph).lower().split()
+            if word not in banned
+        ]
+
+        counts = collections.Counter(words)
+        return counts.most_common(1)[0][0]
+
+```

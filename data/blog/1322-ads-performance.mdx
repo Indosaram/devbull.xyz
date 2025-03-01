@@ -1,0 +1,40 @@
+---
+title: "1322. Ads Performance"
+images: ["None"]
+date: "2023-02-11T01:07:50.000Z"
+tags: ['codingtest', 'sql']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Problem
+
+[LeetCode - The World’s Leading Online Programming Learning Platform
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon.ico)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/ads-performance/description/)
+
+## Solution
+
+```
+SELECT ad_id, 
+    CASE
+        WHEN clicked = 0 AND viewed = 0 THEN 0
+        ELSE ROUND(clicked / (clicked + viewed) * 100, 2)
+    END as ctr
+FROM (
+        SELECT ad_id, 
+            IFNULL(SUM(CASE WHEN action = 'Clicked' THEN cnt END),0) AS clicked,
+            IFNULL(SUM(CASE WHEN action = 'Viewed' THEN cnt END),0) AS viewed,
+            IFNULL(SUM(CASE WHEN action = 'Ignored' then cnt END),0) AS ignored
+        FROM (
+        SELECT ad_id, action, COUNT(*) as cnt
+        FROM Ads
+        GROUP BY ad_id, action
+        ) as Temp
+        GROUP BY ad_id
+) as Temp
+ORDER BY ctr DESC, ad_id
+```

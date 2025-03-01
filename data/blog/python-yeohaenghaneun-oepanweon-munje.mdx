@@ -1,0 +1,135 @@
+---
+title: "[Python] 여행하는 외판원 문제 (Traveling Salesman, TSP)"
+images: ["https://images.unsplash.com/photo-1520645521318-f03a712f0e67?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T11:17:17.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 여행하는 외판원
+
+Traveling salesman problem(TSP)로 유명한 문제이다. Brute force 방식으로, 최소 비용의 edge를 연결하는 방식으로 최소신장트리를 구현한다.
+
+## 해결 코드
+
+`data.csv` 파일에서 데이터를 읽어오도록 되어 있다.
+
+```
+import csv
+import math
+
+# sys 모듈 사용할 수 없는 경우
+def traveling_salesman(num_vertices, edges):
+    # find minimum distance
+    visit = [0] * (num_vertices)
+    curr = 0
+    visit[curr] = 1
+    history = [curr]
+
+    dist = 0
+    while sum(visit) < num_vertices:
+        print(sum(visit), end="\r")
+        temp = []
+        # Find unvisited nodes
+        for ind, node in enumerate(visit):
+            if node == 0 and ind > 0:
+                # Find min. dist. from unvisited nodes
+                weight = []
+                for a, b in enumerate(edges[ind]):
+                    if b > 0 and visit[a] == 1:
+                        weight.append([ind, b])
+
+                if weight:
+                    temp.append(min(weight, key=lambda x: x[1]))
+
+        if temp:
+            cand = min(temp, key=lambda x: x[1])
+            dist += cand[1]
+            visit[cand[0]] = 1
+            history.append(cand[0])
+
+    return history, dist
+
+
+def dist2d(point1, point2):
+    return math.sqrt(
+        abs(point1[0] - point2[0]) ** 2 + abs(point1[1] - point2[1]) ** 2
+    )
+
+
+with open("data.csv", "r") as file:
+    reader = csv.reader(file)
+    next(reader, None)  # Skip header
+    nodes = []
+    for row in reader:
+        nodes.append([int(row[1]), int(row[2])])
+
+num_vertices = 100
+edges = [[0] * (num_vertices) for _ in range(num_vertices)]
+
+for idx1 in range(num_vertices):
+    for idx2 in range(num_vertices):
+        edges[idx1][idx2] = dist2d(nodes[idx1], nodes[idx2])
+
+
+path, dist = traveling_salesman(num_vertices, edges)
+print(path, dist)
+
+```
+
+사실 이렇게 하면 굉장히 비효율적이기 때문에 재귀 방식으로 해결하는게 더 좋겠지만 노드 수가 몇개 되지 않아서 그냥 이렇게 풀었다.
+
+## 해결 코드(Old)
+
+`sys`모듈을 사용할 수 있으면 `INF`를 사용해서 연결행렬 구현이 가능하기 때문에 좀 더 깔끔하게 코드를 쓸 수 있지만.. 간혹 코딩테스트 IDE에서 `sys`모듈 import가 안되는 경우가 있다고 해서 해당 모듈 없이 구현해봤다.
+
+코드에 좀 더 개선의 여지가 있는 것 같은데 어떻게 해야할 지 영 모르겠다..
+
+```
+# sys 모듈 사용할 수 없는 경우
+def travelingsalesman(numV, nodes):
+    edges = [[0] * (numV + 1) for _ in range(numV + 1)]
+    for node in nodes:
+        edges[node[0]][node[1]] = node[2]
+        edges[node[1]][node[0]] = node[2]
+
+    # find minimum distance
+    visit = [0] * (numV + 1)
+    memo = [0] * (numV + 1)
+    curr = 7
+    visit[curr] = 1
+
+    dist = 0
+    while sum(visit) < numV:
+        temp = []
+        # Find unvisited nodes
+        for k in [i for i, j in enumerate(visit) if j == 0 and i > 0]:
+            # Find min. dist. from unvisited nodes
+            weight = [[k, b] for a, b in enumerate(edges[k]) if b > 0 and visit[a] == 1]
+            if weight:
+                temp.append(min(weight, key=lambda x: x[1]))
+
+        if temp:
+            cand = min(temp, key=lambda x: x[1])
+            dist += cand[1]
+            visit[cand[0]] = 1
+
+    return dist
+
+
+nodes = [
+    [1, 7, 12],
+    [4, 7, 13],
+    [1, 5, 17],
+    [3, 5, 20],
+    [2, 4, 24],
+    [1, 4, 28],
+    [3, 6, 37],
+    [5, 6, 45],
+    [2, 5, 62],
+    [1, 2, 67],
+    [5, 7, 73],
+]
+numV = 7
+print(travelingsalesman(numV, nodes))
+```

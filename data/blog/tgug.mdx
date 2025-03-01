@@ -1,0 +1,82 @@
+---
+title: "TGUG - Typora-Ghost image Uploader in Go"
+images: ["https://images.unsplash.com/photo-1495745966610-2a67f2297e5e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDR8fHBob3RvZ3JhcGhlcnxlbnwwfHx8fDE2MjI1MjE5MDY&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-05-21T07:03:01.000Z"
+tags: ['go']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Introduction
+
+![typora](/images/2021/06/fences.png)
+
+[Typora](https://typora.io/)는 내가 몇년 째 쓰고 있는 매우 편리하고 심플한, 그리고 예쁜 마크다운 편집기다. 마크다운 편집이 아니더라도 메모장으로도 자주 사용한다. 특히 코드블럭과 수식도 자유롭게 넣을 수 있기 때문에 더욱 자주 사용하게 된다. 테마도 커스터마이징이 가능하고, 기본 테마도 충분히 예쁘다. 나는 `Night`를 주로 사용한다. 일렉트론 기반의 Windows, Mac, Linux를 모두 지원하는데다 가볍기까지해서 새로운 PC를 세팅할 때마다 반드시 설치해주는 최애 프로그램 중 하나이기도 하다.
+
+그러나 매번 typora에서 작성한 마크다운을 Ghost 블로그로 옮길 때, 이미지를 따로 업로드해서 일일이 원래 자리에 넣어줘야 해서 정말 짜증난다.
+
+나는 Typora의 임베드 이미지를 내 Ghost를 호스팅하고 있는 digitalocean의 서버에 올리는 게 목적이다. 따라서 Ghost API를 사용해서  자동으로 이미지를 업로드해주는 프로그램을 만들었다.
+
+## **Typora 이미지 업로더를 개발한 이유**
+
+### **마크다운 편집기의 단점**
+
+그런데 마크다운은 사실 HTML 그 자체나 마찬가지기 때문에, 편집기 내부에 이미지를 "첨부"할 수 없다는 건 불편한 점이었다. 물론 하이퍼링크나 로컬 경로를 통해서 이미지를 삽입할 수는 있지만, 작성한 마크다운을 어딘가에 업로드할 때에는 일일히 이미지 링크를 수정해줘야 하는 불편함이 있었다.
+
+특히 나는 블로그 플랫폼으로 [Ghost](https://ghost.org/)를 사용하고 있기 때문에 로컬에서 편집한 마크다운 그대로 블로그 포스팅으로 올리면 좋겠다는 생각이 들었다. 그러던 중 Typora 자체에서 이미지 업로드 기능이 있다는 것을 알게 되었는데, 최근 추가된 [typora의 2020년 2월 업데이트](https://support.typora.io/Upload-Image/#custom)에서 내장 이미지를 원하는 저장소에 업로드할 수 있는 기능을 추가해주었다. 하지만 Typora에서 native로 지원하고 있는 앱들은 github, S3 등 클라우드 스토리지에서만 사용이 가능하다. 그래서 나처럼 개인 블로그 서버에 이미지를 올리고 싶은 사람은 사용할 수가 없었다.
+
+사실 나는 기록용으로 문서를 작성할 때는 Notion을 사용하고 있다. 평소 메모용이나 스크래치 문서를 만들 때 이미지를 삽입할 일은 거의 없다. Typora에 이미지를 넣을 때는 헤딩과 이미지 레이아웃을 맞춰서 작성해야 하는 블로그의 경우에만 쓰고 있다.  그래서 Typora + Ghost 전용 이미지 업로더를 사용할 수 있는 환경이다. 그래서 "직접 만들자!"는 마음으로 개발하게 되었다.
+
+### **왜 Golang인가?**
+
+![Gopher](/images/2021/06/img.png)
+
+나는 파이썬을 무척 좋아한다. 읽기 편하고, 빠르게 코딩할 수 있고, 서드파티 라이브러리도 엄청나다. 파이썬으로 못하는 일이 거의 없다고 느껴질 정도로 파이썬은 강력하다. 다만 파이썬의 태생적인 한계로 C/C++ 네이티브로 작성된 라이브러리가 아니면 성능이 느린 게 사실이다. 결국 성능을 생각하면 컴파일 언어로 가야한다. C/C++은 싫고, 그래서 예전부터 배워보고, 써보고 싶었던 Golang으로 이미지 업로더를 개발해 보기로 했다.
+
+Golang은 생각보다 쉽고, 간단했다. 파이썬의 `dict` 와 `json`에 너무 익숙해진 나머지 `map` 자료형에 익숙해지기까지 시간이 조금 걸렸지만, 그 외에는 정말 만족스러웠다. 결과적으로 C/C++에 비해 훨씬 간결한 코드가 나왔다. 성능은 두말할 것도 없었다. 왜 다들 Golang을 꼭 배우라고 하는지 이해가 되는 순간이었다.
+
+## **TGUG 사용법**
+
+TGUG는 [Typora의 이미지 업로더](https://support.typora.io/Upload-Image/)에 연동하기 위해 만들어진 앱이다. 설치 방법, CLI 사용법과 Typora 연동 방법을 소개해 보겠다.
+
+### 설치
+
+아래 명령어를 복사해 쉘에 입력한다.
+
+```
+git clone https://github.com/Indosaram/tgug
+cd tgug
+
+# make a directory reserved for tgug and install in GOBIN path
+sudo mkdir ~/.tgug
+GOBIN=/usr/local/bin go install
+
+```
+
+이제 커맨드로 `tgug` 를 사용할 수 있다. 쉘에 `tgug` 를 입력해보면 설정 화면이 나오게 된다. 여기서 Ghost 블로그 관련 다음 정보를 입력한다.
+
+* Domain
+* Username (email)
+* Password
+
+이 정보는 `~/.tgug` 폴더의 `auth.json` 파일로 저장된다.
+
+### CLI 사용 방법
+
+현재는 이미지 1개 또는 여러개를 업로드하는 기능만 구현되어 있다. 실행 시  `-f` 플래그를 주고 파라미터로 이미지 경로를 입력하면 된다. 여러 이미지를 한번에 업로드하는 경우, 구분자를 공백 없이 콤마(,)로 해서 뒤에 나열하면 된다.
+
+```
+tgug -f=image1.jpg,image2.png,...
+
+```
+
+### Typora 연동 방법
+
+연동 방법은 다음 포스팅을 참고한다.
+
+[How to setup tgug with Typora
+
+Automatic uploadYou can set typora to upload all your images automatically. Go to setting panel,and choose “Image” tab. First, in “When Insert...” menu, select a behavior for Typora to take when youinsert an image. Choose “Upload Image”. Next, you can set an uploading rule forlocal images and o…
+
+![](__GHOST_URL__/assets/icon-192x192.png?v=6c313c1800)일시불 프로그래밍일시불
+
+![](https://images.unsplash.com/photo-1593720218746-e13e4a422a3b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDR8fGNvbmZpZ3xlbnwwfHx8fDE2MjI1MjE3NTY&ixlib=rb-1.2.1&q=80&w=2000)](__GHOST_URL__/how-to-setup-tgug-with-typora/)

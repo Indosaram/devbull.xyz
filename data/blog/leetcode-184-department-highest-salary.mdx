@@ -1,0 +1,28 @@
+---
+title: "Leetcode - 184. Department Highest Salary"
+images: ["None"]
+date: "2022-07-02T02:15:34.000Z"
+tags: ['codingtest']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/department-highest-salary/)
+
+## 정답
+
+```
+SELECT Department.name AS Department, Employee.name as Employee, salary as Salary
+FROM Employee
+JOIN Department ON Employee.departmentId = Department.id
+WHERE (salary, departmentId) in (
+    SELECT MAX(salary), departmentId FROM Employee GROUP BY departmentId
+)
+```

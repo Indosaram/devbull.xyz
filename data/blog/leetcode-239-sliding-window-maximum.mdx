@@ -1,0 +1,84 @@
+---
+title: "Leetcode - 239. Sliding Window Maximum"
+images: ["https://images.unsplash.com/photo-1551524163-d00af9f12253?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDV8fHdpbmRvd3xlbnwwfHx8fDE2MjMwNjYyNDY&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-07T09:52:43.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/sliding-window-maximum/submissions/)
+
+## 풀이
+
+### 브루트 포스
+
+당연하겠지만 TLE가 나온다.
+
+```
+class Solution:
+    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+        return [max(nums[i : i + k]) for i in range(len(nums) - k + 1)]
+```
+
+### Deque
+
+Deque를 사용해 매번 최대값을 구하지 않도록 했지만 여전히 TLE가 나온다.
+
+```
+class Solution:
+    def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+        window = collections.deque(nums[:k], k)
+        max_num = max(window)
+        res = [0 for _ in range(len(nums) - k + 1)]
+        res[0] = max_num
+
+        for idx, num in enumerate(nums[k:]):
+            if window[0] == max_num:
+                window.append(num)
+                max_num = max(window)
+            else:
+                window.append(num)
+                max_num = max(max_num, num)
+
+            res[idx + 1] = max_num
+
+        return res
+```
+
+### Optimized deque
+
+max를 구하는 과정에서 소모되는 O(k)만큼의 연산량을 최소화한 코드.
+
+```
+class Solution(object):
+    def maxSlidingWindow(self, nums, k):
+        q = deque()
+        result = []
+
+        for i in range(len(nums)):
+            # the first/left (max) element is out of the current window
+            if q and i - q[0] == k:
+                q.popleft()
+
+            while q:
+                # pop useles elements from last of the queue
+                if nums[q[-1]] < nums[i]:
+                    q.pop()
+                else:
+                    break
+
+            q.append(i)
+
+            if i >= k - 1:
+                result.append(nums[q[0]])
+
+        return result
+```

@@ -1,0 +1,77 @@
+---
+title: "DigitalOcean에서 Ghost 4로 업데이트하는 방법"
+images: ["https://images.unsplash.com/photo-1604186838309-c6715f0d3e6c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDE2fHxnaG9zdHxlbnwwfHx8fDE2MjQyNDA5Mzg&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2021-06-21T02:00:40.000Z"
+tags: ['set-up']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## Ghost Update
+
+먼저 최신 버전의 `ghost-cli`를 설치한다. 반드시 `sudo` `-g` 키워드를 빼먹으면 안된다. 커뮤니티에 올라오는 설치/업데이트 관련 질문 중 대부분은 cli를 그냥 설치해서 발생한다.
+
+```
+sudo npm install -g ghost-cli@latest
+
+```
+
+고스트 cli는 고스트가 설치된 경로에서만 작동한다. 고스트를 DigitalOcean에서 설치했다면 아래 경로에 설치되어있다.
+
+```
+cd /var/www/ghost
+
+```
+
+고스트 업데이트는 이전 버전에서 다음 메이저 버전으로 바로 업데이트가 되지 않는다. 만일 Ghost 3 버전을 사용중이라면 먼저 버전3의 최신 버전으로 업데이트를 한다.
+
+```
+# Update to latest of current major version
+ghost update v3
+
+# Update to next major version
+ghost update
+
+```
+
+## Ghost를 DigitalOcean에서 설치해야 하는 이유
+
+만일 Ghost를 AWS나 다른 곳에서 설치했다면 생각보다 자잘한 문제가 많이 발생한다. 예를 들어 AWS LightSail에 3.5달러짜리 서버에 Ghost 이미지를 사용해 설치하면 기본 설치 경로가 `/var/www/ghost`가 아니어서 업데이트 때마다 경로를 다시 찾느라 번거롭다. 그리고 최초 설치 시에도 SSL 인증서 발급 등이 까다로워 거의 베어메탈에 설치하는 것처럼 복잡하게 느껴진다.
+
+하지만 DigitalOcean은 미리 Ghost를 위한 전용 서버 이미지가 있어서 설치할 때에도 사용자가 신경써야 하는 부분이 전혀 없다. 설치 스크립트가 알아서 모든 걸 처리하기 때문이다. 지금껏 1년 정도 DigitalOcean에서 고스트를 4개 호스팅하면서 느낀 점은 다른 클라우드 서버보다 훨씬 관리가 편하다는 점이다.
+
+지금까지 고스트를 사용하면서 자잘한 오류 때문에 고통받고 있다면 지금 바로 DigitalOcean으로 마이그레이션하는 것을 추천한다. 아래 배너를 클릭하면 100달러 크레딧을 받을 수 있으니 지금 바로 시작해보길 추천!
+
+[![DigitalOcean Referral Badge](https://web-platforms.sfo2.cdn.digitaloceanspaces.com/WWW/Badge%201.svg)](https://www.digitalocean.com/?refcode=58a4cd24f491&utm_campaign=Referral_Invite&utm_medium=Referral_Program&utm_source=badge)
+
+## Troubleshooting
+
+### 1. non-root user
+
+만일 non-root 유저가 없다면 새로 생성한다. `USERNAME`을 원하는 유저 이름으로 변경한다.
+
+```
+sudo adduser USERNAME
+sudo usermod -aG sudo USERNAME
+su USERNAME
+
+```
+
+### 2. 접근 권한 문제 (permission denied)
+
+```
+sudo chown -R USERNAME:USERNAME /var/www/ghost
+
+```
+
+### 3. Node 버전 문제
+
+Ghost의 Node 버전 호환성은 아래 링크에서 확인할 수 있다.
+
+[](https://ghost.org/docs/faq/node-versions/)
+
+Ghost 4.7.0 기준으로 추천 노드 버전은 14.x를 LTS로 지원하고 있다. Node 14.x버전으로 업데이트하려면 다음과 같이 입력한다.
+
+```
+curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash && sudo apt-get install -y nodejs
+
+```

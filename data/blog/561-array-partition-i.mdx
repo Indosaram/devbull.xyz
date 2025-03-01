@@ -1,0 +1,37 @@
+---
+title: "Leetcode - 561. Array Partition I"
+images: ["https://images.unsplash.com/photo-1562184552-94810dff77f5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTc3M3wwfDF8c2VhcmNofDE1fHxwYXJ0aXRpb258ZW58MHx8fHwxNjQ0MTMwNjE4&ixlib=rb-1.2.1&q=80&w=2000"]
+date: "2022-02-06T06:42:19.000Z"
+tags: ['codingtest', 'python']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+## 문제
+
+[Loading...
+
+Level up your coding skills and quickly land a job. This is the best place to expand your knowledge and get prepared for your next interview.
+
+![](https://leetcode.com/favicon-192x192.png)LeetCode
+
+![](https://leetcode.com/static/images/LeetCode_Sharing.png)](https://leetcode.com/problems/array-partition-i/)
+
+## 답안
+
+```
+class Solution:
+    def arrayPairSum(self, nums: List[int]) -> int:
+        sorted_nums = sorted(nums)
+
+        return sum([num for idx, num in enumerate(sorted_nums) if not idx % 2])
+
+```
+
+좀더 간결하게
+
+```
+class Solution:
+    def arrayPairSum(self, nums: List[int]) -> int:
+        return sum(sorted(nums)[::2])
+
+```

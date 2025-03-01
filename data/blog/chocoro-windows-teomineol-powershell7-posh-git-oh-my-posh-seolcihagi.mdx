@@ -1,0 +1,166 @@
+---
+title: "Windows 터미널 설정: Powershell Core + Posh-Git, Oh-my-posh 설치하기(feat. choco)"
+images: ["https://images.unsplash.com/photo-1509966756634-9c23dd6e6815?ixlib=rb-1.2.1&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=2000&fit=max&ixid=eyJhcHBfaWQiOjExNzczfQ"]
+date: "2020-08-16T11:28:37.000Z"
+tags: ['set-up']
+---
+
+<TOCInline toc={props.toc} asDisclosure />
+이번 포스팅에서는 패키지 관리 솔루션인 Chocolatey의 도움을 받아 Windows Terminal, Powershell Core을 설치하고 Powerline 테마를 설정하는 방법을 소개합니다.
+
+## Choco🍫 설치
+
+[Chocolatey](https://chocolatey.org/)는 패키지 관리 솔루션으로, 명령줄 하나로 간편하게 프로그램을 설치, 삭제, 업데이트가 가능합니다. 특히 Windows 환경에서는 리눅스나 macOS와 달리 패키지 설치가 굉장히 귀찮고 어려운데 이런 문제를 정말 깔끔하게 해결했습니다.
+
+다만 공식 설치 파일이 지원된다기보다 유저가 올린 파일을 바탕으로 빌드하는 방식이기 때문에, chocolatey를 통해서 처음 설치하는 패키지라면 안전하게 빌드되었는지(Safely built) 확인하는 과정이 필요합니다. 하지만 유명한 프로그램이라면 대부분 검증이 완료된 상태기 때문에 걱정 없이 설치가 가능합니다.
+
+> (주의) 공식 설치 경로가 아니기 때문에 최신 버전을 설치할 수 없는 경우도 존재합니다.
+
+Chocolatey는 설치도 매우 간단합니다. powershell을 **관리자 권한**으로 실행합니다. 관리자 권한으로 실행하려면 "시작 버튼 - powershell 검색 - 관리자로 실행"대로 하면 됩니다. 그리고 아래 스크립트를 실행합니다.
+
+```
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+
+```
+
+만일 설치 시마다 터미널에 yes를 누르기 귀찮거나, `-y`플래그를 입력하기 귀찮은 경우
+
+```
+choco feature enable -n allowGlobalConfirmation
+```
+
+명령어를 실행하면 모든 설치에 대해 yes를 입력할 필요가 없습니다.
+
+## Windows Terminal 설치 ✔
+
+Windows Terminal은 검고 딱딱했던 윈도우 셸인 cmd와 powershell을 좀더 다채롭고 편리하게 사용하게 해줌과 동시에, WSL을 사용하는 사용자라면 bash 셸을 함께 실행할 수 있게 되어 매우 편리한 터미널입니다. 윈도우 환경에서 개발하고자 하는 사람이라면  필수적인 프로그램이니  꼭 설치하세요!
+
+저는 기존에 사용하던 cmder보다 훨씬 직관적이고, 설정 또한 `.json`파일을 이용하기 때문에 옵션도 쉽고 빠르게 설정이 가능해져서 편리하게 잘 쓰고 있습니다.
+
+공식 설치는 아니지만 choco에서 Windows terminal을 간편하게 설치할 수 있습니다.
+
+```
+choco install microsoft-windows-terminal
+
+```
+
+공식 설치를 원한다면 [Windows Terminal 저장소](https://github.com/microsoft/terminal)에서 다운로드 가능합니다.
+
+## Powershell Core 7 설치
+
+다음으로는 Powershell의 최신 버전인 Core 7을 설치합니다.
+
+> 2022년 2월 1일 기준 최신 버전은 7.2.1입니다.
+
+choco를 사용해 설치합니다.
+
+```
+choco install powershell-core
+```
+
+Choco에서는 안정화 버전(LTS) 만을 제공하는데 만일 최신 버전을 다운받고 싶다면 [Powershell 깃허브 페이지](https://github.com/PowerShell/PowerShell/releases)에서 설치파일을 받아 설치할 수 있습니다. 자신의 아키텍처(인텔/AMD, ARM)에 맞는 파일을 다운로드하고 설치하면 됩니다. 설치 과정에서는 계속 다음 버튼만 눌러서 설치해도 됩니다.
+
+## Powershell에 테마 적용하기
+
+![](/static/images/2022/02/image-1.png)
+
+다음은 맥 또는 리눅스처럼 Powerline 테마를 Powershell에서 사용하는 방법을 소개합니다.
+
+#### Posh-Git, Oh-my-posh, PSReadline 설치
+
+powerline 테마를 위해 Posh-Git, Oh-my-posh, PSReadline를 설치합니다.
+
+* `posh-git`은 powershell 환경에서 git을 사용할 수 있게 해주는 기능입니다.
+* `oh-my-posh`는 이름만 봐도 알겠지만 bash 셸의 `oh-my-zsh`를 모티브로 powershell에 적용하는 프로젝트입니다. 드디어 윈도우에서도 예쁜 셸을 사용할 수 있습니다!
+
+powershell에서 아래 명령어를 입력해 각 모듈을 설치한다.
+
+```
+Install-Module posh-git -Scope CurrentUser
+Set-ExecutionPolicy Bypass -Scope Process -Force; Invoke-Expression ((New-Object System.Net.WebClient).DownloadString('https://ohmyposh.dev/install.ps1'))
+New-Item -ItemType File -Path $PROFILE
+```
+
+터미널을 완전히 종료하고 관리자 권한으로 시작한 다음 스크립트 실행 권한을 추가합니다.
+
+```
+Set-ExecutionPolicy Unrestricted -Force
+```
+
+폰트를 설치합니다.
+
+```
+oh-my-posh font install
+
+```
+
+#### Powershell 테마 다운로드 및 프로필 설정하기
+
+Oh-my-posh에서 지원하는 파워셸 테마는 아래 페이지에서 미리보기 및 다운로드가 가능합니다.
+
+[Themes | Oh My Posh
+
+Oh My Posh comes with many themes included out-of-the-box. Below are some screenshots of the more common themes.
+
+![](https://ohmyposh.dev/img/favicon.ico)Oh My PoshOh My Posh
+
+![](https://ohmyposh.dev/assets/images/M365Princess-20cc4205adaa70b9b532a9e52426145c.png)](https://ohmyposh.dev/docs/themes)
+
+다음 코드를 실행해 테마를 설정합니다.
+
+```
+oh-my-posh init pwsh | Invoke-Expression
+
+```
+
+원하는 테마를 설정합니다. 예를 들어 `M365Princess` 는 아래 명령어로 추가할 수 있습니다. 아래 코드를 `notepad $PROFILE` 로 메모장을 연 다음 추가합니다.
+
+```
+ oh-my-posh init pwsh --config 'C:\Users\freed\AppData\Local\Programs\oh-my-posh\themes\M365Princess.omp.json' | Invoke-Expression
+```
+
+#### Windows 터미널 설정
+
+폰트를 모두 설치한 다음, 터미널의 설정에서 폰트를 바꿔줘야 한다.
+
+![](/static/images/2021/08/image-1.png)
+
+설정에서 `프로필` - `Powershell` - `모양` - `글꼴` - `'MesloLGS NF'` 선택한다. 그 다음 꼭 "저장" 버튼을 눌러야 합니다!
+
+![](/static/images/2021/08/image-2.png)
+
+드디어 테마가 적용된 것을 볼 수 있다👋
+
+> 해당 테마는 pwsh10k입니다.
+
+![](/static/images/2021/08/image-3.png)
+
+#### VS Code 터미널 설정
+
+VS Code에서는 Windows Terminal 설정과 별개로 폰트 설정을 해줘야 터미널의 폰트가 깨지지 않습니다.
+
+설정에서 바로 수정한다면 `terminal font` 를 검색해 폰트를 추가해주면 되는데요.
+
+![](/static/images/2021/08/image-4.png)
+
+`settings.json` 을 직접 수정한다면 아래 라인을 추가하거나 수정하면 됩니다.
+
+```
+{
+	"terminal.integrated.fontFamily": "'MesloLGS NF'",
+}
+```
+
+## (Optional) 추천 기능(autosuggestion) 추가하기
+
+`PSReadLine` 모듈에 옵션 하나만 추가하면 커맨드 추천 기능을 사용할 수 있습니다. 아래 내용을 프로파일에 추가합니다. 추가하기 위해서는 파워셸에서 `notepad $profile` 을 입력합니다.
+
+```
+
+Import-Module PSReadLine
+Set-PSReadLineOption -PredictionSource History
+```
+
+그 다음 셸을 재시작하고 나면 터미널에 명령어를 입력하는 경우, 예전에 입력했던 기록을 바탕으로 다음 명령어를 추천해줍니다. 추천된 명령어를 사용하려면 방향키 →를 입력합니다.
+
+![](/static/images/2022/03/image.png)
