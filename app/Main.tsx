@@ -3,6 +3,7 @@ import Tag from '@/components/Tag'
 import siteMetadata from '@/data/siteMetadata'
 import { formatDate } from 'pliny/utils/formatDate'
 import NewsletterForm from 'pliny/ui/NewsletterForm'
+import Image from 'next/image'
 
 const MAX_DISPLAY = 5
 
@@ -12,16 +13,34 @@ export default function Home({ posts }) {
       <div className="divide-y divide-gray-200 dark:divide-gray-700">
         <div className="space-y-2 pt-6 pb-8 md:space-y-5">
           <h1 className="text-3xl leading-9 font-extrabold tracking-tight text-gray-900 sm:text-4xl sm:leading-10 md:text-6xl md:leading-14 dark:text-gray-100">
-            Latest
+            Posts
           </h1>
           <p className="text-lg leading-7 text-gray-500 dark:text-gray-400">
             {siteMetadata.description}
           </p>
+          <Link href={`/blog/rust-python-book`} className="flex justify-center">
+            <div className="flex w-120 justify-between space-x-2 border border-gray-200 p-4 dark:border-gray-700">
+              <div className="grid">
+                <h2 className="text-md leading-9 font-extrabold tracking-tight text-gray-900 dark:text-gray-100">
+                  ✨ Featured
+                </h2>
+                <h2 className="text-xl leading-8 font-bold tracking-tight">
+                  {'<파이썬 프로그래머를 위한 러스트 입문> 출간!'}
+                </h2>
+              </div>
+              <Image
+                src="/static/images/2024/06/Capture-2024-06-10-215709.png"
+                alt="Rust Python Book"
+                width={60}
+                height={20}
+              />
+            </div>
+          </Link>
         </div>
         <ul className="divide-y divide-gray-200 dark:divide-gray-700">
           {!posts.length && 'No posts found.'}
           {posts.slice(0, MAX_DISPLAY).map((post) => {
-            const { slug, date, title, summary, tags } = post
+            const { slug, date, title, summary, tags, body } = post
             return (
               <li key={slug} className="py-12">
                 <article>
@@ -36,7 +55,10 @@ export default function Home({ posts }) {
                       <div className="space-y-6">
                         <div>
                           <h2 className="text-2xl leading-8 font-bold tracking-tight">
-                            <Link href={`/${slug}`} className="text-gray-900 dark:text-gray-100">
+                            <Link
+                              href={`/blog/${slug}`}
+                              className="text-gray-900 dark:text-gray-100"
+                            >
                               {title}
                             </Link>
                           </h2>
@@ -47,12 +69,12 @@ export default function Home({ posts }) {
                           </div>
                         </div>
                         <div className="prose max-w-none text-gray-500 dark:text-gray-400">
-                          {summary}
+                          {summary || body}
                         </div>
                       </div>
                       <div className="text-base leading-6 font-medium">
                         <Link
-                          href={`/${slug}`}
+                          href={`/blog/${slug}`}
                           className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
                           aria-label={`Read more: "${title}"`}
                         >
@@ -70,7 +92,7 @@ export default function Home({ posts }) {
       {posts.length > MAX_DISPLAY && (
         <div className="flex justify-end text-base leading-6 font-medium">
           <Link
-            href="/"
+            href="/blog"
             className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
             aria-label="All posts"
           >
