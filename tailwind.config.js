@@ -22,6 +22,12 @@ module.exports = {
             h3: {
               fontWeight: '600',
             },
+            'code::before': {
+              content: '""',
+            },
+            'code::after': {
+              content: '""',
+            },
             code: {
               color: theme('--color-indigo-500'),
             },
@@ -38,6 +44,12 @@ module.exports = {
             },
             'h1,h2,h3,h4,h5,h6': {
               color: theme('--color-gray-100'),
+            },
+            'code::before': {
+              content: '""',
+            },
+            'code::after': {
+              content: '""',
             },
           },
         },
