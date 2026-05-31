@@ -1,0 +1,381 @@
+---
+title: "Turning Antigravity CLI Into a More Disciplined Plan Executor"
+date: "2026-05-31T08:00:00.000Z"
+tags: ['dev-diary', 'ai-tools']
+images: ['/static/images/precise_alignment_cover.png']
+---
+
+![Turning Antigravity CLI Into a More Disciplined Plan Executor](/static/images/precise_alignment_cover.png)
+
+<TOCInline toc={props.toc} asDisclosure />
+
+If you use `Antigravity CLI` for real implementation work, the hardest problem is usually not raw model quality. It is **execution discipline**.
+
+A fast model can still drift out of scope, improvise around a plan, or blur the line between “implementation” and “creative interpretation.” Before I tightened my setup, my biggest frustration was when the executor treated a carefully crafted, step-by-step plan as a mere "creative suggestion," introducing speculative abstractions and "while I'm here" refactoring that made the changes difficult to audit and verify.
+
+To solve this, I tightened three parts of my `Antigravity CLI` setup:
+1. the instruction layer (`GEMINI.md`, which plays the role that `AGENTS.md` often plays in other tools),
+2. a dedicated `implement-plan` skill,
+3. and (as a bonus safety guardrail) the CLI permission model in `settings.json`.
+
+This post walks through the problem of plan drift, how the instruction layer and custom skill enforce absolute discipline, and how to restrict command permissions to prevent unwanted mutations.
+
+---
+
+## The Problem: When the Executor Rebels Against the Plan
+
+In real engineering work, an agent that decides to be a creative designer instead of a disciplined builder is a liability. 
+
+Without strict guardrails, a highly capable model running on `Antigravity CLI` easily falls into several problematic patterns:
+- **Scope Drift**: The model spots nearby code that could "look cleaner" or "benefit from a quick refactor" and alters files completely unrelated to the active ticket.
+- **Creative Interpretation**: Instead of writing the exact surgical diff outlined in the plan, it improvises and introduces speculative APIs or structural changes "just in case."
+- **Messy Commits and Tool Churn**: Instead of sticking to one target change, it jumps across tasks, modifying dependencies, or doing unrelated lint cleanups.
+
+When this happens, you lose the ability to audit what changes were made and why. The implementation loop becomes a source of friction rather than acceleration. We don't need the executor to plan; we need it to execute.
+
+---
+
+## The Solution: Enforcing Absolute Execution Discipline
+
+To force the model back into its lanes, I implemented a strict system: global instruction guardrails (`GEMINI.md`) and a plan-bound execution skill.
+
+### 1. Hard Rules in the Instruction Layer (`GEMINI.md`)
+
+The first step was to treat the global instruction file as a contract rather than general guidance.
+
+At `~/.gemini/GEMINI.md`, I added a global execution layer that pushes `Antigravity CLI` toward a constrained “plan executor” mode for implementation tasks.
+
+<details>
+<summary><b>🛠️ Click to expand the global GEMINI.md file</b></summary>
+
+```markdown
+# Gemini 3.5 Flash Executor Guardrails
+
+Apply these rules when the user asks for implementation, code changes, debugging, refactors, tests, reviews, or repository operations.
+
+For purely conversational questions, explanation-only requests, brainstorming, or open-ended discussion, answer normally and do not force this workflow.
+
+## 1. Operating Mode
+
+You are a constrained code executor.
+
+- Do exactly what was requested.
+- Prefer the smallest correct diff.
+- Preserve existing behavior unless the task explicitly changes it.
+- Treat the task description or saved plan as the contract.
+- Do not widen scope just because nearby code looks related.
+
+## 2. Scope Guardrails
+
+Before editing, identify:
+
+- allowed files
+- allowed symbols/functions
+- required behavior changes
+- non-goals
+
+If the task or plan already provides an allowed file list, treat it as hard scope.
+
+If an edit would require touching files outside the stated scope:
+
+- STOP
+- explain why
+- ask for approval or clarification
+
+Do not silently expand into:
+
+- refactors
+- cleanup
+- renames
+- helper extraction
+- test rewrites unrelated to the requested behavior
+- architecture changes
+
+## 3. Ambiguity Protocol
+
+If any of these occur, do not guess:
+
+- the plan references code/tests that do not exist in the current snapshot
+- there are multiple plausible implementations with materially different scope
+- the requested change conflicts with current code structure
+- the change appears to require out-of-scope edits
+
+In that case:
+
+1. stop editing
+2. state the exact ambiguity
+3. propose the narrowest safe interpretation
+4. wait for clarification unless the user clearly preferred that narrow interpretation already
+
+## 4. Forbidden Patterns
+
+Never do the following unless the user explicitly requests it:
+
+- edit files outside the allowed scope
+- modify BUILD.gn, CI, lockfiles, package manifests, or workspace config as a shortcut
+- add timers, sleeps, polling, delayed tasks, or retry loops as a band-aid
+- delete, weaken, or rewrite unrelated tests to make the change pass
+- introduce placeholder code, TODO-only code, or speculative abstractions
+- do “while I’m here” cleanup
+- change drag lifecycle, event plumbing, or adjacent systems unless the task explicitly requires it
+
+If you are tempted to do one of these, STOP and report it instead.
+
+## 5. Preflight Before Editing
+
+Before making changes, print a compact PREFLIGHT section containing:
+
+- files you will edit
+- exact symbols/areas you will change
+- why each edit is needed
+- any ambiguity found
+
+If the task is based on a saved plan, map your intended edits to the plan requirements before editing.
+
+## 6. Implementation Rules
+
+- Prefer direct, local fixes over generalized abstractions.
+- Reuse existing patterns already present in the codebase.
+- If a referenced test already exists, update only the assertion or setup needed.
+- If a referenced test does not exist, do not invent broader production changes to compensate.
+- Keep comments factual and minimal.
+
+## 7. Self-Check After Editing
+
+After editing, always print a SELF_CHECK section containing:
+
+- changed files
+- confirmation that only in-scope files changed
+- confirmation that no banned workaround was added
+- confirmation that unrelated tests were not deleted or weakened
+- a plan-to-diff mapping for each meaningful hunk
+
+If any changed file is out of scope, treat the attempt as failed and fix the scope violation before presenting the result.
+
+## 8. Review Loop Behavior
+
+For implementation tasks, use this loop:
+
+1. implement minimal diff
+2. review the diff against the task/plan
+3. fix only blocking mismatches
+4. stop after the requested scope is satisfied
+
+Do not use open-ended “improve more” iterations.
+
+Each review/fix cycle must answer:
+
+- what blocking issue was found
+- what exact file/symbol fixes it
+- whether the new diff is still in scope
+
+If the same class of violation repeats twice, stop and escalate instead of continuing to churn.
+
+## 9. Testing and Verification
+
+When tests are part of the requested change:
+
+- add or update only the tests needed for the requested behavior
+- keep assertions aligned to the new contract, not the old incidental behavior
+- do not change unrelated fixtures or timing unless required
+
+If you cannot verify something, say so explicitly. Do not pretend a check was run.
+
+## 10. Output Style for Implementation Tasks
+
+Use this structure when doing code changes:
+
+- PREFLIGHT
+- CHANGED_FILES
+- PLAN_TO_DIFF_MAPPING
+- SELF_CHECK
+- OPEN_QUESTIONS
+
+Be concise, but always make scope compliance obvious.
+```
+
+</details>
+
+The shape is deliberate: implementation should become auditable, not just plausible.
+
+---
+
+### 2. The `implement-plan` skill
+
+The second piece is a dedicated skill at:
+
+`~/.gemini/antigravity-cli/skills/implement-plan/SKILL.md`
+
+This skill is intentionally narrow. Its job is not to invent a plan. Its job is to execute an existing one faithfully.
+
+The skill starts by defining the role clearly:
+
+> You are an executor, not a planner.
+
+That one sentence matters more than it looks. A lot of agent drift starts when the model decides that the plan is just a suggestion.
+
+#### What the skill now does
+
+The current `implement-plan` skill tells `Antigravity CLI` to:
+
+1. resolve the provided plan path first,
+2. check and report basic preconditions,
+3. read the **entire plan before editing**,
+4. extract the plan’s goals, non-goals, ordered steps, target files, required commands, and verification criteria,
+5. refuse to silently re-plan,
+6. emit a visible **PREFLIGHT** block before making changes,
+7. read root and nearest `AGENTS.md` context before execution,
+8. map every file change back to a plan item,
+9. use canonical verification commands,
+10. stop and report when blockers are real,
+11. produce a structured final report.
+
+<details>
+<summary><b>📋 Click to expand the Structured Final Report Template</b></summary>
+
+```markdown
+## Plan
+- Path: <resolved path>
+- Summary: <1-2 lines>
+
+## Preconditions
+- Plan file: pass/fail
+- Branch: <name>
+- Head: <sha> <subject>
+- Plan-specific preconditions: <notes>
+
+## PREFLIGHT
+- Files to touch
+- Checklist items
+- Verification commands
+
+## Steps Executed
+- [plan item] -> [files changed] -> [result]
+
+## Verification
+- Command: <cmd>
+- Result: pass/fail
+- Evidence: <short raw output or summary>
+
+## Diff Summary
+- `git diff --stat`
+- Files changed
+
+## Out of Scope Findings
+- <list or none>
+
+## Blockers / Open Questions
+- <list or none>
+
+## Status
+- COMPLETE | PARTIAL | BLOCKED
+- One-sentence honest summary
+```
+
+</details>
+
+This is one of the highest-leverage changes in the whole setup. Even when the implementation is imperfect, the reporting format makes it much easier to audit what happened.
+
+#### One notable removal: no dirty-working-tree check
+
+The current version of `implement-plan` **does not** include any git dirty-working-tree check.
+
+Earlier iterations did, but I removed that requirement. The skill now checks:
+- whether the plan file exists and is readable,
+- the current branch and latest commit,
+- and whether the plan itself declares extra preconditions.
+
+It no longer blocks or even checks execution based on working tree dirtiness.
+
+That makes the skill less rigid in a monorepo where unrelated workspace state is often present and where “clean tree only” can become more noise than safety.
+
+---
+
+## Bonus: Tightening the CLI Permission Model
+
+As an extra layer of mechanical safety on top of rules and skills, I also tightened the CLI permission model in:
+
+`~/.gemini/antigravity-cli/settings.json`
+
+While rules keep the agent's cognition aligned, settings keep its commands controlled.
+
+### Current permission shape
+
+<details>
+<summary><b>⚙️ Click to expand the settings.json permission structure</b></summary>
+
+```json
+{
+  "model": "Gemini 3.5 Flash (High)",
+  "permissions": {
+    "allow": [
+      "read_file(*)",
+      "write_file(*)",
+      "mcp(*)",
+      "command(*)",
+      "command(bun)",
+      "command(git status)",
+      "command(git diff)",
+      "..."
+    ],
+    "deny": [
+      "command(npm)",
+      "command(npx)",
+      "command(git sparse-checkout)"
+    ],
+    "ask": [
+      "command(git add)",
+      "command(git checkout)",
+      "command(git commit)",
+      "command(git reset)",
+      "command(git revert)",
+      "command(git worktree)",
+      "command(git branch)",
+      "command(git)"
+    ]
+  },
+  "toolPermission": "always-proceed"
+}
+```
+
+</details>
+
+This permission policy aims to establish a safe compromise between speed and control. Safe, low-friction operations like file reading and common commands (including `bun` and `git status`) are immediately **allowed** to keep execution fluid, while destructive or banned commands (like `npm`, `npx`, or monorepo-forbidden sparse-checkouts) are strictly **denied**. Meanwhile, repository-mutating operations like `git add`, `git checkout`, and `git commit` are set to **ask** for human confirmation before execution, ensuring the agent never alters state without explicit supervision.
+
+However, a subtle nuance lies in the rules' precedence: because `command(*)` is globally allowed, there is an inherent ambiguity in whether the narrower `deny` and `ask` filters always successfully override it. While this setup successfully mirrors the intent of a highly restrictive sandbox in practice and gets the job done, the configuration remains slightly less semantically clean than a purely explicit, whitelist-only structure—a practical compromise between absolute configuration purity and immediate engineering velocity.
+
+---
+
+## Why this combination works better than any single change
+
+None of these changes matters much in isolation.
+- A permission model alone does not stop scope drift.
+- A skill alone does not encode safe boundaries.
+- Rules alone do not force a structured execution/reporting loop.
+
+The value comes from the combination:
+
+- **The global `GEMINI.md`**: teaches the agent to act like a constrained executor.
+- **The `implement-plan` skill**: forces implementation to stay anchored to a saved plan.
+- **The CLI permission rules**: put friction in front of the commands most likely to cause damage.
+
+That is what turns `Antigravity CLI` from “a fast coding assistant” into “a plan-bound executor with guardrails.”
+
+---
+
+## Final thoughts
+
+What I wanted from this setup was not more intelligence in the abstract. I wanted less improvisation.
+
+The resulting system is not fancy:
+- write down the global execution rules,
+- force implementation to follow a saved plan,
+- and make dangerous commands explicit in the permission layer.
+
+But that is enough to change the operating feel of the tool.
+
+`Antigravity CLI` is still the same CLI.
+The model is still `Gemini 3.5 Flash (High)`.
+The difference is that it now runs inside a tighter contract.
+
+And for real engineering work, that contract matters more than most people think.
