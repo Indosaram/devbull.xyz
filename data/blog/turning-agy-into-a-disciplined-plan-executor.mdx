@@ -13,12 +13,11 @@ If you use `Antigravity CLI` for real implementation work, the hardest problem i
 
 A fast model can still drift out of scope, improvise around a plan, or blur the line between “implementation” and “creative interpretation.” Before I tightened my setup, my biggest frustration was when the executor treated a carefully crafted, step-by-step plan as a mere "creative suggestion," introducing speculative abstractions and "while I'm here" refactoring that made the changes difficult to audit and verify.
 
-To solve this, I tightened three parts of my `Antigravity CLI` setup:
+To solve this, I tightened two major parts of my `Antigravity CLI` setup:
 1. the instruction layer (`GEMINI.md`, which plays the role that `AGENTS.md` often plays in other tools),
-2. a dedicated `implement-plan` skill,
-3. and (as a bonus safety guardrail) the CLI permission model in `settings.json`.
+2. and a dedicated `implement-plan` skill.
 
-This post walks through the problem of plan drift, how the instruction layer and custom skill enforce absolute discipline, and how to restrict command permissions to prevent unwanted mutations.
+This post walks through the problem of plan drift and how the global instruction layer and a custom plan-focused skill enforce absolute, unwavering discipline during coding tasks.
 
 ---
 
@@ -291,65 +290,9 @@ That makes the skill less rigid in a monorepo where unrelated workspace state is
 
 ---
 
-## Bonus: Tightening the CLI Permission Model
-
-As an extra layer of mechanical safety on top of rules and skills, I also tightened the CLI permission model in:
-
-`~/.gemini/antigravity-cli/settings.json`
-
-While rules keep the agent's cognition aligned, settings keep its commands controlled.
-
-### Current permission shape
-
-<details>
-<summary><b>⚙️ Click to expand the settings.json permission structure</b></summary>
-
-```json
-{
-  "model": "Gemini 3.5 Flash (High)",
-  "permissions": {
-    "allow": [
-      "read_file(*)",
-      "write_file(*)",
-      "mcp(*)",
-      "command(*)",
-      "command(bun)",
-      "command(git status)",
-      "command(git diff)",
-      "..."
-    ],
-    "deny": [
-      "command(npm)",
-      "command(npx)",
-      "command(git sparse-checkout)"
-    ],
-    "ask": [
-      "command(git add)",
-      "command(git checkout)",
-      "command(git commit)",
-      "command(git reset)",
-      "command(git revert)",
-      "command(git worktree)",
-      "command(git branch)",
-      "command(git)"
-    ]
-  },
-  "toolPermission": "always-proceed"
-}
-```
-
-</details>
-
-This permission policy aims to establish a safe compromise between speed and control. Safe, low-friction operations like file reading and common commands (including `bun` and `git status`) are immediately **allowed** to keep execution fluid, while destructive or banned commands (like `npm`, `npx`, or monorepo-forbidden sparse-checkouts) are strictly **denied**. Meanwhile, repository-mutating operations like `git add`, `git checkout`, and `git commit` are set to **ask** for human confirmation before execution, ensuring the agent never alters state without explicit supervision.
-
-However, a subtle nuance lies in the rules' precedence: because `command(*)` is globally allowed, there is an inherent ambiguity in whether the narrower `deny` and `ask` filters always successfully override it. While this setup successfully mirrors the intent of a highly restrictive sandbox in practice and gets the job done, the configuration remains slightly less semantically clean than a purely explicit, whitelist-only structure—a practical compromise between absolute configuration purity and immediate engineering velocity.
-
----
-
 ## Why this combination works better than any single change
 
 None of these changes matters much in isolation.
-- A permission model alone does not stop scope drift.
 - A skill alone does not encode safe boundaries.
 - Rules alone do not force a structured execution/reporting loop.
 
@@ -357,7 +300,6 @@ The value comes from the combination:
 
 - **The global `GEMINI.md`**: teaches the agent to act like a constrained executor.
 - **The `implement-plan` skill**: forces implementation to stay anchored to a saved plan.
-- **The CLI permission rules**: put friction in front of the commands most likely to cause damage.
 
 That is what turns `Antigravity CLI` from “a fast coding assistant” into “a plan-bound executor with guardrails.”
 
@@ -369,8 +311,7 @@ What I wanted from this setup was not more intelligence in the abstract. I wante
 
 The resulting system is not fancy:
 - write down the global execution rules,
-- force implementation to follow a saved plan,
-- and make dangerous commands explicit in the permission layer.
+- and force implementation to follow a saved plan.
 
 But that is enough to change the operating feel of the tool.
 
