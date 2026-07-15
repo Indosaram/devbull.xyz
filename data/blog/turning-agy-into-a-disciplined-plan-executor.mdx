@@ -1,11 +1,13 @@
 ---
-title: "Turning Antigravity CLI Into a More Disciplined Plan Executor"
+title: "Turning Antigravity CLI Into a Self-Verifying Plan Executor"
 date: "2026-05-31T08:00:00.000Z"
+lastmod: "2026-07-15T08:00:00.000Z"
+summary: "How I split my Antigravity CLI harness across two models: Gemini 3.5 Flash executes a saved plan under strict guardrails, and a dedicated Gemini 3.1 Pro reviewer judges the result through an automated review loop that repeats until it returns PASS."
 tags: ['dev-diary', 'ai-tools']
 images: ['/static/images/precise_alignment_cover.png']
 ---
 
-![Turning Antigravity CLI Into a More Disciplined Plan Executor](/static/images/precise_alignment_cover.png)
+![Turning Antigravity CLI Into a Self-Verifying Plan Executor](/static/images/precise_alignment_cover.png)
 
 <TOCInline toc={props.toc} asDisclosure />
 
@@ -13,11 +15,14 @@ If you use `Antigravity CLI` for real implementation work, the hardest problem i
 
 A fast model can still drift out of scope, improvise around a plan, or blur the line between “implementation” and “creative interpretation.” Before I tightened my setup, my biggest frustration was when the executor treated a carefully crafted, step-by-step plan as a mere "creative suggestion," introducing speculative abstractions and "while I'm here" refactoring that made the changes difficult to audit and verify.
 
-To solve this, I tightened two major parts of my `Antigravity CLI` setup:
+To solve this, I tightened three parts of my `Antigravity CLI` setup:
 1. the instruction layer (`GEMINI.md`, which plays the role that `AGENTS.md` often plays in other tools),
-2. and a dedicated `implement-plan` skill.
+2. a dedicated `implement-plan` skill,
+3. and a separate **reviewer agent running Gemini 3.1 Pro**, wired into an automated review loop that runs until it returns PASS.
 
-This post walks through the problem of plan drift and how the global instruction layer and a custom plan-focused skill enforce absolute, unwavering discipline during coding tasks.
+The first two pieces made execution *auditable*: rules and a skill force the fast executor to stay anchored to a saved plan and to report what it did in a fixed structure. The third piece is what changed the whole thing. Once a different, higher-capability model does the judging, the setup stops being merely auditable and becomes *self-verifying*. The executor can no longer sign off on its own work.
+
+This post walks through the problem of plan drift, how the global instruction layer and a custom plan-focused skill enforce discipline during coding tasks, and why moving the final verdict onto a second model was the change that mattered most.
 
 ---
 
@@ -207,6 +212,17 @@ The second piece is a dedicated skill at:
 
 This skill is intentionally narrow. Its job is not to invent a plan. Its job is to execute an existing one faithfully.
 
+In practice, I kick off a run with a single command that loads the skill and points it at a saved plan:
+
+```text
+/goal Use the implement-plan skill to implement this plan. Per its
+instructions, keep iterating until the 3.1 Pro reviewer verification
+loop finally returns PASS.
+.omo/plans/agent-hot-update-and-rag-completion-hyperplan-2026-07-15.md
+```
+
+The parts are simple. `/goal` is the `Antigravity CLI` slash command that loads a skill by name and hands it a task. `implement-plan` is the skill described here. The trailing path is the plan I want executed, saved under `.omo/plans/` in my setup. The "keep iterating until PASS" clause is not decoration; it maps directly to the review loop the skill now runs, which I get to further down.
+
 The skill starts by defining the role clearly:
 
 > You are an executor, not a planner.
@@ -215,27 +231,31 @@ That one sentence matters more than it looks. A lot of agent drift starts when t
 
 #### What the skill now does
 
-The current `implement-plan` skill tells `Antigravity CLI` to:
+The current `implement-plan` skill defines twelve numbered behaviors. In order, it tells `Antigravity CLI` to:
 
-1. resolve the provided plan path first,
-2. check and report basic preconditions,
+1. resolve the provided plan path first, and echo it before doing anything else,
+2. check and report basic preconditions (plan file readable, current branch and latest commit, any plan-declared preconditions),
 3. read the **entire plan before editing**,
-4. extract the plan’s goals, non-goals, ordered steps, target files, required commands, and verification criteria,
-5. refuse to silently re-plan,
-6. emit a visible **PREFLIGHT** block before making changes,
+4. extract the plan's goal, non-goals (verbatim), ordered steps, target files, required commands, and **numbered acceptance criteria (AC-1, AC-2, …)**, deriving and labelling them when the plan is silent,
+5. refuse to silently re-plan, collapse steps, or skip them,
+6. emit a visible **PREFLIGHT** block before making changes, including a behavioral verification plan for each acceptance criterion,
 7. read root and nearest `AGENTS.md` context before execution,
-8. map every file change back to a plan item,
-9. use canonical verification commands,
-10. stop and report when blockers are real,
-11. produce a structured final report.
+8. hold scope discipline: every file change must map back to a plan item, with no opportunistic refactors or cleanup,
+9. run **three-layer, evidence-based verification** (commands, per-criterion, behavioral),
+10. run a **diff audit** before claiming COMPLETE, mapping every changed hunk to a plan item and checking each non-goal was not violated,
+11. stop and report the moment a real blocker appears,
+12. run a **pre-COMPLETE self-review**, then **delegate the final verdict to the `reviewer` subagent** (Rule 12) and loop until it returns PASS,
+
+and finally produce a structured report in a fixed format.
 
 <details>
 <summary><b>📋 Click to expand the Structured Final Report Template</b></summary>
 
-```markdown
+```text
 ## Plan
 - Path: <resolved path>
 - Summary: <1-2 lines>
+- Non-goals: <verbatim list>
 
 ## Preconditions
 - Plan file: pass/fail
@@ -246,19 +266,43 @@ The current `implement-plan` skill tells `Antigravity CLI` to:
 ## PREFLIGHT
 - Files to touch
 - Checklist items
+- Acceptance criteria (AC-1, AC-2, ...)
 - Verification commands
+- Behavioral verification plan (per AC)
 
 ## Steps Executed
 - [plan item] -> [files changed] -> [result]
 
-## Verification
-- Command: <cmd>
-- Result: pass/fail
-- Evidence: <short raw output or summary>
+## Verification — Layer A (Commands)
+| Command | Result | Evidence (raw output / last lines) |
+|---|---|---|
 
-## Diff Summary
+## Verification — Layer B (Acceptance Criteria)
+| AC | Statement | Status (PASS/FAIL/UNVERIFIED/SKIPPED) | Concrete evidence |
+|---|---|---|---|
+
+## Verification — Layer C (Behavior)
+| AC | Action taken | Observed result | Verdict |
+|---|---|---|---|
+
+## Diff Audit
 - `git diff --stat`
-- Files changed
+- Hunk → plan item mapping
+| File / Hunk | Plan item or AC | Justified? |
+|---|---|---|
+- Plan files NOT touched (with reason):
+- Files touched NOT in plan (with reason):
+- Non-goal check:
+  - <non-goal 1>: not violated — <evidence>
+  - <non-goal 2>: not violated — <evidence>
+
+## Pre-COMPLETE Self-Review
+1. All plan steps executed with result: Y/N
+2. All ACs PASS with concrete evidence: Y/N
+3. Behavioral verification ran where applicable: Y/N
+4. Diff audit clean, no non-goal violations: Y/N
+5. Unsupported judgments: <list or none>
+6. Most likely thing a hostile reviewer would catch: <answer>
 
 ## Out of Scope Findings
 - <list or none>
@@ -273,7 +317,23 @@ The current `implement-plan` skill tells `Antigravity CLI` to:
 
 </details>
 
-This is one of the highest-leverage changes in the whole setup. Even when the implementation is imperfect, the reporting format makes it much easier to audit what happened.
+This is one of the highest-leverage changes in the whole setup. Even when the implementation is imperfect, the reporting format makes it much easier to audit what happened. The report is no longer a summary the model writes to look thorough; it is a set of tables that force the model to attach evidence to every claim.
+
+#### Evidence-based verification, in three layers
+
+The skill is blunt about what counts as proof. Two lines set the tone:
+
+> A green checkmark with no output is not evidence.
+
+> Soft claims ("looks good", "should work", "probably fine") are not evidence.
+
+Verification is split into three mandatory layers, none of which can be skipped silently:
+
+- **Layer A, commands.** Run the plan's canonical commands (or the repo-standard ones discovered from `AGENTS.md`, the README, or the build files) and capture raw output. If a step cannot be run, it is marked `SKIPPED` with a reason, never `PASS`.
+- **Layer B, per acceptance criterion.** Each AC-N gets a row stating the exact evidence that proves it. A passing build does not, by itself, satisfy any criterion; ACs are about behavior, not green CI.
+- **Layer C, behavioral and end-to-end.** New features get exercised for real (curl, a REPL call, a browser action, a CLI run) and the observable result is pasted in. Bug fixes reproduce the original failure first, then show it passing. Refactors show the prior behavior is preserved.
+
+The point of the three layers is to make it hard to declare victory on a vibe. If the evidence is not there, the honest status is `PARTIAL` or `BLOCKED`, and the report has to say which condition failed.
 
 #### One notable removal: no dirty-working-tree check
 
@@ -290,33 +350,87 @@ That makes the skill less rigid in a monorepo where unrelated workspace state is
 
 ---
 
+### 3. The missing piece: the executor was grading its own homework
+
+For a while I thought a strong report template was the finish line. It was not.
+
+The problem is structural, not cosmetic. The same fast model that writes the code also fills in the verification tables. And a fast model that has just spent its whole context convincing itself the change is correct is exactly the wrong judge of whether the change is correct. The failure mode is not laziness; it is confidence. A model can produce a tidy AC table, every row marked `PASS`, every claim phrased with authority, and still be wrong, because it is grading its own homework and it already believes the answer.
+
+No amount of "be honest" wording fully fixes this. Self-assessment has a ceiling. To get past it, the verdict has to move to a different model that did not write the code.
+
+#### The 3.1 Pro reviewer and the automated review loop
+
+The fix is a dedicated reviewer agent that runs on a higher-capability model and never touches the implementation. It only judges.
+
+<details>
+<summary><b>🛠️ Click to expand the reviewer agent config</b></summary>
+
+```markdown
+---
+name: reviewer
+displayName: Code Reviewer (3.1 Pro)
+model: "Gemini 3.1 Pro"
+description: Expert reviewer agent that validates implementation against the plan.
+---
+
+# Code Reviewer
+
+You are the Code Reviewer, running on a high-capability Pro model. Your role is to carefully audit the implementation changes made by the implementation agent.
+
+## Instructions
+1. **Compare with Plan**: Read the original plan file and verify that every step in the plan has been implemented.
+2. **Review Code Changes**: Check the modified/created files for correctness, style, and potential bugs.
+3. **Verify Compliance**: Ensure that the changes do not violate any conventions outlined in `AGENTS.md`.
+4. **Report Findings**: Output a structured review report:
+   - **Verification Status**: PASS or FAIL
+   - **Plan Match**: Confirmation that all planned items are implemented.
+   - **Code Quality**: Observations on the written code.
+   - **Suggestions**: Any recommended improvements or fixes if needed.
+```
+
+</details>
+
+The reviewer reads the original plan, checks that every planned step is actually implemented, reviews the modified files for correctness, style, and bugs, verifies the changes do not violate `AGENTS.md` conventions, and then returns a structured verdict: a `PASS`/`FAIL` verification status, a plan-match confirmation, code-quality observations, and concrete suggestions.
+
+Rule 12 of the skill wires this into a loop. Before the executor is allowed to claim `COMPLETE`, it must delegate the final verification to the `reviewer` subagent by invoking it through `invoke_subagent`, passing the plan file and the modified files as context. Then it waits for the reviewer's report. If the verdict is `FAIL`, the executor analyzes the suggestions and bugs, implements the fixes, and re-invokes the reviewer. That implement → review → fix cycle repeats until the reviewer returns `PASS`, or until three failed iterations, at which point the executor stops and reports a blocker instead of declaring success. `COMPLETE` is forbidden while the reviewer still returns `FAIL`, and the reviewer's final report is included in the executor's output.
+
+The result is an explicit two-model contract:
+
+- **Executor, Gemini 3.5 Flash (High).** Cheap and fast. It does the work: reads the plan, makes the smallest correct diff, runs the three verification layers, audits its own diff.
+- **Reviewer, Gemini 3.1 Pro.** Slower and more careful. It never writes code; it only decides whether the work passes.
+
+Cheap-and-fast for execution, smart-and-careful for the gate. The fast model is free to be fast because it is no longer the last word, and the expensive model is only paid for the one job it is best at: catching the thing the fast model talked itself into.
+
+---
+
 ## Why this combination works better than any single change
 
 None of these changes matters much in isolation.
 - A skill alone does not encode safe boundaries.
 - Rules alone do not force a structured execution/reporting loop.
+- A structured report alone still lets the author grade its own work.
 
 The value comes from the combination:
 
 - **The global `GEMINI.md`**: teaches the agent to act like a constrained executor.
-- **The `implement-plan` skill**: forces implementation to stay anchored to a saved plan.
+- **The `implement-plan` skill**: forces implementation to stay anchored to a saved plan and to attach evidence to every claim.
+- **The `reviewer` agent (Gemini 3.1 Pro)**: moves the final verdict onto a second model, so PASS means something.
 
-That is what turns `Antigravity CLI` from “a fast coding assistant” into “a plan-bound executor with guardrails.”
+That is what turns `Antigravity CLI` from “a fast coding assistant” into a plan-bound executor that verifies itself against a separate judge.
 
 ---
 
 ## Final thoughts
 
-What I wanted from this setup was not more intelligence in the abstract. I wanted less improvisation.
+What I wanted from this setup was not more intelligence in the abstract. I wanted less improvisation, and a verdict I could trust.
 
 The resulting system is not fancy:
 - write down the global execution rules,
-- and force implementation to follow a saved plan.
+- force implementation to follow a saved plan,
+- and hand the final PASS/FAIL to a different model.
 
 But that is enough to change the operating feel of the tool.
 
-`Antigravity CLI` is still the same CLI.
-The model is still `Gemini 3.5 Flash (High)`.
-The difference is that it now runs inside a tighter contract.
+`Antigravity CLI` is still the same CLI. Execution still runs on `Gemini 3.5 Flash (High)`. What changed is that the fast model no longer gets to sign off on its own work: verification is delegated to `Gemini 3.1 Pro`, and the review loop keeps running until that separate judge returns PASS. The two-model split, and the self-verifying loop it enables, is what actually moved the needle.
 
 And for real engineering work, that contract matters more than most people think.
