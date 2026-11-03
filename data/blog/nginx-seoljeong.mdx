@@ -1,0 +1,227 @@
+---
+title: "nginx 설정 방법: 서버 운영·배포를 위한 구조와 예제"
+description: "nginx 설정 파일의 컨텍스트 구조와 주요 디렉티브를 정리하고, 리버스 프록시·정적 파일·캐시·검증과 리로드까지 배포 환경에서 바로 쓰는 순서로 설명해요."
+date: '2026-11-02'
+lastmod: '2026-11-02'
+tags: ['웹서버·프록시']
+images: ['/static/images/nginx-seoljeong/cover.webp']
+sources:
+  - https://nginx.org/en/docs/beginners_guide.html
+  - https://nginx.org/en/docs/http/ngx_http_proxy_module.html
+  - https://docs.nginx.com/nginx/admin-guide/basic-functionality/managing-configuration-files/
+firstHand:
+  type: 'screenshot'
+  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+---
+
+nginx 설정은 `nginx.conf`의 컨텍스트 계층을 먼저 이해하고, `server`와 `location` 블록에 필요한 디렉티브만 채워 넣는 순서로 진행하면 대부분의 요구를 해결할 수 있어요. 이 글은 배포 환경에서 가장 자주 손대게 되는 리버스 프록시, 정적 파일 서빙, 캐시, 설정 검증과 리로드를 공식 문서 기준으로 정리했어요. 설정 파일을 처음 만지는 백엔드 개발자도 그대로 따라 할 수 있도록 단계별로 안내합니다.
+
+## 한눈에 보기
+
+nginx 설정은 "어디에 무엇을 두는가"만 익히면 읽는 속도가 크게 올라가요. 아래 흐름을 먼저 머리에 넣어 두면 이후 예제가 훨씬 편하게 읽혀요.
+
+- 설정 파일은 `main` → `events` → `http` → `server` → `location` 순서의 중첩 구조를 가져요.
+- 바깥쪽 컨텍스트에 둔 디렉티브는 안쪽 블록으로 상속되고, 안쪽에서 다시 선언하면 덮어써요.
+- 도메인 단위 분기는 `server_name`, 경로 단위 분기는 `location`이 담당해요.
+- 백엔드 애플리케이션으로 요청을 넘길 때는 `proxy_pass`와 헤더 설정을 함께 봐야 해요.
+- 수정 후에는 반드시 `nginx -t`로 문법을 확인하고 리로드로 반영해요.
+
+운영 중인 서버라면 재시작보다 리로드가 기본값이에요. 리로드는 기존 연결을 유지한 채 새 워커 프로세스가 새 설정을 물려받는 방식이라, 설정 오류만 없다면 서비스 중단 없이 반영할 수 있어요.
+
+## 설정 파일 구조와 주요 디렉티브 비교
+
+먼저 전체 구조를 표로 정리해 볼게요. 각 디렉티브가 어느 위치에 놓이는지가 헷갈릴 때 이 표를 기준으로 삼으면 됩니다.
+
+| 항목 | 역할 | 주로 두는 위치 |
+| --- | --- | --- |
+| `worker_processes` | 워커 프로세스 수 결정 | main |
+| `events` | 연결 처리 관련 설정 묶음 | main |
+| `include` | 다른 설정 파일을 불러옴 | 어느 컨텍스트에서나 가능 |
+| `http` | HTTP 전반 설정을 묶는 블록 | main |
+| `upstream` | 백엔드 서버 그룹 정의 | http |
+| `server` | 가상 호스트 단위 블록 | http |
+| `server_name` | 요청 도메인 매칭 | server |
+| `location` | URI 패턴별 처리 분기 | server |
+| `root` / `alias` | 정적 파일 경로 지정 | server, location |
+| `proxy_pass` | 요청을 넘길 대상 지정 | location |
+| `try_files` | 파일 존재 여부에 따른 분기 | server, location |
+| `access_log` / `error_log` | 로그 경로와 형식 지정 | http, server, location |
+
+여기서 자주 하는 실수가 `proxy_pass`를 `server` 블록에 두는 경우예요. `proxy_pass`는 URI 매칭 이후에 동작하므로 `location` 안에 두는 것이 자연스러워요. 반대로 `include`는 어디에나 둘 수 있어서, 사이트별 설정을 파일로 쪼개 두고 `http` 블록에서 불러오는 패턴을 많이 씁니다.
+
+## 단계별 설정 방법
+
+### 1. 설치 상태와 파일 위치 확인
+
+배포판마다 기본 경로가 달라서, 먼저 실제로 어떤 파일을 읽고 있는지 확인하는 편이 안전해요.
+
+```bash
+nginx -v
+nginx -V
+nginx -t
+```
+
+`nginx -V`는 컴파일 옵션과 함께 기본 설정 파일 경로, prefix 디렉터리를 보여줘요. `nginx -t`는 현재 설정의 문법 검사 결과를 출력하므로, 손대기 전 상태를 한 번 기록해 두면 문제가 생겼을 때 원인 범위를 좁히기 좋아요.
+
+### 2. main과 events 컨텍스트 정리
+
+```nginx
+worker_processes auto;
+
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    sendfile      on;
+
+    include /etc/nginx/conf.d/*.conf;
+}
+```
+
+`worker_processes auto`는 사용 가능한 코어 수에 맞춰 워커를 띄우라는 의미예요. `include`로 `conf.d` 디렉터리를 불러오면 사이트별 설정을 파일 단위로 관리할 수 있어서, 배포 스크립트가 특정 파일만 교체하기도 쉬워집니다.
+
+### 3. server 블록으로 도메인 분기
+
+```nginx
+server {
+    listen 80;
+    server_name api.example.com;
+
+    access_log /var/log/nginx/api.access.log;
+    error_log  /var/log/nginx/api.error.log;
+
+    location / {
+        proxy_pass http://app_backend;
+    }
+}
+```
+
+`listen`은 수신 포트, `server_name`은 매칭할 호스트 이름이에요. 도메인이 여러 개라면 `server` 블록을 여러 개 두고 `server_name`만 다르게 지정하면 됩니다. 이때 어느 블록에도 걸리지 않는 요청은 기본 서버가 처리하므로, 의도하지 않은 도메인으로 접근하는 요청을 막고 싶다면 기본 서버 블록을 별도로 두는 방식을 씁니다.
+
+### 4. location 블록으로 경로 분기
+
+```nginx
+location /static/ {
+    alias /srv/app/static/;
+    expires 7d;
+}
+
+location /api/ {
+    proxy_pass http://app_backend;
+    proxy_set_header Host              $host;
+    proxy_set_header X-Real-IP         $remote_addr;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+}
+```
+
+`root`는 URI를 경로 뒤에 붙이는 방식이고, `alias`는 URI를 지정한 경로로 치환하는 방식이에요. `/static/`처럼 접두사를 잘라내고 싶을 때는 `alias`가 직관적입니다. `proxy_set_header`를 빠뜨리면 백엔드에서 클라이언트 IP가 프록시 주소로 보이거나, 리다이렉트 URL이 내부 주소로 생성되는 문제가 생겨요.
+
+### 5. 업스트림과 리버스 프록시 구성
+
+```nginx
+upstream app_backend {
+    server 10.0.0.11:8080;
+    server 10.0.0.12:8080;
+}
+
+server {
+    listen 80;
+    server_name api.example.com;
+
+    location / {
+        proxy_pass http://app_backend;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+    }
+}
+```
+
+백엔드가 여러 대라면 `upstream`에 묶어 두고 `proxy_pass`에서 그룹 이름을 참조해요. 기본 분산 방식은 라운드 로빈이고, 상태 확인이나 가중치 같은 세부 동작은 모듈 문서에서 확인해 적용하는 것이 좋아요. 무중단 배포를 한다면 업스트림 목록을 어떻게 갱신할지도 함께 설계해야 합니다.
+
+### 6. 정적 파일과 캐시 설정
+
+```nginx
+location ~* \.(css|js|png|jpg|svg|woff2)$ {
+    root /srv/app/public;
+    expires 30d;
+    add_header Cache-Control "public, immutable";
+    access_log off;
+}
+```
+
+정적 자산은 파일명에 해시를 붙여 배포하는 경우가 많아서, 오래 캐시해도 안전해요. 반대로 `index.html`처럼 자주 바뀌는 파일은 캐시를 짧게 두거나 캐시하지 않도록 분리하는 편이 좋습니다. `expires`와 `Cache-Control`을 동시에 지정할 때는 두 헤더가 충돌하지 않는지 응답을 직접 확인하는 것이 확실해요.
+
+### 7. 설정 검증과 리로드
+
+```bash
+nginx -t
+nginx -s reload
+```
+
+순서를 반드시 지켜야 해요. 문법이 틀린 상태로 리로드를 걸면 기존 프로세스가 계속 살아 있어서 "설정을 바꿨는데 반영이 안 된다"는 착각을 하기 쉬워요. 컨테이너 환경이라면 `nginx -t`를 이미지 빌드 단계나 엔트리포인트에서 먼저 실행하도록 넣어 두면 배포 사고를 크게 줄일 수 있어요.
+
+## 상황별 선택 가이드
+
+같은 요구라도 서비스 형태에 따라 설정 위치가 달라져요.
+
+- 정적 사이트만 서비스한다면 `root`와 `try_files`만으로 충분해요.
+- SPA를 서빙한다면 `try_files $uri $uri/ /index.html;`로 새로고침 시 경로가 끊기지 않게 처리해요.
+- API 앞단에 둔다면 `proxy_pass`와 함께 전달 헤더를 정리하고, 업로드가 있다면 본문 크기 제한 디렉티브도 확인해요.
+- 여러 도메인을 한 인스턴스에서 처리한다면 `server` 블록을 도메인별로 나누고 로그 파일도 분리해요.
+- TLS 종료를 nginx가 담당한다면 인증서 경로와 프로토콜 설정을 `server` 블록에 두고, 백엔드와는 내부망으로 통신하도록 분리해요.
+- 배포가 잦다면 사이트 설정 파일을 템플릿으로 두고 환경 변수로 치환해 배포하는 방식이 관리하기 편해요.
+
+선택 기준은 단순해요. "이 설정이 요청 단위로 달라지는가"를 물어보고, 그렇다면 `location`으로 내리고, 아니라면 위쪽 컨텍스트에 두면 됩니다.
+
+## 주의할 점
+
+설정 파일은 문법 오류보다 의미 오류에서 사고가 나는 경우가 많아요. 아래 항목은 배포 전에 한 번씩 확인하는 것이 좋습니다.
+
+- 모든 디렉티브 끝에 세미콜론이 있는지, 블록 중괄호가 짝을 이루는지 확인해요.
+- `include` 경로에 오타가 있으면 해당 파일이 조용히 무시될 수 있어요.
+- `proxy_pass`에 URI를 붙이면 경로가 치환되고, 붙이지 않으면 원본 URI가 그대로 전달돼요. 이 차이를 모르면 404가 반복됩니다.
+- 정규식 `location`은 우선순위 규칙이 접두사 매칭과 달라서, 의도한 블록이 선택되는지 로그로 확인하는 편이 안전해요.
+- 로그 경로의 디렉터리 권한과 로테이션 설정을 함께 점검해요. 로그가 가득 차면 서비스 전체가 영향을 받아요.
+- 리로드 후에는 응답 헤더와 상태 코드를 직접 확인해요. 설정이 적용됐다고 가정하지 않는 것이 좋아요.
+
+또한 인증서나 키 파일 경로는 배포 환경마다 다르므로, 설정 파일에 절대 경로를 하드코딩하기보다 환경별 파일로 분리하는 편이 안전합니다.
+
+## 자주 묻는 질문
+
+### nginx 설정 파일은 어디에 있나요?
+
+배포판과 설치 방식에 따라 다르지만, 보통 주 설정 파일과 사이트별 설정 디렉터리로 나뉘어 있어요. `nginx -V`로 실제 기본 설정 파일 경로를 확인하는 것이 가장 확실합니다.
+
+### 설정을 바꾼 뒤 재시작과 리로드 중 무엇을 해야 하나요?
+
+일반적인 설정 변경은 리로드로 충분해요. 재시작은 프로세스 자체를 교체하므로 순간적인 연결 단절이 생길 수 있어서, 모듈 교체나 바이너리 업그레이드처럼 꼭 필요한 경우에만 사용해요.
+
+### proxy_pass 뒤에 슬래시를 붙이는 것과 안 붙이는 것의 차이는 무엇인가요?
+
+URI가 포함된 형태로 쓰면 매칭된 접두사가 치환되고, 호스트만 지정하면 원본 URI가 그대로 전달돼요. 백엔드 라우팅 경로가 `/api`를 포함하는지 여부에 따라 결과가 달라지므로 두 형태를 구분해서 써야 합니다.
+
+### location 블록의 우선순위는 어떻게 되나요?
+
+정확히 일치하는 블록이 가장 먼저 선택되고, 그다음 정규식 매칭과 접두사 매칭이 규칙에 따라 이어져요. 헷갈릴 때는 `return`이나 별도 로그를 넣어 어느 블록이 실제로 처리하는지 확인하는 것이 빠릅니다.
+
+### 502 Bad Gateway가 뜨면 어디부터 확인해야 하나요?
+
+먼저 업스트림 주소와 포트가 실제로 열려 있는지, 백엔드 프로세스가 살아 있는지 확인해요. 그다음 `error_log`에서 연결 거부인지 타임아웃인지 구분하면 원인 범위가 크게 좁혀집니다.
+
+### 설정 파일을 여러 개로 나눠도 되나요?
+
+됩니다. `http` 블록에서 `include`로 디렉터리를 불러오면 파일 단위로 관리할 수 있어요. 다만 파일명 순서대로 읽히므로, 순서에 의존하는 설정이 있다면 이름 규칙을 정해 두는 것이 좋아요.
+
+## 출처
+
+- nginx 공식 문서, Beginner's Guide: https://nginx.org/en/docs/beginners_guide.html
+- nginx 공식 문서, ngx_http_proxy_module: https://nginx.org/en/docs/http/ngx_http_proxy_module.html
+- nginx 공식 문서, Managing Configuration Files: https://docs.nginx.com/nginx/admin-guide/basic-functionality/managing-configuration-files/
+
+설정 디렉티브의 정확한 문법과 사용 가능한 컨텍스트는 버전에 따라 달라질 수 있으므로, 실제 적용 전에는 사용 중인 버전의 공식 문서를 확인하시길 권해요.
+
+운영 흐름까지 함께 정리하고 싶다면 [nginx 로그로 장애 원인 좁히기](/blog/nginx-log-troubleshooting)와 [무중단 배포 전략 비교](/blog/zero-downtime-deployment)를 이어서 읽어 보세요. 설정은 결국 배포와 장애 대응 속에서 검증되기 때문에, 두 글을 함께 보면 어떤 디렉티브를 어디에 두어야 하는지 판단이 훨씬 쉬워집니다.

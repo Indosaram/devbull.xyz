@@ -1,0 +1,192 @@
+---
+title: "pulumi aws.ec2.vpc로 VPC를 코드로 정의하는 방법"
+description: "pulumi aws.ec2.vpc 리소스의 입력 값과 출력 값, 서브넷·라우팅·NAT 구성 순서, awsx.ec2.Vpc와의 차이, 기존 VPC 임포트와 삭제 주의점까지 백엔드 개발자 관점에서 정리합니다."
+date: '2026-11-02'
+lastmod: '2026-11-02'
+tags: ['기타']
+images: ['/static/images/pulumi-aws-ec2-vpc/cover.webp']
+sources:
+  - https://www.pulumi.com/registry/packages/aws/api-docs/ec2/vpc/
+  - https://www.pulumi.com/registry/packages/awsx/api-docs/ec2/vpc/
+  - https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html
+firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+---
+
+pulumi aws.ec2.vpc는 AWS Classic provider에서 VPC 한 개의 경계를 선언하는 리소스입니다. CIDR 대역과 DNS 옵션, 테넌시처럼 VPC 본체에 속한 값만 다루고, 서브넷과 라우팅 테이블, 게이트웨이는 각각 다른 리소스로 조합해야 합니다. 이 글은 그 경계를 기준으로 입력 값과 출력 값, 실제 구성 순서, 임포트와 삭제에서 걸리는 지점을 정리합니다.
+
+## 한눈에 보기
+
+pulumi aws.ec2.vpc를 처음 마주하면 "VPC를 만들어 주는 리소스"라는 설명만 보고 서브넷까지 자동으로 생길 것이라 기대하기 쉽습니다. 실제로는 반대입니다. 이 리소스는 VPC라는 논리적 컨테이너 하나만 만들고, 그 안을 채우는 일은 전부 다른 리소스에 위임합니다. 그래서 코드가 길어지지만, 대신 어떤 서브넷이 어느 라우팅 테이블을 쓰는지가 코드에 그대로 드러납니다.
+
+리소스 이름은 provider 모듈 경로까지 포함해 `aws.ec2.Vpc`로 표기합니다. TypeScript에서는 `new aws.ec2.Vpc(...)`, Python에서는 `aws.ec2.Vpc(...)` 형태로 호출하고, 입력 속성 이름은 언어별 관례를 따릅니다. TypeScript는 camelCase, Python은 snake_case를 씁니다. 문서를 볼 때 언어 탭을 바꾸면 같은 속성이 이름만 달라지는 것을 확인할 수 있습니다.
+
+VPC를 만들면 AWS가 기본 라우팅 테이블, 기본 네트워크 ACL, 기본 보안 그룹을 함께 생성합니다. Pulumi는 이 식별자들을 출력 값으로 노출합니다. 즉 "VPC를 만들었더니 딸려 온 리소스"를 코드에서 참조할 수 있으므로, 기본 보안 그룹을 그대로 쓰지 않겠다는 판단도 코드로 남길 수 있습니다.
+
+## 주요 입력 값과 출력 값
+
+가장 자주 쓰는 항목만 추려도 아래 정도입니다.
+
+| 항목 | 성격 | 설명 |
+| --- | --- | --- |
+| cidrBlock | 입력(필수) | VPC의 IPv4 대역입니다. 생성 후 변경할 수 없어 교체로 이어집니다. |
+| enableDnsSupport | 입력 | VPC 안에서 DNS 확인 기능을 쓸지 정합니다. |
+| enableDnsHostnames | 입력 | 인스턴스에 퍼블릭 DNS 호스트 이름을 부여할지 정합니다. |
+| instanceTenancy | 입력 | 기본 테넌시와 전용 테넌시 중 하나를 고릅니다. |
+| tags | 입력 | Name 태그를 포함한 리소스 태그 묶음입니다. |
+| id | 출력 | VPC 식별자이며 서브넷 등 하위 리소스가 참조합니다. |
+| arn | 출력 | 정책 연결 등에 쓰는 VPC의 ARN입니다. |
+| defaultRouteTableId | 출력 | VPC와 함께 만들어진 기본 라우팅 테이블입니다. |
+| defaultSecurityGroupId | 출력 | VPC와 함께 만들어진 기본 보안 그룹입니다. |
+| mainRouteTableId | 출력 | 서브넷에 별도 연결이 없을 때 적용되는 라우팅 테이블입니다. |
+
+여기서 눈여겨볼 점은 입력 항목이 생각보다 적다는 것입니다. VPC는 "주소 공간과 이름"만 정하고, 실제 트래픽 경로는 라우팅 테이블과 게이트웨이가 결정합니다. 그래서 VPC 코드를 읽을 때는 이 리소스만 보지 말고 같은 스택 안의 서브넷과 라우팅 리소스를 함께 봐야 전체 그림이 잡힙니다.
+
+## aws.ec2.Vpc와 awsx.ec2.Vpc 비교
+
+Pulumi에는 이름이 비슷한 상위 수준 리소스가 하나 더 있습니다. `@pulumi/awsx` 패키지가 제공하는 `awsx.ec2.Vpc`입니다. 둘은 목적이 다르므로 혼동하지 않는 편이 좋습니다.
+
+| 구분 | aws.ec2.Vpc | awsx.ec2.Vpc |
+| --- | --- | --- |
+| 성격 | 단일 VPC 리소스 | VPC와 서브넷·게이트웨이를 묶은 구성 요소 |
+| 서브넷 생성 | 직접 선언해야 함 | 전략에 따라 자동 생성 |
+| 라우팅 테이블 | 직접 선언하고 연결해야 함 | 서브넷 유형에 맞춰 자동 구성 |
+| NAT 게이트웨이 | EIP와 NAT 리소스를 직접 조합 | 옵션에 따라 자동 생성 |
+| 제어 수준 | 세밀함 | 편의성 위주 |
+| 적합한 경우 | 기존 인프라와 정확히 맞춰야 할 때 | 빠르게 표준 구성을 만들 때 |
+
+처음 환경을 만들 때는 awsx 쪽이 빠르지만, 운영 중인 네트워크를 코드로 옮기는 상황이라면 aws.ec2.Vpc로 하나씩 맞추는 편이 안전합니다. 자동 생성된 서브넷 대역이 기존 대역과 겹치면 나중에 되돌리기 어려운 변경이 되기 때문입니다.
+
+## 단계별 구성 방법
+
+### 1. 프로젝트와 provider 준비
+
+Pulumi 프로젝트를 만들고 AWS provider를 설정합니다. 리전과 자격 증명은 스택 설정이나 실행 환경의 표준 자격 증명 체인을 따르게 두는 편이 재현하기 쉽습니다. 리전을 코드에 상수로 박아 두면 스택을 늘릴 때마다 같은 값을 복사하게 되므로, 스택 설정으로 분리하는 쪽을 권합니다.
+
+```typescript
+import * as aws from "@pulumi/aws";
+```
+
+### 2. VPC 리소스 선언
+
+VPC는 주소 대역과 DNS 옵션만 정하고 시작합니다.
+
+```typescript
+const vpc = new aws.ec2.Vpc("main-vpc", {
+    cidrBlock: "10.20.0.0/16",
+    enableDnsSupport: true,
+    enableDnsHostnames: true,
+    instanceTenancy: "default",
+    tags: {
+        Name: "main-vpc",
+        ManagedBy: "pulumi",
+    },
+});
+
+export const vpcId = vpc.id;
+```
+
+`enableDnsHostnames`를 켜 두면 인스턴스가 퍼블릭 DNS 이름을 갖게 되어, 사설 호스팅 영역과 연결했을 때 이름 해석이 기대대로 동작합니다. 반대로 꺼 두면 이름 기반 접근이 실패하는 경우가 생기므로, 특별한 이유가 없다면 켜 두는 편이 좋습니다.
+
+### 3. 서브넷과 라우팅 연결
+
+서브넷은 가용 영역 단위로 나눕니다. 가용 영역 이름은 하드코딩하지 말고 데이터 소스로 조회하는 편이 스택을 다른 리전으로 옮길 때 유리합니다.
+
+```typescript
+const azs = await aws.getAvailabilityZones({ state: "available" });
+
+const publicSubnet = new aws.ec2.Subnet("main-public-a", {
+    vpcId: vpc.id,
+    cidrBlock: "10.20.10.0/24",
+    availabilityZone: azs.names[0],
+    mapPublicIpOnLaunch: true,
+    tags: { Name: "main-public-a" },
+});
+```
+
+인터넷 게이트웨이와 라우팅 테이블을 붙입니다. 라우팅 테이블은 `routes` 배열로 한 번에 선언할 수 있어, 경로와 연결을 따로 관리하는 것보다 읽기 쉽습니다.
+
+```typescript
+const igw = new aws.ec2.InternetGateway("main-igw", {
+    vpcId: vpc.id,
+    tags: { Name: "main-igw" },
+});
+
+const publicRouteTable = new aws.ec2.RouteTable("main-public-rt", {
+    vpcId: vpc.id,
+    routes: [{ cidrBlock: "0.0.0.0/0", gatewayId: igw.id }],
+    tags: { Name: "main-public-rt" },
+});
+
+new aws.ec2.RouteTableAssociation("main-public-rta", {
+    subnetId: publicSubnet.id,
+    routeTableId: publicRouteTable.id,
+});
+```
+
+프라이빗 서브넷에서 외부로 나가야 한다면 NAT 게이트웨이를 퍼블릭 서브넷에 두고, 프라이빗 라우팅 테이블의 기본 경로를 NAT 게이트웨이로 향하게 합니다. NAT 게이트웨이는 가용 영역에 종속되므로, 가용 영역을 늘리면 NAT도 함께 늘어난다는 점을 코드 구조에 반영해 두는 편이 좋습니다.
+
+```typescript
+const natEip = new aws.ec2.Eip("main-nat-eip", { domain: "vpc" });
+
+const natGateway = new aws.ec2.NatGateway("main-nat", {
+    allocationId: natEip.id,
+    subnetId: publicSubnet.id,
+    tags: { Name: "main-nat" },
+});
+```
+
+### 4. 결과 확인과 출력
+
+배포 전에는 미리보기로 어떤 리소스가 생성·교체·삭제되는지 확인합니다. 특히 교체(replace) 표시가 뜨는 리소스는 실제로 지워졌다가 다시 만들어지므로, 운영 환경에서는 반드시 미리보기 단계에서 걸러야 합니다. 배포 후에는 스택 출력으로 VPC 식별자를 확인하고, 다른 스택에서 참조할 값은 출력으로 노출해 둡니다.
+
+```bash
+pulumi preview
+pulumi up
+pulumi stack output vpcId
+```
+
+## 상황별 선택 기준
+
+새 환경을 빠르게 띄우는 것이 목적이라면 awsx.ec2.Vpc로 시작해도 됩니다. 다만 서브넷 대역이나 라우팅 규칙을 조직 표준에 맞춰야 한다면, 자동 생성에 기대기보다 aws.ec2.Vpc와 개별 리소스를 조합하는 편이 낫습니다. 자동 생성된 값은 나중에 바꾸기 어렵고, 코드만 보고 최종 대역을 알기 어렵기 때문입니다.
+
+이미 콘솔이나 다른 도구로 만든 VPC를 그대로 관리해야 한다면 임포트를 씁니다. 리소스 정의를 실제 구성과 같게 맞춘 뒤 임포트하면, 이후 변경은 Pulumi가 계산합니다.
+
+```bash
+pulumi import aws:ec2/vpc:Vpc main-vpc vpc-0123456789abcdef0
+```
+
+여러 스택이 하나의 VPC를 공유하는 구조라면 VPC를 소유한 스택에서만 리소스를 관리하고, 나머지 스택은 조회 데이터 소스로 식별자를 가져오는 방식이 안전합니다. 소유권이 여러 스택에 흩어지면 삭제 순서가 꼬이기 쉽습니다.
+
+## 주의할 점
+
+가장 큰 함정은 `cidrBlock`입니다. 이 값은 생성 후 바꿀 수 없어서, 코드에서 대역을 수정하면 기존 VPC를 지우고 새로 만드는 교체가 발생합니다. 운영 중인 VPC라면 리소스 옵션으로 보호를 걸어 두고, 대역 변경은 별도 마이그레이션 계획으로 다루는 편이 좋습니다.
+
+VPC 삭제는 그 안에 남은 리소스가 모두 정리된 뒤에만 성공합니다. 같은 스택이 관리하는 리소스는 의존 관계의 역순으로 삭제되지만, 콘솔에서 손으로 만든 리소스나 다른 스택이 만든 리소스가 남아 있으면 삭제가 실패합니다. 이때는 남은 리소스를 먼저 정리하거나 스택 밖 관리 대상임을 명확히 해야 합니다.
+
+기본 보안 그룹과 기본 라우팅 테이블은 VPC와 함께 자동으로 생깁니다. 이들을 그대로 쓸지, 별도 보안 그룹으로 대체할지 코드에서 분명히 정해 두지 않으면, 나중에 규칙이 어디서 왔는지 추적하기 어려워집니다. 태그 규칙도 함께 정해 두면 비용 추적과 소유자 파악이 쉬워집니다.
+
+## 자주 묻는 질문
+
+### pulumi aws.ec2.vpc와 awsx.ec2.Vpc 중 무엇부터 봐야 하나요?
+
+네트워크 구성을 직접 통제해야 한다면 aws.ec2.vpc부터 보는 편이 좋습니다. 서브넷과 라우팅이 어떻게 연결되는지 코드로 드러나기 때문입니다. 반대로 표준적인 구성으로 빠르게 시작하는 것이 목적이라면 awsx 쪽이 진입 장벽이 낮습니다.
+
+### 콘솔에서 만든 기존 VPC를 그대로 관리하려면 어떻게 하나요?
+
+리소스 정의를 실제 구성과 동일하게 작성한 뒤 임포트 명령으로 스택에 편입합니다. 임포트 직후에는 미리보기로 변경 사항이 비어 있는지 확인해야 합니다. 차이가 남아 있다면 정의가 실제 구성과 어긋난 것이므로 그 부분을 먼저 맞춥니다.
+
+### VPC를 지우려는데 서브넷이 남아 있다고 실패하는 이유는 무엇인가요?
+
+VPC 안에 연결된 리소스가 있으면 삭제가 거부되기 때문입니다. 같은 스택이 관리하는 리소스는 함께 정리되지만, 외부에서 만든 리소스는 그렇지 않습니다. 남은 리소스의 소유권을 확인하고 먼저 정리한 뒤 다시 삭제를 시도합니다.
+
+### cidrBlock을 바꾸면 왜 리소스 교체가 일어나나요?
+
+VPC의 주소 대역은 생성 시점에 고정되는 값이기 때문입니다. Pulumi는 이 변경을 기존 VPC 삭제와 새 VPC 생성으로 해석합니다. 운영 환경에서는 보호 옵션을 걸어 실수로 인한 교체를 막는 편이 안전합니다.
+
+## 출처
+
+- Pulumi Registry, aws.ec2.Vpc: https://www.pulumi.com/registry/packages/aws/api-docs/ec2/vpc/
+- Pulumi Registry, awsx.ec2.Vpc: https://www.pulumi.com/registry/packages/awsx/api-docs/ec2/vpc/
+- Amazon VPC 사용 설명서: https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html
+
+VPC 대역을 어떻게 나누고 라우팅 테이블을 어떤 단위로 묶을지 먼저 정리하고 싶다면, 서브넷 CIDR 분할과 라우팅 설계를 다룬 [VPC 서브넷 설계와 라우팅 정리](/blog/aws-vpc-subnet-cidr-routing) 글을 함께 보시길 권합니다. 네트워크 설계가 정리된 뒤에야 pulumi aws.ec2.vpc 코드도 읽을 만한 형태가 됩니다.

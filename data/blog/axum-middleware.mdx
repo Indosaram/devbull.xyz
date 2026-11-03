@@ -1,0 +1,214 @@
+---
+title: "axum middleware 작성과 적용: tower 레이어로 요청 흐름 다루기"
+description: "axum에서 middleware를 작성하고 Router에 적용하는 방법을 정리합니다. from_fn과 tower_http 레이어, 적용 순서, route_layer와의 차이까지 백엔드 운영 관점에서 설명해요."
+date: '2026-11-02'
+lastmod: '2026-11-02'
+tags: ['Rust·서버']
+images: ['/static/images/axum-middleware/cover.webp']
+sources:
+  - https://docs.rs/axum/latest/axum/middleware/index.html
+  - https://docs.rs/tower-http/latest/tower_http/
+  - https://docs.rs/axum/latest/axum/routing/struct.Router.html
+firstHand:
+  type: 'screenshot'
+  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+---
+
+axum의 미들웨어는 핸들러 앞뒤를 감싸는 tower 레이어예요. 그래서 직접 async 함수를 작성해 붙일 수도 있고, tower-http가 제공하는 완성된 레이어를 그대로 조합할 수도 있어요. 이 글은 미들웨어를 어떤 방식으로 작성하고 Router 어디에 적용해야 하는지, 그리고 운영 중에 자주 걸리는 지점을 순서대로 정리해요.
+
+## 한눈에 보기
+
+axum에서 요청은 Router → 레이어 → 핸들러 순서로 흘러가요. 레이어는 요청이 핸들러에 닿기 전과 응답이 클라이언트로 나가기 전, 두 지점에 끼어들 수 있어요. 접근 방식은 크게 네 가지로 나뉘어요.
+
+- `middleware::from_fn`: 요청과 `Next`를 받는 async 함수로 미들웨어를 작성해요. 타입이 단순해서 로깅, 헤더 조작, 간단한 접근 확인에 잘 맞아요.
+- `middleware::from_fn_with_state`: 애플리케이션 상태를 함께 받아요. DB 풀이나 설정 값을 미들웨어 안에서 써야 할 때 필요해요.
+- `tower::Layer` 직접 구현: 서비스 조합을 세밀하게 제어해야 할 때 써요. 대부분의 상황에서는 from_fn으로 충분해요.
+- tower-http 레이어: 추적, CORS, 압축, 타임아웃처럼 정형화된 기능은 직접 만들지 말고 가져다 붙이는 편이 안전해요.
+
+핵심은 "공통 처리는 레이어, 비즈니스 로직은 핸들러"로 분리하는 것이에요. 미들웨어가 라우팅이나 도메인 판단까지 떠안기 시작하면 순서와 책임이 금방 꼬여요.
+
+## 미들웨어 방식 비교
+
+| 항목 | from_fn | from_fn_with_state | tower::Layer 직접 구현 | tower-http 레이어 |
+| --- | --- | --- | --- | --- |
+| 작성 난이도 | 낮음 | 낮음 | 높음 | 매우 낮음 |
+| 상태 접근 | 불가 | 가능 | 가능 | 레이어 설정으로 대체 |
+| 요청 전 처리 | 가능 | 가능 | 가능 | 레이어마다 다름 |
+| 응답 후 처리 | 가능 | 가능 | 가능 | 레이어마다 다름 |
+| 추천 용도 | 로깅, 헤더 주입 | 인증, 설정 전달 | 연결 단위 제어 | 추적, CORS, 압축 |
+| 재사용성 | 보통 | 보통 | 높음 | 높음 |
+
+표에서 보듯 실무에서 손으로 작성할 일이 많은 쪽은 from_fn 계열이에요. 나머지는 이미 검증된 레이어를 조합하는 영역으로 보는 편이 좋아요.
+
+## 단계별로 미들웨어 작성하고 적용하기
+
+### 의존성 준비
+
+Cargo.toml에 axum과 함께 tower, tower-http를 추가해요. tower-http는 필요한 기능만 feature로 켜면 빌드 부담을 줄일 수 있어요. 추적과 CORS, 압축, 타임아웃 정도를 후보로 두고 실제로 쓰는 것만 활성화하면 돼요.
+
+### from_fn으로 기본 미들웨어 작성
+
+가장 단순한 형태는 요청 정보를 읽고 `next.run(request)`를 호출하는 함수예요. 호출 전이 요청 단계, 호출 후가 응답 단계가 돼요.
+
+```rust
+use axum::{
+    extract::Request,
+    middleware::Next,
+    response::Response,
+};
+
+async fn log_request(request: Request, next: Next) -> Response {
+    let method = request.method().clone();
+    let path = request.uri().path().to_string();
+
+    // 요청 단계: 핸들러 진입 전에 할 일을 여기서 처리해요
+    let response = next.run(request).await;
+
+    // 응답 단계: 핸들러가 만든 응답을 그대로 받아요
+    println!("{method} {path} -> {}", response.status());
+    response
+}
+```
+
+이 함수는 반환 타입이 `Response`로 고정되어 있어요. 응답을 직접 만들지 않고 `next.run`의 결과를 그대로 돌려주는 구조를 유지하면 핸들러 동작을 바꾸지 않아요.
+
+### 상태가 필요한 미들웨어 작성
+
+설정 값이나 공용 클라이언트를 미들웨어에서 써야 한다면 `from_fn_with_state`를 써요. 인자 순서는 추출기, 요청, `Next` 순으로 두는 것이 일반적이에요.
+
+```rust
+use axum::{
+    extract::{Request, State},
+    http::HeaderValue,
+    middleware::Next,
+    response::Response,
+};
+
+#[derive(Clone)]
+struct AppState {
+    service_name: String,
+}
+
+async fn tag_response(
+    State(state): State<AppState>,
+    request: Request,
+    next: Next,
+) -> Response {
+    let mut response = next.run(request).await;
+
+    if let Ok(value) = HeaderValue::from_str(&state.service_name) {
+        response.headers_mut().insert("x-service", value);
+    }
+
+    response
+}
+```
+
+상태는 `Clone`이어야 하고, Router의 `with_state`로 넘긴 값과 같은 타입이어야 해요. 여기서 헤더 삽입이 실패할 수 있는 경우를 조용히 넘기도록 처리한 점도 눈여겨볼 만해요. 미들웨어에서 패닉이 나면 해당 연결이 끊기기 때문이에요.
+
+### Router에 적용하기
+
+작성한 미들웨어는 `Router::layer`나 `Router::route_layer`로 붙여요. 둘의 차이가 운영에서 꽤 중요해요.
+
+```rust
+use axum::{middleware, routing::get, Router};
+
+let state = AppState {
+    service_name: "api".to_string(),
+};
+
+let app = Router::new()
+    .route("/health", get(health))
+    .route_layer(middleware::from_fn(log_request))
+    .layer(middleware::from_fn_with_state(state.clone(), tag_response))
+    .with_state(state);
+```
+
+`layer`는 라우터 전체를 감싸요. 매칭되는 라우트가 없을 때도 실행돼요. 반면 `route_layer`는 실제로 라우트가 매칭된 경우에만 실행돼요. 그래서 인증처럼 "핸들러에 도달하기 전에 반드시 확인해야 하는" 처리는 `route_layer`에 두는 편이 의도가 분명해져요.
+
+### tower-http 레이어 조합
+
+직접 만들 필요가 없는 기능은 tower-http에서 가져와요.
+
+```rust
+use tower_http::{
+    compression::CompressionLayer,
+    cors::CorsLayer,
+    trace::TraceLayer,
+};
+
+let app = Router::new()
+    .route("/health", get(health))
+    .layer(TraceLayer::new_for_http())
+    .layer(CompressionLayer::new())
+    .layer(CorsLayer::permissive());
+```
+
+`CorsLayer::permissive()`는 모든 오리진을 허용해요. 개발 중에는 편하지만 운영에 그대로 두면 보안상 좋지 않아요. 허용 오리진과 메서드를 명시한 설정으로 바꿔서 쓰는 것이 기본이에요.
+
+## 상황별 선택 기준
+
+어떤 방식을 고를지 헷갈릴 때는 "이 처리가 라우트를 아는가"를 기준으로 삼으면 정리가 돼요.
+
+- 모든 요청의 추적과 로그를 남기고 싶다면 tower-http의 추적 레이어를 먼저 붙여요. 요청 식별자와 상태 코드가 함께 기록돼요.
+- 인증과 권한 확인은 `from_fn_with_state`로 작성하고 `route_layer`에 두는 편이 안전해요. 공개 라우트와 보호 라우트를 라우터 단위로 분리할 수 있어요.
+- 응답 헤더나 캐시 정책처럼 응답만 손보고 싶다면 `map_response` 계열이 읽기 쉬워요.
+- 요청 본문을 검사해야 한다면 소비와 복원을 함께 처리해야 해요. 이 경우는 미들웨어보다 추출기나 핸들러 쪽이 나은 경우도 많아요.
+- 연결 단위로 무언가를 하고 싶다면 `tower::Layer`를 직접 구현하는 편이 맞아요. 다만 대부분의 요구는 from_fn으로 해결돼요.
+
+## 주의할 점
+
+미들웨어를 붙인 뒤에 자주 마주치는 함정들이 있어요.
+
+첫째, 요청 본문을 읽으면 다시 넣어줘야 해요. 본문은 한 번 소비되면 사라지기 때문에, 검사만 하고 끝내면 핸들러가 빈 본문을 받아요. `into_parts`로 분해한 뒤 `from_parts`로 재조립하는 흐름을 기억해 두세요.
+
+```rust
+use axum::{body::Body, extract::Request, middleware::Next, response::Response};
+
+async fn inspect_body(request: Request, next: Next) -> Response {
+    let (parts, body) = request.into_parts();
+    let bytes = axum::body::to_bytes(body, usize::MAX).await.unwrap();
+
+    // 본문을 다시 붙여야 핸들러가 읽을 수 있어요
+    let request = Request::from_parts(parts, Body::from(bytes));
+    next.run(request).await
+}
+```
+
+둘째, 레이어 순서를 의식해야 해요. axum은 나중에 추가한 레이어를 바깥쪽에 두기 때문에, CORS와 압축처럼 서로 영향을 주는 레이어는 순서를 바꾸면 동작이 달라져요. 순서가 복잡해지면 `ServiceBuilder`로 한 번에 묶어 선언하는 편이 읽기 쉬워요.
+
+셋째, `route_layer`는 매칭 실패 시 실행되지 않아요. 404 응답에도 공통 헤더를 붙이고 싶다면 `layer`를 써야 해요.
+
+넷째, 미들웨어 안에서 오래 걸리는 작업을 하면 안 돼요. 외부 호출이나 디스크 접근이 필요하면 타임아웃을 함께 두고, 블로킹 작업은 별도 스레드로 넘기는 것을 검토하세요.
+
+다섯째, 미들웨어에서 반환하는 에러 응답 형식을 통일하세요. 핸들러는 JSON으로 응답하는데 미들웨어만 빈 본문을 돌려주면 클라이언트 입장에서 원인을 찾기 어려워져요.
+
+## 자주 묻는 질문
+
+### axum middleware와 tower 레이어는 같은 건가요?
+
+axum의 미들웨어는 tower의 레이어와 서비스 개념 위에 만들어져 있어요. `from_fn`은 그중에서 함수 하나로 레이어를 만들 수 있게 감싸둔 편의 도구이고, 내부적으로는 tower의 조합으로 동작해요. 그래서 tower 생태계의 레이어를 그대로 axum 라우터에 붙일 수 있어요.
+
+### 미들웨어에서 요청 본문을 읽어도 되나요?
+
+가능하지만 권장하지는 않아요. 본문을 소비한 뒤 다시 넣어주지 않으면 핸들러가 빈 본문을 받고, 큰 본문을 메모리에 올리면 부담이 커져요. 본문 검증이 필요하면 추출기나 핸들러에서 처리하는 편이 명확해요.
+
+### 특정 라우트에만 미들웨어를 적용하려면 어떻게 하나요?
+
+보호할 라우트를 별도 Router로 만들고 그 라우터에 `route_layer`를 적용한 뒤, 상위 라우터에 `merge`나 `nest`로 합치는 방식이 깔끔해요. 이렇게 하면 공개 라우트와 보호 라우트의 경계가 코드 구조에 그대로 드러나요.
+
+### 적용 순서는 어떻게 결정되나요?
+
+Router에 나중에 추가한 레이어가 바깥쪽에서 먼저 실행돼요. 요청은 바깥에서 안으로, 응답은 안에서 바깥으로 지나가요. 추적 레이어를 가장 바깥에 두면 전체 구간을 관찰할 수 있어서 순서를 잡을 때 기준으로 삼기 좋아요.
+
+### from_fn과 from_fn_with_state 중 무엇을 먼저 고려해야 하나요?
+
+상태가 필요 없다면 `from_fn`으로 시작하세요. 상태가 필요해지는 시점에 `from_fn_with_state`로 바꾸면 되고, 시그니처 차이는 인자 하나뿐이라 이전 비용이 크지 않아요.
+
+## 출처
+
+- axum 미들웨어 공식 문서: https://docs.rs/axum/latest/axum/middleware/index.html
+- tower-http 공식 문서: https://docs.rs/tower-http/latest/tower_http/
+- axum Router 공식 문서: https://docs.rs/axum/latest/axum/routing/struct.Router.html
+
+서버 운영 흐름에서 함께 읽으면 좋은 글도 남겨둬요. [Rust 서버 배포 체크리스트](/rust-server-deploy)와 [tower 서비스 조합 이해하기](/tower-service-layer)를 같이 보면, 미들웨어를 어디에 두고 어떤 순서로 배치할지 판단하는 데 도움이 될 거예요.

@@ -1,0 +1,148 @@
+---
+title: "axum cors 설정: CorsLayer로 허용 정책 만들기"
+description: "axum에서 tower-http의 CorsLayer로 CORS를 설정하는 방법과 허용 출처·메서드·헤더 설계 기준, 자주 겪는 실수를 공식 문서 범위에서 정리해요."
+date: '2026-11-02'
+lastmod: '2026-11-02'
+tags: ['Rust·서버']
+images: ['/static/images/axum-cors/cover.webp']
+sources:
+  - https://docs.rs/axum/latest/axum/
+  - https://docs.rs/tower-http/latest/tower_http/cors/index.html
+  - https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+  - https://github.com/tower-rs/tower-http
+firstHand:
+  type: 'screenshot'
+  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+---
+
+axum에서 CORS는 프레임워크에 내장된 기능이 아니라 tower-http의 CorsLayer 미들웨어로 처리해요. 그래서 Router에 `.layer()`로 CorsLayer를 씌우는 형태가 가장 일반적이고, 허용 출처를 명시하지 않으면 브라우저 요청이 조용히 차단돼요. 이 글은 공식 문서에서 확인한 범위 안에서 설정 순서와 정책 설계 기준, 그리고 운영에서 자주 밟는 함정을 정리해요.
+
+## 한눈에 보기
+
+- axum 자체에는 CORS 설정이 없어요. tower-http 크레이트의 `cors` 기능을 켜고 `CorsLayer`를 라우터에 적용해요.
+- CORS는 서버가 강제하는 접근 제어가 아니라 브라우저가 응답 헤더를 읽고 판단하는 정책이에요. 서버의 책임은 올바른 헤더를 붙여 응답하는 것까지예요.
+- 개발 중에는 `CorsLayer::permissive()`로 시작할 수 있지만, 운영에서는 허용 출처와 메서드, 헤더를 명시하는 편이 안전해요.
+- 쿠키나 인증 정보를 함께 주고받으려면 와일드카드 출처를 쓸 수 없어요. 출처를 정확히 나열해야 해요.
+- 미들웨어 순서에 따라 에러 응답에서 CORS 헤더가 빠질 수 있어요. CORS는 가급적 바깥쪽에 두는 편이 좋아요.
+
+## axum에서 CORS가 처리되는 위치
+
+axum은 라우팅과 추출자, 응답 변환에 집중한 프레임워크예요. 횡단 관심사는 tower 생태계의 미들웨어로 위임하는 구조라서, CORS 설정 코드도 자연스럽게 `Router::layer()` 호출 형태로 등장해요. 이 구조를 이해하고 있으면 "왜 특정 경로에서만 CORS 헤더가 빠지는지" 같은 문제를 훨씬 빠르게 좁힐 수 있어요.
+
+CORS의 판단 주체는 브라우저예요. 서버가 `Access-Control-Allow-Origin` 같은 응답 헤더를 붙이면 브라우저가 그 값을 읽고 실제 응답을 자바스크립트에 넘길지 결정해요. 그래서 서버 입장에서 할 일은 헤더를 정확히 붙이는 것뿐이고, curl이나 서버 간 통신에서는 CORS가 아예 적용되지 않아요. "curl로는 되는데 브라우저에서만 실패한다"는 상황이 바로 이 지점에서 나와요.
+
+브라우저는 단순 요청으로 분류되지 않는 호출을 보낼 때 프리플라이트(OPTIONS) 요청을 먼저 보내요. `CorsLayer`는 이 프리플라이트를 내부 핸들러까지 전달하지 않고 미들웨어 단계에서 응답할 수 있어요. 그래서 프리플라이트가 핸들러 로그에 안 보인다고 해서 설정이 빠진 것은 아니에요.
+
+## 설정 항목 비교
+
+| 항목 | 지정하는 값 | 놓치기 쉬운 부분 |
+| --- | --- | --- |
+| 허용 출처 | `allow_origin`에 실제 프론트 도메인 | 와일드카드와 자격 증명은 함께 쓸 수 없어요 |
+| 허용 메서드 | `allow_methods`에 GET·POST·PATCH·DELETE 등 | 실제 호출에 쓰는 메서드를 빠뜨리기 쉬워요 |
+| 허용 헤더 | `allow_headers`에 Content-Type, Authorization 등 | 커스텀 헤더를 빠뜨리면 프리플라이트에서 막혀요 |
+| 노출 헤더 | `expose_headers`로 브라우저에 공개할 헤더 | 기본적으로는 일부 헤더만 읽을 수 있어요 |
+| 결과 캐시 | `max_age`로 프리플라이트 결과 재사용 | 값을 키우면 정책 변경이 늦게 반영돼요 |
+| 자격 증명 | `allow_credentials`로 쿠키·인증 정보 허용 | 출처를 정확히 지정해야만 동작해요 |
+
+표의 항목은 모두 `CorsLayer`의 빌더 메서드에 대응해요. 하나라도 빠지면 브라우저 콘솔에는 같은 종류의 CORS 오류로 보이기 때문에, 오류 메시지만 보고 원인을 추정하기보다는 요청 헤더와 응답 헤더를 직접 비교하는 편이 빨라요.
+
+## 단계별로 CorsLayer 적용하기
+
+먼저 의존성을 준비해요. tower-http는 기능 플래그로 모듈을 나누기 때문에, 의존성 선언에서 `cors` 기능을 켜지 않으면 `CorsLayer`를 찾을 수 없어요. 버전은 프로젝트에서 사용 중인 axum과 호환되는 조합을 공식 문서에서 확인하는 편이 안전해요.
+
+다음으로 레이어를 만들어요. 단일 출처만 허용한다면 문자열을 `HeaderValue`로 파싱해 넘기면 되고, 여러 출처를 허용한다면 목록으로 넘겨요.
+
+```rust
+use axum::http::{header, HeaderValue, Method};
+use tower_http::cors::{AllowOrigin, CorsLayer};
+
+let cors = CorsLayer::new()
+    .allow_origin(AllowOrigin::list([
+        "https://app.example.com".parse::<HeaderValue>().unwrap(),
+        "https://admin.example.com".parse::<HeaderValue>().unwrap(),
+    ]))
+    .allow_methods([Method::GET, Method::POST, Method::PATCH, Method::DELETE])
+    .allow_headers([header::CONTENT_TYPE, header::AUTHORIZATION])
+    .expose_headers([header::ETAG])
+    .max_age(std::time::Duration::from_secs(600));
+```
+
+만든 레이어는 라우터에 적용해요. 전체 API에 공통 적용하려면 최상위 라우터에, 특정 경로에만 적용하려면 해당 경로를 담은 하위 라우터에 걸어요.
+
+```rust
+use axum::{routing::get, Router};
+
+fn app() -> Router {
+    let cors = build_cors();
+
+    Router::new()
+        .route("/health", get(health))
+        .layer(cors)
+}
+```
+
+쿠키 기반 세션을 쓴다면 `allow_credentials(true)`를 함께 지정하고, 출처는 반드시 정확한 값으로 나열해요. 이때 프론트엔드 쪽에서도 요청에 자격 증명을 포함하도록 설정해야 실제로 쿠키가 오가요.
+
+마지막으로 검증은 브라우저에서 해요. 개발자 도구의 네트워크 탭에서 프리플라이트 요청과 본 요청의 응답 헤더를 각각 확인하면, 어느 항목이 빠졌는지 바로 알 수 있어요.
+
+## 상황별 선택 기준
+
+### 로컬 개발 환경
+
+프론트 개발 서버의 포트가 매번 달라지는 상황이라면 `CorsLayer::permissive()`로 시작해도 괜찮아요. 다만 이 설정은 사실상 모든 출처를 허용하므로 운영 설정에 그대로 남기지 않도록 주의해야 해요. 환경 변수나 설정 파일로 개발용과 운영용 레이어를 분리하는 편이 안전해요.
+
+### 단일 프론트 도메인
+
+가장 흔한 구성이에요. 출처 하나를 명시하고, 실제로 쓰는 메서드와 헤더만 나열해요. 허용 목록이 좁을수록 실수로 열어둔 경로를 줄일 수 있어요.
+
+### 여러 도메인, 서브도메인
+
+목록을 명시하거나 `AllowOrigin::predicate`로 조건을 직접 작성할 수 있어요. 서브도메인 전체를 허용하고 싶다는 이유로 와일드카드 출처를 쓰면 자격 증명을 함께 쓸 수 없게 되므로, 목록이나 조건 판별로 푸는 편이 좋아요.
+
+### 쿠키 세션 인증
+
+`allow_credentials(true)`와 정확한 출처 지정이 함께 필요해요. 또한 인증 미들웨어가 OPTIONS 요청을 막지 않도록 CORS 레이어를 인증 레이어보다 바깥에 두어야 해요.
+
+### 공개 API
+
+인증 정보를 주고받지 않는 공개 엔드포인트라면 와일드카드 출처를 써도 무방해요. 대신 인증이 필요한 경로와 같은 레이어를 공유하지 않도록 라우터를 나누는 편이 좋아요.
+
+## 주의할 점
+
+- 레이어 순서를 확인해야 해요. `.layer()`는 나중에 호출한 것이 바깥을 감싸므로, CORS를 가장 바깥에 두면 안쪽에서 만들어진 에러 응답에도 헤더가 붙어요.
+- 핸들러에서 오류가 나면 응답에 CORS 헤더가 빠질 수 있어요. 브라우저에는 CORS 오류로 보이지만 실제 원인은 서버 쪽 예외인 경우가 많으니 서버 로그를 함께 확인해야 해요.
+- 프리플라이트 요청에는 인증 헤더가 붙지 않아요. 인증 미들웨어가 OPTIONS를 거부하면 본 요청은 시도조차 되지 않아요.
+- 와일드카드 출처와 자격 증명은 스펙상 함께 쓸 수 없어요. 쿠키를 쓰는 순간 출처는 명시 목록이 되어야 해요.
+- 리버스 프록시나 게이트웨이를 앞에 두었다면 CORS 관련 헤더를 제거하거나 덮어쓰지 않는지 확인해야 해요.
+- 허용 헤더 목록에 커스텀 헤더를 빠뜨리면 프리플라이트에서 막혀요. 프론트에서 실제로 보내는 헤더를 기준으로 목록을 만들어야 해요.
+
+## 자주 묻는 질문
+
+### axum에서 CORS 설정은 어디에 두나요?
+
+tower-http의 `CorsLayer`를 만들어 `Router::layer()`로 적용해요. 전체 API에 공통으로 걸고 싶다면 최상위 라우터에, 경로별로 다르게 가져가고 싶다면 하위 라우터에 각각 적용하면 돼요. 레이어를 여러 번 겹치면 가장 바깥 설정이 우선하므로 순서를 함께 확인해야 해요.
+
+### `allow_origin(Any)`를 운영에서 쓰면 안 되나요?
+
+인증 정보를 주고받지 않는 공개 API라면 사용할 수 있어요. 하지만 쿠키나 인증 헤더를 함께 쓰는 구조에서는 와일드카드 출처를 쓸 수 없고, 어떤 사이트에서든 호출이 가능해지는 만큼 노출 범위를 다시 검토하는 편이 좋아요. 운영에서는 허용 출처를 명시하는 쪽을 권해요.
+
+### 프리플라이트 요청이 401이나 404로 실패해요.
+
+CORS 레이어가 인증 미들웨어보다 안쪽에 있으면 OPTIONS 요청이 인증 단계에서 먼저 막힐 수 있어요. CORS를 바깥쪽으로 옮기면 프리플라이트는 미들웨어에서 바로 응답해요. 경로가 없는 경우에도 같은 증상이 나므로 라우트 정의도 함께 확인해야 해요.
+
+### curl로는 정상인데 브라우저에서만 CORS 오류가 나요.
+
+CORS는 브라우저가 적용하는 정책이라 curl에는 아예 적용되지 않아요. 브라우저 개발자 도구에서 프리플라이트 응답 헤더를 직접 열어 허용 출처와 허용 헤더가 기대한 값인지 비교해 보세요. 서버 로그에 요청이 보이지 않는다면 프리플라이트 단계에서 막힌 것이에요.
+
+### 쿠키를 함께 보내면 갑자기 막혀요.
+
+`allow_credentials(true)`를 켜고 출처를 정확히 지정했는지 확인해야 해요. 프론트엔드 요청에도 자격 증명 포함 옵션이 필요하고, 서버 쪽 쿠키 속성도 함께 맞춰야 해요. 세 가지 중 하나만 빠져도 브라우저는 요청을 차단해요.
+
+## 출처
+
+- axum 공식 문서: https://docs.rs/axum/latest/axum/
+- tower-http CorsLayer 공식 문서: https://docs.rs/tower-http/latest/tower_http/cors/index.html
+- MDN CORS 개요: https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
+- tower-http 저장소: https://github.com/tower-rs/tower-http
+
+CORS 설정은 배포 환경이 바뀔 때마다 다시 손보게 되는 주제예요. 리버스 프록시 구성이나 헬스 체크, 무중단 배포처럼 서버 운영 전반의 흐름은 [Rust 서버 운영 가이드](/blog/rust-server-operations)에서 이어서 확인할 수 있어요.

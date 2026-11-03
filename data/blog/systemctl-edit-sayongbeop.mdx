@@ -1,0 +1,124 @@
+---
+title: "systemctl edit 사용법: drop-in 오버라이드 정리"
+description: "systemctl edit 사용법을 정리합니다. drop-in 오버라이드 파일 위치와 --full·--runtime 옵션 차이, 편집 후 적용과 revert로 되돌리는 절차를 순서대로 설명합니다."
+date: '2026-11-02'
+lastmod: '2026-11-02'
+tags: ['기타']
+images: ['/static/images/systemctl-edit-sayongbeop/cover.webp']
+sources:
+  - https://www.freedesktop.org/software/systemd/man/latest/systemctl.html
+  - https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html
+  - https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html
+firstHand:
+  type: 'screenshot'
+  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+---
+
+`systemctl edit`는 패키지가 설치한 유닛 파일을 직접 고치지 않고, 그 위에 얹히는 drop-in 오버라이드 파일만 따로 만들어 설정을 덮어쓰는 명령입니다. 원본 파일은 그대로 남기 때문에 패키지 업데이트나 배포 자동화가 유닛 파일을 갈아치워도 내가 넣은 설정은 유지됩니다. 이 글은 오버라이드 파일이 어디에 생기는지부터 `--full`·`--runtime` 옵션의 차이, 편집 후 적용과 되돌리기 절차까지 순서대로 설명합니다.
+
+## 한눈에 보기
+
+- `sudo systemctl edit 유닛이름`을 실행하면 `/etc/systemd/system/유닛이름.d/override.conf` 파일이 편집기로 열립니다. 원본 유닛 파일은 건드리지 않습니다.
+- 편집기를 저장하고 닫으면 systemd가 설정을 다시 읽습니다. 다만 이미 실행 중인 프로세스에 반영하려면 `systemctl restart`가 따로 필요합니다.
+- `--full`은 유닛 파일 전체를 복사해 편집하고, `--runtime`은 재부팅하면 사라지는 임시 오버라이드를 만듭니다.
+- 되돌릴 때는 `sudo systemctl revert 유닛이름` 한 줄로 오버라이드를 모두 제거할 수 있습니다.
+- 편집기를 거치지 않고 파일을 직접 고쳤다면 `sudo systemctl daemon-reload`를 잊지 마세요.
+
+## drop-in과 전체 편집 비교
+
+먼저 세 가지 방식이 어디에 어떤 파일을 만드는지 정리해 두면 헷갈리지 않습니다.
+
+| 방식 | 명령 | 만들어지는 파일 | 원본 유닛 수정 | 재부팅 후 유지 |
+| --- | --- | --- | --- | --- |
+| drop-in 오버라이드 | `systemctl edit 유닛` | `/etc/systemd/system/유닛.d/override.conf` | 아니요 | 유지됩니다 |
+| 전체 사본 편집 | `systemctl edit --full 유닛` | `/etc/systemd/system/유닛` | 아니요(사본 생성) | 유지됩니다 |
+| 런타임 오버라이드 | `systemctl edit --runtime 유닛` | `/run/systemd/system/유닛.d/override.conf` | 아니요 | 사라집니다 |
+
+대부분의 상황에서는 첫 번째 방식이 정답입니다. 변경 내용이 파일 하나에 모여 리뷰하기 쉽고, 업스트림이 유닛 파일을 수정해도 충돌하지 않습니다. `--full`은 지시어를 통째로 갈아엎어야 할 때만 쓰는 편이 좋습니다. 사본을 만들어 두면 나중에 패키지가 기본값을 바꿔도 그 변경이 자동으로 따라오지 않기 때문입니다.
+
+## 단계별로 systemctl edit 사용하기
+
+### 편집할 유닛 이름 확인
+
+먼저 대상 유닛의 정확한 이름을 확인합니다. `systemctl cat nginx`를 실행하면 systemd가 실제로 읽고 있는 유닛 파일 경로와 내용이 함께 나옵니다. 실행 중인 서비스 목록은 `systemctl list-units --type=service --state=running`으로 확인할 수 있습니다. 템플릿 유닛이라면 `이름@인스턴스.service`처럼 인스턴스 이름까지 붙여야 합니다.
+
+### 편집기 열기
+
+`sudo systemctl edit nginx`를 실행합니다. 유닛 파일은 시스템 영역에 있으므로 권한이 필요합니다. 편집기는 `SYSTEMD_EDITOR` 또는 `EDITOR` 환경 변수를 따르고, 지정하지 않으면 시스템 기본 편집기가 열립니다. 처음 열면 어떤 파일을 편집하는지 설명하는 주석이 보이고, 그 아래에 내용을 채우면 됩니다.
+
+### 오버라이드 내용 작성
+
+drop-in 파일에는 섹션 헤더를 직접 적어야 합니다. 헤더 없이 지시어만 쓰면 병합되지 않습니다.
+
+- `[Service]`
+- `Restart=always`
+- `Environment=APP_ENV=production`
+
+`[Unit]`, `[Service]`, `[Install]` 중 바꾸려는 지시어가 속한 섹션을 골라 적으면 됩니다. 예를 들어 서비스 재시작 정책은 `[Service]`, 설명이나 의존 관계는 `[Unit]`에 들어갑니다.
+
+### 병합 결과 확인
+
+저장한 뒤 `systemctl cat nginx`를 다시 실행하면 원본 파일 아래에 오버라이드 파일 경로가 주석으로 표시되고, 병합된 최종 내용이 이어서 나옵니다. 특정 지시어의 실제 적용값만 보고 싶다면 `systemctl show nginx -p Restart`처럼 속성 이름을 지정해 조회할 수 있습니다.
+
+### 서비스에 적용
+
+설정 파일을 다시 읽는 것과 프로세스를 다시 띄우는 것은 별개입니다. `sudo systemctl restart nginx`로 서비스를 재시작하고 `systemctl status nginx`로 상태를 확인하세요. `systemctl edit`로 저장한 경우에는 설정 재적용이 자동으로 이루어지지만, 파일을 손으로 만들거나 지운 경우에는 `sudo systemctl daemon-reload`를 직접 실행해야 합니다.
+
+## 목록형 지시어는 빈 값으로 초기화합니다
+
+`ExecStart`나 `Environment`처럼 여러 번 나열할 수 있는 지시어는 오버라이드에서 값을 추가하면 기존 목록 뒤에 덧붙습니다. 기존 값을 없애고 내 값만 쓰고 싶다면 빈 값을 한 번 지정해 목록을 비운 뒤 새 값을 넣습니다.
+
+- `[Service]`
+- `ExecStart=`
+- `ExecStart=/usr/local/bin/myapp --port 8080`
+
+이때 빈 줄과 주석은 목록 초기화로 취급되지 않으므로 반드시 지시어 이름만 쓰고 값을 비워야 합니다. 이 동작을 모르면 기존 명령과 새 명령이 함께 실행되어 포트 충돌이 나는 경우가 많습니다.
+
+## 상황별 선택 가이드
+
+- 패키지 기본값에 한두 줄만 덧붙이고 싶다면 `systemctl edit`를 씁니다. 가장 안전하고 되돌리기도 쉽습니다.
+- 유닛 파일 전체를 우리 환경에 맞게 새로 쓰고 싶다면 `systemctl edit --full`을 씁니다. 대신 업스트림 변경을 수동으로 따라가야 합니다.
+- 재부팅 전까지만 잠깐 테스트하고 싶다면 `systemctl edit --runtime`을 씁니다. `/run` 아래에 만들어지므로 재부팅하면 자동으로 사라집니다.
+- 드롭인 파일 이름을 직접 정하고 싶다면 `--drop-in=이름` 옵션으로 파일명을 지정할 수 있습니다.
+- 여러 유닛에 같은 설정을 반복 적용한다면 오버라이드 파일을 형상 관리에 두고 배포 도구로 배포하는 편이 추적에 유리합니다.
+
+## 자주 하는 실수와 주의할 점
+
+- 섹션 헤더를 빼먹는 경우가 가장 흔합니다. `[Service]` 한 줄이 없으면 지시어가 무시됩니다.
+- 편집 후 재시작을 잊으면 실행 중인 프로세스는 예전 설정 그대로 동작합니다.
+- 파일을 직접 수정하고 `daemon-reload`를 생략하면 systemd는 변경을 인식하지 못합니다.
+- 유닛 이름을 잘못 적으면 의도하지 않은 이름의 유닛을 편집하게 됩니다. 편집 전에 `systemctl cat`으로 이름을 확인하세요.
+- `--full`로 만든 사본은 패키지 업데이트와 무관하게 남습니다. 나중에 기본값이 바뀌어도 자동 반영되지 않는다는 점을 기억해야 합니다.
+- `/run` 아래에 만든 오버라이드는 재부팅과 함께 사라집니다. 영구 설정으로 착각하지 마세요.
+- 마스킹된 유닛은 먼저 `systemctl unmask`로 해제해야 편집한 내용이 의미를 가집니다.
+- 문법이 의심되면 `systemd-analyze verify`로 유닛 파일을 검사할 수 있습니다. 오류가 있는 상태로 재시작하면 서비스가 뜨지 않을 수 있으니 적용 전에 확인하는 편이 좋습니다.
+
+## 자주 묻는 질문
+
+### systemctl edit와 유닛 파일을 직접 수정하는 것의 차이는 무엇인가요?
+
+직접 수정은 패키지가 제공하는 원본 파일을 덮어쓰는 일이라 업데이트 때 변경이 사라질 수 있습니다. `systemctl edit`는 별도 오버라이드 파일에 변경만 남기고 원본과 병합하므로, 업그레이드 후에도 내 설정이 유지되고 무엇을 바꿨는지도 한눈에 보입니다.
+
+### 편집했는데 서비스 동작이 그대로입니다. 무엇을 확인해야 하나요?
+
+먼저 `systemctl cat`으로 병합된 내용에 내가 쓴 지시어가 실제로 들어갔는지 확인합니다. 그다음 `systemctl show`로 적용값을 조회하고, 그래도 그대로라면 `systemctl restart`로 프로세스를 다시 띄웠는지 확인하세요. 파일을 직접 고친 경우라면 `daemon-reload` 여부도 함께 봐야 합니다.
+
+### drop-in 오버라이드를 원래대로 되돌리려면 어떻게 하나요?
+
+`sudo systemctl revert 유닛이름`을 실행하면 `systemctl edit`로 만든 변경이 제거되고 배포판이 제공한 원래 유닛으로 돌아갑니다. 파일을 직접 지우는 방법도 있지만, 지운 뒤에는 `daemon-reload`와 재시작을 직접 해야 합니다.
+
+### ExecStart를 바꿨는데 기존 명령도 같이 실행됩니다. 왜 그런가요?
+
+`ExecStart`는 목록형 지시어라 새로 지정한 값이 기존 목록에 추가되기 때문입니다. 빈 `ExecStart=` 한 줄로 목록을 초기화한 뒤 원하는 명령을 다시 적으면 기존 값은 실행되지 않습니다.
+
+### --runtime 옵션은 언제 쓰면 좋나요?
+
+설정을 잠깐 시험해 보고 싶지만 서버에 흔적을 남기고 싶지 않을 때 적합합니다. `/run` 아래에 만들어져 재부팅하면 자동으로 사라지므로, 검증이 끝나면 같은 내용을 `systemctl edit`로 옮겨 영구 설정으로 만드는 흐름이 안전합니다.
+
+## 출처
+
+- systemctl 공식 매뉴얼: https://www.freedesktop.org/software/systemd/man/latest/systemctl.html
+- systemd.unit 공식 매뉴얼(drop-in과 병합 규칙): https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html
+- systemd.service 공식 매뉴얼: https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html
+
+유닛 설정을 손으로 만지다 보면 재시작 정책이나 로그 확인까지 함께 손볼 일이 많습니다. 서비스가 죽었을 때 자동으로 다시 띄우는 방법은 [systemd 자동 재시작 설정](/systemd-restart-policy/)에서, 장애 원인을 추적하는 로그 확인 절차는 [journalctl 사용법](/journalctl-usage/)에서 이어서 볼 수 있습니다.
