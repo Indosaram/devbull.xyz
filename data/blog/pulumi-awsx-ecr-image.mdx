@@ -38,16 +38,18 @@ pulumi awsx.ecr image는 AWSX에서 ECR 이미지를 빌드하고 푸시한 뒤,
 
 다음으로 빌드 컨텍스트를 정리해요. `path`에는 Dockerfile과 빌드에 필요한 파일이 있는 디렉터리를 지정해요. Dockerfile 이름이나 위치가 일반적이지 않다면 `dockerfile` 옵션으로 따로 지정할 수 있어요. 빌드 인자가 필요하면 `args`를, 빌드 환경 변수가 필요하면 `env`를 검토해요.
 
-    import * as awsx from "@pulumi/awsx";
+```
+import * as awsx from "@pulumi/awsx";
 
-    const repo = new awsx.ecr.Repository("app-repo");
+const repo = new awsx.ecr.Repository("app-repo");
 
-    const image = new awsx.ecr.Image("app-image", {
-      repositoryUrl: repo.url,
-      path: "./app",
-    });
+const image = new awsx.ecr.Image("app-image", {
+  repositoryUrl: repo.url,
+  path: "./app",
+});
 
-    export const imageUri = image.imageUri;
+export const imageUri = image.imageUri;
+```
 
 위 예시처럼 리포지토리와 이미지 리소스를 나눠 정의하면 역할이 분명해져요. 이미지 리소스는 `path`의 Dockerfile을 기준으로 빌드하고, 결과를 ECR에 푸시한 뒤 `imageUri`를 출력해요. 이 출력을 ECS 서비스나 태스크 정의 쪽에서 참조하도록 연결해요.
 
