@@ -4,18 +4,24 @@ description: "ssh 키 생성하기 절차를 ssh-keygen 기준으로 정리합�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-ki-saengseonghagi/cover.webp']
+images: ['/static/images/ssh-ki-saengseonghagi/cover.webp', '/static/images/ssh-ki-saengseonghagi/diagram.webp', '/static/images/ssh-ki-saengseonghagi/faq.webp']
 sources:
   - https://man.openbsd.org/ssh-keygen
   - https://www.openssh.com/manual.html
   - https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 키 생성하기 정리: ssh-keygen부터 서버 등록까지 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-ki-saengseonghagi/cover.webp)
+
 
 ssh 키 생성하기는 `ssh-keygen` 명령으로 끝나는 단순한 작업이지만, 어떤 알고리즘을 고르고 공개키를 어디에 두느냐에 따라 이후 운영 편의성이 크게 달라집니다. 결론부터 말씀드리면 새로 만드는 키는 ed25519로 생성하고, 개인키는 passphrase로 보호한 뒤 ssh-agent에 등록하며, 서버에는 공개키만 `authorized_keys`로 배포하는 구성이 가장 무난합니다. 이 글은 그 흐름을 명령 단위로 정리하고, 배포 자동화나 다중 계정처럼 상황이 달라질 때 무엇을 바꿔야 하는지까지 함께 다룹니다.
 
+
+
+![ssh 키 생성하기 정리: ssh-keygen부터 서버 등록까지 소제목 카드. 한눈에 보기, 키 알고리즘 비교 표, 단계별로 ssh 키 생성하기, 공개키 등록과 ssh-agent 설정](/static/images/ssh-ki-saengseonghagi/diagram.webp)
 ## 한눈에 보기
 
 ssh 키 인증은 "개인키는 내 쪽에, 공개키는 서버에"라는 규칙 위에서 동작합니다. 접속을 시도하면 서버가 공개키로 만든 문제를 보내고, 클라이언트가 개인키로 서명해 응답하는 방식으로 신원이 확인됩니다. 그래서 서버에는 절대 개인키를 두지 않고 공개키만 등록합니다.
@@ -168,6 +174,9 @@ passphrase를 명령행 인자로 넘기는 방식은 셸 히스토리와 프로
 
 키는 한 번 만들고 끝이 아니라 교체 대상입니다. 담당자별로 키를 분리하고, 퇴사나 역할 변경 시 해당 공개키를 `authorized_keys`에서 제거하며, 지문 목록을 문서로 관리해 두면 교체 시점에 혼란이 줄어듭니다.
 
+
+
+![ssh 키 생성하기 정리: ssh-keygen부터 서버 등록까지 질문 카드. 기존 키가 있는지 먼저 확인합니다, 키 쌍을 생성합니다, passphrase를 설정합니다](/static/images/ssh-ki-saengseonghagi/faq.webp)
 ## 자주 묻는 질문
 
 ### ssh 키 생성하기에서 passphrase는 꼭 설정해야 하나요?

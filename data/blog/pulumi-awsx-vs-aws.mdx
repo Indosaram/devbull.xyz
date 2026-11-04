@@ -4,19 +4,25 @@ description: "Pulumi에서 AWS 리소스를 정의할 때 awsx와 aws 중 무엇
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/pulumi-awsx-vs-aws/cover.webp']
+images: ['/static/images/pulumi-awsx-vs-aws/cover.webp', '/static/images/pulumi-awsx-vs-aws/diagram.webp', '/static/images/pulumi-awsx-vs-aws/faq.webp']
 sources:
   - https://www.pulumi.com/docs/reference/pkg/aws/
   - https://www.pulumi.com/docs/reference/pkg/awsx/
   - https://www.pulumi.com/registry/packages/awsx/
   - https://www.pulumi.com/docs/iac/concepts/stacks/
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![pulumi awsx vs aws 비교: 무엇을 언제 쓸까 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/pulumi-awsx-vs-aws/cover.webp)
+
 
 pulumi awsx vs aws를 고민하고 있다면, 결론부터 말씀드리면 두 패키지는 서로를 대체하는 경쟁 관계가 아니라 층위가 다른 도구입니다. aws는 AWS 리소스를 하나씩 그대로 정의하는 기반 패키지이고, awsx는 그 위에서 자주 쓰는 조합을 합리적인 기본값과 함께 묶어 주는 컴포넌트 모음이에요. 그래서 대부분의 운영 환경에서는 aws를 기준으로 삼고, 반복되는 패턴에만 awsx를 얹는 방식이 가장 안전합니다.
 
+
+
+![pulumi awsx vs aws 비교: 무엇을 언제 쓸까 소제목 카드. 한눈에 보기, 비교 표, 두 패키지의 관계 이해하기, 단계별로 선택하고 적용하는 방법](/static/images/pulumi-awsx-vs-aws/diagram.webp)
 ## 한눈에 보기
 
 `pulumi-aws`(문서에서 AWS Classic이라고 부르는 패키지)는 Terraform AWS 프로바이더를 브리지한 패키지입니다. 그래서 Terraform에서 보던 리소스 타입과 인자 이름이 거의 그대로 대응되고, AWS 서비스 커버리지가 넓습니다. 대신 VPC와 서브넷, 라우팅 테이블, 보안 그룹, 로드 밸런서, ECS 서비스까지 직접 나열해야 하므로 코드가 길어지기 쉽습니다.
@@ -82,6 +88,9 @@ pulumi awsx vs aws를 고민하고 있다면, 결론부터 말씀드리면 두 �
 
 다섯 번째는 상태 관리입니다. 두 패키지를 함께 써도 상태 백엔드는 하나입니다. 스택 단위로 권한과 잠금을 나누고, 운영 스택은 승인 절차를 거쳐 배포하도록 파이프라인을 구성해 두면 컴포넌트 사용 여부와 무관하게 사고를 줄일 수 있습니다.
 
+
+
+![pulumi awsx vs aws 비교: 무엇을 언제 쓸까 질문 카드. awsx만으로 모든 AWS 리소스를 정의할 수 있나요?, aws와 awsx를 한 프로그램에서 같이 써도 되나요?, awsx로 만든 리소스를 나중에 aws로 바꾸면 재생성이 일어나나요?](/static/images/pulumi-awsx-vs-aws/faq.webp)
 ## 자주 묻는 질문
 
 ### awsx만으로 모든 AWS 리소스를 정의할 수 있나요?

@@ -4,18 +4,24 @@ description: 'ssh 키 생성 명령어의 기본 흐름과 ssh-keygen 옵션, �
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-ki-saengseong-myeongryeongeo/cover.webp']
+images: ['/static/images/ssh-ki-saengseong-myeongryeongeo/cover.webp', '/static/images/ssh-ki-saengseong-myeongryeongeo/diagram.webp', '/static/images/ssh-ki-saengseong-myeongryeongeo/faq.webp']
 sources:
   - 'https://man.openbsd.org/ssh-keygen'
   - 'https://www.openssh.com/manual.html'
   - 'https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent'
 firstHand:
-  type: 'screenshot'
-  evidence: 'OpenSSH 매뉴얼과 GitHub 공식 문서에서 확인한 ssh-keygen 옵션, 키 종류, 공개키 등록 절차 범위를 요약했습니다.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 키 생성 명령어 기초 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-ki-saengseong-myeongryeongeo/cover.webp)
+
 
 ssh 키 생성 명령어는 결국 `ssh-keygen` 하나로 정리됩니다. 터미널에서 키 종류를 지정해 실행하고 저장 경로와 암호를 입력하면 공개키와 개인키가 만들어져요. 이 글은 서버 운영과 배포를 담당하는 백엔드 개발자를 기준으로 생성부터 등록, 권한 점검까지 순서대로 정리했어요.
 
+
+
+![ssh 키 생성 명령어 기초 정리 소제목 카드. 한눈에 보기, 키 종류와 옵션 비교, 단계별로 키 만드는 방법, 상황별 선택 기준](/static/images/ssh-ki-saengseong-myeongryeongeo/diagram.webp)
 ## 한눈에 보기
 
 `ssh-keygen`은 OpenSSH에 함께 들어 있는 도구라서 별도 설치 없이 대부분의 리눅스 배포판과 macOS에서 바로 실행할 수 있어요. 윈도우에서는 OpenSSH 클라이언트 기능을 켜거나 별도 클라이언트를 사용해요.
@@ -121,6 +127,9 @@ ssh 키 생성 명령어는 결국 `ssh-keygen` 하나로 정리됩니다. 터�
 
 운영 중인 서버라면 키를 새로 만드는 일보다 기존 키를 정리하는 일이 더 자주 생겨요. 접속 계정별로 어떤 키가 등록되어 있는지 주기적으로 확인하는 습관이 도움이 돼요.
 
+
+
+![ssh 키 생성 명령어 기초 정리 질문 카드. 키 종류를 정하고 명령 실행, 저장 경로와 암호 입력, 권한 확인](/static/images/ssh-ki-saengseong-myeongryeongeo/faq.webp)
 ## 자주 묻는 질문
 
 ### ssh 키는 어디에 저장되나요?

@@ -4,18 +4,24 @@ description: "railway 배포 중단이 발생할 때 확인할 배포 상태, �
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['배포 플랫폼']
-images: ['/static/images/railway-baepo-jungdan/cover.webp']
+images: ['/static/images/railway-baepo-jungdan/cover.webp', '/static/images/railway-baepo-jungdan/diagram.webp', '/static/images/railway-baepo-jungdan/faq.webp']
 sources:
   - https://docs.railway.com/
   - https://docs.railway.com/guides/deployments
   - https://docs.railway.com/reference/healthchecks
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![railway 배포 중단 원인과 대응 방법 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/railway-baepo-jungdan/cover.webp)
+
 
 railway 배포 중단은 플랫폼 장애 하나로 단정하기 어렵고, 빌드 실패·배포 단계 실패·헬스체크 실패·서비스 일시 중지·저장소 웹훅 누락처럼 여러 지점에서 발생해요. 먼저 배포 상태와 로그를 확인하고, 서비스 설정과 저장소 연결을 차례로 점검하는 순서가 안전해요. 이 글은 Railway 공식 문서에서 확인한 범위를 기준으로 원인 분류와 대응 절차를 정리해요.
 
+
+
+![railway 배포 중단 원인과 대응 방법 소제목 카드. 한눈에 보기, railway 배포 중단 원인 비교, 배포 중단 상황을 확인하는 단계별 방법, 상황별 선택: 재배포, 롤백, 일시 중지](/static/images/railway-baepo-jungdan/diagram.webp)
 ## 한눈에 보기
 
 railway 배포 중단을 마주하면 대시보드의 배포 목록에서 상태를 먼저 확인해요. 빌드 단계에서 멈췄는지, 배포 단계에서 헬스체크에 실패했는지, 사용자가 직접 취소했는지에 따라 대응이 달라져요. 로그를 보지 않고 재배포를 반복하면 같은 원인을 다시 만날 가능성이 커요.
@@ -68,6 +74,9 @@ railway 배포 중단을 해결할 때 가장 흔한 실수는 로그를 보지 
 
 자동 배포가 꺼진 상태에서 코드만 푸시하면 배포가 시작되지 않아요. GitHub 저장소 연결, 대상 브랜치, 웹훅 상태를 주기적으로 확인하고, 저장소 이전이나 권한 변경이 있었다면 연결을 다시 점검해요. 서비스 일시 중지와 배포 실패는 원인과 복구 방법이 다르므로 대시보드에서 상태를 구분해 확인해요.
 
+
+
+![railway 배포 중단 원인과 대응 방법 질문 카드. Railway에서 배포를 중단하면 기존 서비스도 멈추나요?, 빌드 로그에 오류가 없는데 배포가 중단될 수 있나요?, GitHub 푸시 후 배포가 시작되지 않으면 무엇을 확인해야 하나요?](/static/images/railway-baepo-jungdan/faq.webp)
 ## 자주 묻는 질문
 
 ### Railway에서 배포를 중단하면 기존 서비스도 멈추나요?

@@ -4,17 +4,25 @@ description: "Pulumi AWSX로 ECR 이미지를 빌드하고 배포할 때 image �
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/pulumi-awsx-ecr-image/cover.webp']
+images: ['/static/images/pulumi-awsx-ecr-image/cover.webp', '/static/images/pulumi-awsx-ecr-image/diagram.webp', '/static/images/pulumi-awsx-ecr-image/faq.webp']
 sources:
   - https://www.pulumi.com/registry/packages/awsx/api-docs/ecr/image/
   - https://www.pulumi.com/registry/packages/awsx/api-docs/ecr/repository/
   - https://www.pulumi.com/docs/iac/clouds/aws/guides/awsx/
   - https://docs.aws.amazon.com/AmazonECR/latest/userguide/what-is-ecr.html
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![pulumi awsx.ecr image: ECR 이미지 빌드와 배포 이해 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/pulumi-awsx-ecr-image/cover.webp)
+
 
 pulumi awsx.ecr image는 AWSX에서 ECR 이미지를 빌드하고 푸시한 뒤, 배포에 쓸 이미지 URI를 제공하는 리소스예요. 핵심은 `repositoryUrl`과 빌드 경로를 정확히 연결하고, ECS 같은 서비스의 `image` 값에 그 결과를 넘기는 것이에요. 이 글은 공식 문서에서 확인한 범위 안에서 개념, 절차, 선택 기준을 정리해요.
 
+
+
+![pulumi awsx.ecr image: ECR 이미지 빌드와 배포 이해 소제목 카드. 한눈에 보기, 비교 표, 단계별 방법, 상황별 선택](/static/images/pulumi-awsx-ecr-image/diagram.webp)
 ## 한눈에 보기
 
 `awsx.ecr.Image`는 Dockerfile이 있는 디렉터리를 빌드 컨텍스트로 삼아 이미지를 만들고, 지정한 ECR 리포지토리에 푸시해요. 이 리소스는 ECR 리포지토리 자체를 새로 정의하는 역할보다, 이미 만들어진 리포지토리 주소에 이미지를 밀어 넣는 역할에 가까워요. 그래서 보통 `awsx.ecr.Repository`로 리포지토리를 준비한 뒤 그 `url`을 `repositoryUrl`에 넘겨요.
@@ -75,6 +83,9 @@ ECR 푸시 권한도 중요해요. AWS 자격 증명이 올바르더라도 리�
 
 배포 대상 아키텍처와 이미지 플랫폼이 맞는지도 확인해요. 특히 Graviton 같은 다른 아키텍처를 사용한다면 `platform` 옵션이나 CI 빌드 설정이 배포 환경과 일치해야 해요.
 
+
+
+![pulumi awsx.ecr image: ECR 이미지 빌드와 배포 이해 질문 카드. awsx.ecr.Image와 awsx.ecr.Repository는 어떻게 다른가요?, repositoryUrl에는 무엇을 넣어야 하나요?, Pulumi 실행 환경에 Docker가 꼭 필요한가요?](/static/images/pulumi-awsx-ecr-image/faq.webp)
 ## 자주 묻는 질문
 
 ### awsx.ecr.Image와 awsx.ecr.Repository는 어떻게 다른가요?

@@ -4,13 +4,21 @@ description: "koyeb cloud가 무엇인지, Git과 Docker 이미지로 배포하�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['배포 플랫폼']
-images: ['/static/images/koyeb-cloud/cover.webp']
+images: ['/static/images/koyeb-cloud/cover.webp', '/static/images/koyeb-cloud/diagram.webp', '/static/images/koyeb-cloud/faq.webp']
 sources: ['https://www.koyeb.com/docs', 'https://www.koyeb.com/docs/getting-started', 'https://www.koyeb.com/docs/reference/cli', 'https://www.koyeb.com/pricing']
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![koyeb cloud: 배포 플랫폼 구조와 배포 절차 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/koyeb-cloud/cover.webp)
+
 
 koyeb cloud는 서버를 직접 만들지 않고 컨테이너를 배포하고 운영하는 서버리스 플랫폼입니다. Git 저장소나 컨테이너 이미지를 연결하면 빌드부터 배포, 헬스 체크, 도메인 연결까지 플랫폼이 대신 처리합니다. 이 글은 서버 운영과 배포를 맡고 있는 백엔드 개발자가 Koyeb Cloud를 처음 검토할 때 확인해야 할 구조와 절차, 그리고 실제로 부딪히기 쉬운 지점을 정리합니다.
 
+
+
+![koyeb cloud: 배포 플랫폼 구조와 배포 절차 정리 소제목 카드. 한눈에 보기, Koyeb Cloud의 동작 구조, 배포 방식 비교, 단계별 배포 절차](/static/images/koyeb-cloud/diagram.webp)
 ## 한눈에 보기
 
 Koyeb Cloud를 이해할 때 가장 중요한 개념은 "애플리케이션은 묶음이고, 실제로 트래픽을 받는 것은 서비스"라는 구분입니다. 애플리케이션은 배포 단위를 묶는 논리적 이름에 가깝고, 그 아래에 만들어지는 서비스가 컨테이너 실행과 라우팅을 담당합니다. 그래서 콘솔이나 CLI에서 무언가를 만들 때도 앱을 먼저 만들고 서비스를 정의하는 순서가 자연스럽습니다.
@@ -78,6 +86,9 @@ Koyeb Cloud가 잘 맞는 경우는 대체로 다음과 같습니다. 사이드 
 
 비용은 실행 중인 인스턴스와 사용한 자원을 기준으로 계산되는 구조이므로, 요금 체계는 배포 전에 공식 가격 페이지에서 직접 확인해야 합니다. 무료 사용 범위와 인스턴스 규격 정책은 시점에 따라 달라질 수 있으므로, 오래된 블로그의 숫자를 기준으로 견적을 내는 것은 피해야 합니다. 마지막으로 환경 변수와 시크릿은 분리해 관리하고, 로그에 값이 찍히지 않도록 마스킹 처리를 확인합니다.
 
+
+
+![koyeb cloud: 배포 플랫폼 구조와 배포 절차 정리 질문 카드. Koyeb Cloud는 무료로 시작할 수 있나요?, Dockerfile이 없어도 배포할 수 있나요?, 유휴 시 인스턴스를 내리는 설정은 어떤 서비스에 적합한가요?](/static/images/koyeb-cloud/faq.webp)
 ## 자주 묻는 질문
 
 ### Koyeb Cloud는 무료로 시작할 수 있나요?

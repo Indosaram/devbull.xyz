@@ -4,18 +4,24 @@ description: 'nginx 설정 변경 방법을 파일 위치 확인, 문법 검사,
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['웹서버·프록시']
-images: ['/static/images/nginx-seoljeong-byeongyeong/cover.webp']
+images: ['/static/images/nginx-seoljeong-byeongyeong/cover.webp', '/static/images/nginx-seoljeong-byeongyeong/diagram.webp', '/static/images/nginx-seoljeong-byeongyeong/faq.webp']
 sources:
   - 'https://nginx.org/en/docs/beginners_guide.html'
   - 'https://nginx.org/en/docs/ngx_core_module.html'
   - 'https://docs.nginx.com/nginx/admin-guide/basic-functionality/managing-configuration-files/'
 firstHand:
-  type: 'screenshot'
-  evidence: 'nginx 공식 문서(nginx.org, docs.nginx.com)에서 확인한 설정 파일 구조, nginx -t 문법 검사, nginx -s reload 반영 절차 범위를 요약했습니다.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![nginx 설정 변경 방법: 무중단 반영과 롤백 절차 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/nginx-seoljeong-byeongyeong/cover.webp)
+
 
 nginx 설정 변경은 설정 파일을 고친 뒤 문법 검사를 통과시키고, 마지막에 reload로 반영하는 순서로 진행하면 대부분의 장애를 피할 수 있어요. 핵심은 편집, 검사, 반영, 확인으로 이어지는 짧은 주기를 지키는 것이고, 문제가 생겼을 때 즉시 되돌릴 수 있도록 직전 파일을 남겨 두는 습관이 함께 필요해요. 이 글은 서버 운영과 배포를 담당하는 백엔드 개발자를 기준으로 설정 파일 위치를 찾는 방법부터 반영과 롤백까지를 순서대로 정리해요.
 
+
+
+![nginx 설정 변경 방법: 무중단 반영과 롤백 절차 소제목 카드. 한눈에 보기, 설정 파일 구조를 먼저 파악해요, 자주 바꾸는 설정 비교 표, 단계별 설정 변경 방법](/static/images/nginx-seoljeong-byeongyeong/diagram.webp)
 ## 한눈에 보기
 
 - 실제로 읽히는 설정 파일 경로를 먼저 확인해요. `nginx -t` 출력이나 `nginx -V`의 컴파일 옵션에서 확인할 수 있어요.
@@ -95,6 +101,9 @@ nginx는 설정을 계층 구조로 읽어요. 최상위 main 컨텍스트 아�
 - SELinux나 파일 권한이 설정된 환경에서는 문법이 맞아도 특정 경로 접근이 막힐 수 있어요.
 - 배포 자동화에 reload를 넣었다면 검사 실패 시 반영을 건너뛰는 조건을 반드시 함께 넣어요.
 
+
+
+![nginx 설정 변경 방법: 무중단 반영과 롤백 절차 질문 카드. 1단계: 실제로 읽히는 파일 확인하기, 2단계: 백업과 버전 관리, 3단계: 설정 파일 편집](/static/images/nginx-seoljeong-byeongyeong/faq.webp)
 ## 자주 묻는 질문
 
 ### nginx 설정 변경을 재시작 없이 반영할 수 있나요?

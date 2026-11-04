@@ -4,19 +4,25 @@ description: "axum rust docs를 처음 펼칠 때 어디서부터 읽어야 하�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Rust·서버']
-images: ['/static/images/axum-rust-docs/cover.webp']
+images: ['/static/images/axum-rust-docs/cover.webp', '/static/images/axum-rust-docs/diagram.webp', '/static/images/axum-rust-docs/faq.webp']
 sources:
   - https://docs.rs/axum/latest/axum/
   - https://github.com/tokio-rs/axum
   - https://docs.rs/axum/latest/axum/extract/index.html
   - https://docs.rs/tower-http/latest/tower_http/
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![axum rust docs: 공식 문서 읽는 순서와 핵심 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/axum-rust-docs/cover.webp)
+
 
 axum rust docs를 찾는 이유는 대부분 "공식 문서가 방대해서 어디서부터 봐야 할지 모르겠다"는 문제로 모여요. 결론부터 말하면 docs.rs의 axum 크레이트 문서에서 시작해 핸들러와 추출기 항목을 먼저 읽고, 그다음 상태 공유와 미들웨어로 넘어가면 시행착오가 크게 줄어요. 이 글은 서버 운영과 배포를 담당하는 백엔드 개발자 관점에서 공식 문서를 읽는 순서와 확인 포인트를 정리해요.
 
+
+
+![axum rust docs: 공식 문서 읽는 순서와 핵심 정리 소제목 카드. 한눈에 보기, 문서 구조 비교 표, 단계별로 문서를 읽는 방법, 상황별 선택 가이드](/static/images/axum-rust-docs/diagram.webp)
 ## 한눈에 보기
 
 axum rust docs는 성격이 다른 세 갈래로 나뉘어 있어요. 첫째는 docs.rs에 올라간 API 문서로, 타입과 트레이트 단위 설명이 촘촘하게 정리되어 있어요. 둘째는 GitHub 저장소의 examples 디렉터리로, 실제로 컴파일되는 전체 코드를 보여줘서 개념을 손에 붙이는 데 유리해요. 셋째는 axum이 의존하는 tower, tower-http, hyper, tokio 쪽 문서로, 미들웨어와 런타임 동작을 이해할 때 필요해요.
@@ -93,6 +99,9 @@ axum::serve 함수 항목에는 리스너를 넘겨 서버를 기동하는 방�
 
 넷째, 오류를 문자열로만 반환하는 습관이에요. 운영 단계에서는 상태 코드와 본문 형식이 계약이 되므로, 문서에서 안내하는 응답 변환 방식을 초기에 정해 두어야 해요.
 
+
+
+![axum rust docs: 공식 문서 읽는 순서와 핵심 정리 질문 카드. 첫 단계: 크레이트 루트 예제 실행, 둘째 단계: 라우터와 핸들러의 관계 파악, 셋째 단계: 추출기 항목 정독](/static/images/axum-rust-docs/faq.webp)
 ## 자주 묻는 질문
 
 ### axum rust docs는 어디서 보는 것이 가장 정확한가요?

@@ -4,13 +4,21 @@ description: "SSH 터널링 포트 포워딩의 로컬·원격·동적 포워딩
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-teoneolring-poteu-powoding/cover.webp']
+images: ['/static/images/ssh-teoneolring-poteu-powoding/cover.webp', '/static/images/ssh-teoneolring-poteu-powoding/diagram.webp', '/static/images/ssh-teoneolring-poteu-powoding/faq.webp']
 sources: ['https://man.openbsd.org/ssh', 'https://man.openbsd.org/ssh_config', 'https://man.openbsd.org/sshd_config', 'https://www.rfc-editor.org/rfc/rfc4254']
-firstHand: {type: 'screenshot', evidence: 'OpenBSD ssh·ssh_config·sshd_config 매뉴얼과 RFC 4254에서 확인한 포워딩 옵션과 동작 범위를 요약했습니다.'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 터널링 포트 포워딩 기초 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-teoneolring-poteu-powoding/cover.webp)
+
 
 SSH 터널링 포트 포워딩은 SSH 연결을 재사용해 다른 포트의 트래픽을 안전하게 전달하는 방법입니다. 로컬 포워딩은 내 컴퓨터에서 원격 대상으로, 원격 포워딩은 원격 서버에서 내 쪽 대상으로 연결을 만들며, 동적 포워딩은 SOCKS 프록시로 활용합니다. 핵심 옵션과 상황별 선택 기준을 아래에서 정리해요.
 
+
+
+![ssh 터널링 포트 포워딩 기초 정리 소제목 카드. 한눈에 보기, 로컬·원격·동적 포워딩 비교, 단계별로 SSH 터널 열기, 상황별 선택 기준](/static/images/ssh-teoneolring-poteu-powoding/diagram.webp)
 ## 한눈에 보기
 
 SSH 터널링 포트 포워딩은 크게 로컬 포워딩, 원격 포워딩, 동적 포워딩으로 나눌 수 있습니다. 모두 SSH 클라이언트와 SSH 서버 사이에 이미 만들어진 보안 연결을 통해 별도 포트의 트래픽을 전달한다는 점은 같아요. 차이는 연결을 어느 쪽에서 듣고, 대상 호스트에 어느 쪽이 접속하느냐입니다.
@@ -71,6 +79,9 @@ SSH 터널링 포트 포워딩은 크게 로컬 포워딩, 원격 포워딩, 동
 
 로컬 포트가 이미 사용 중이면 터널이 열리지 않습니다. `ExitOnForwardFailure=yes`를 사용하면 이런 실패를 빨리 알 수 있습니다. 장시간 유지하는 터널은 keepalive 옵션과 로그 확인을 함께 두고, 사용하지 않는 터널은 바로 종료합니다. 조직의 보안 정책과 방화벽 규칙을 우회하는 용도로 사용해서는 안 됩니다.
 
+
+
+![ssh 터널링 포트 포워딩 기초 정리 질문 카드. 로컬 포워딩과 원격 포워딩은 무엇이 다른가요?, `-N`과 `-f`는 각각 어떤 역할을 하나요?, 원격 포워딩을 다른 장비에서도 접속하게 하려면 어떻게 하나요?](/static/images/ssh-teoneolring-poteu-powoding/faq.webp)
 ## 자주 묻는 질문
 
 ### 로컬 포워딩과 원격 포워딩은 무엇이 다른가요?

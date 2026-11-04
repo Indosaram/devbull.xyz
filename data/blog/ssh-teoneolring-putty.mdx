@@ -4,18 +4,24 @@ description: "PuTTY에서 SSH 터널링을 설정하는 방법과 로컬·원격
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-teoneolring-putty/cover.webp']
+images: ['/static/images/ssh-teoneolring-putty/cover.webp', '/static/images/ssh-teoneolring-putty/diagram.webp', '/static/images/ssh-teoneolring-putty/faq.webp']
 sources:
   - https://www.chiark.greenend.org.uk/~sgtatham/putty/latest/htmldoc/Chapter7.html
   - https://www.openssh.com/manual.html
   - https://www.putty.org/
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 터널링 putty 설정과 활용 방법 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-teoneolring-putty/cover.webp)
+
 
 PuTTY의 SSH 터널링은 SSH 연결을 암호화된 통로로 활용해 직접 닿기 어려운 서비스에 접근하는 기능이에요. 로컬 포워딩은 내 PC에서 원격 서비스로, 원격 포워딩은 원격 서버에서 내 쪽 서비스로, 동적 포워딩은 SOCKS 프록시처럼 연결을 중계할 때 사용해요. 이 글은 PuTTY 공식 문서의 포트 포워딩 설명을 기준으로 설정 절차와 선택 기준을 정리해요.
 
+
+
+![ssh 터널링 putty 설정과 활용 방법 소제목 카드. 한눈에 보기, SSH 터널링과 PuTTY의 역할, 로컬·원격·동적 포워딩 비교, PuTTY로 로컬 포워딩 설정하는 단계](/static/images/ssh-teoneolring-putty/diagram.webp)
 ## 한눈에 보기
 
 PuTTY에서 SSH 터널링을 다룰 때 먼저 기억할 점은 터널이 SSH 세션에 묶여 있다는 점이에요. PuTTY 창을 닫거나 네트워크가 끊기면 포워딩도 함께 멈춰요. 그래서 운영 환경에서는 터널을 임시 디버깅 수단으로 쓰고, 상시 접근이 필요하면 별도의 세션 유지와 재접속 절차를 마련하는 편이 안전해요.
@@ -76,6 +82,9 @@ PuTTY는 GUI 기반 SSH 클라이언트로, 세션 설정 화면에서 포워딩
 
 원격 포워딩은 SSH 서버의 설정과 방화벽에 영향을 받아요. 서버가 원격 포트를 어느 인터페이스에 바인딩하는지, 외부 접근을 허용하는지 확인하지 않으면 의도와 다르게 동작할 수 있어요. 또한 터널을 조직의 접근 통제를 우회하는 용도로 사용하면 안 되며, 키 인증과 호스트 키 확인, 최소 권한 원칙을 지키는 것이 기본이에요.
 
+
+
+![ssh 터널링 putty 설정과 활용 방법 질문 카드. PuTTY 터널은 PuTTY 창을 닫아도 유지되나요?, 로컬 포워딩과 원격 포워딩은 무엇이 다른가요?, 동적 포워딩은 언제 쓰나요?](/static/images/ssh-teoneolring-putty/faq.webp)
 ## 자주 묻는 질문
 
 ### PuTTY 터널은 PuTTY 창을 닫아도 유지되나요?

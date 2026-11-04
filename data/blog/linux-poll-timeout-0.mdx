@@ -4,13 +4,21 @@ description: "linux poll timeout 0의 의미와 사용 시점을 정리해요. �
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/linux-poll-timeout-0/cover.webp']
+images: ['/static/images/linux-poll-timeout-0/cover.webp', '/static/images/linux-poll-timeout-0/diagram.webp', '/static/images/linux-poll-timeout-0/faq.webp']
 sources: ['https://man7.org/linux/man-pages/man2/poll.2.html', 'https://pubs.opengroup.org/onlinepubs/9699919799/functions/poll.html', 'https://man7.org/linux/man-pages/man7/epoll.7.html']
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![linux poll timeout 0: 비블로킹 확인과 이벤트 루프 활용 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/linux-poll-timeout-0/cover.webp)
+
 
 linux poll timeout 0은 `poll()` 호출이 이벤트를 기다리지 않고 현재 준비 상태만 즉시 확인하도록 만드는 값이에요. 서버 운영 코드에서 논블로킹 점검, 이벤트 루프의 분기, 배포 중 종료 신호 확인에 자주 쓰여요. 다만 호출 위치를 잘못 잡으면 바쁜 대기가 되므로 반환값과 루프 구조를 함께 봐야 해요.
 
+
+
+![linux poll timeout 0: 비블로킹 확인과 이벤트 루프 활용 소제목 카드. 한눈에 보기, poll 타임아웃 비교 표, linux poll timeout 0이 필요한 상황, 단계별 확인 방법](/static/images/linux-poll-timeout-0/diagram.webp)
 ## 한눈에 보기
 
 `poll()`은 여러 파일 디스크립터의 읽기·쓰기 준비 상태를 한 번에 묻는 시스템 호출이에요. 타임아웃 인자는 기다리는 방식만 바꾸고, 준비 상태를 알려주는 계약은 그대로예요.
@@ -72,6 +80,9 @@ linux poll timeout 0은 `poll()` 호출이 이벤트를 기다리지 않고 현�
 
 `epoll`과 혼동하지 않는 것도 중요해요. `epoll_wait()`의 타임아웃 0도 즉시 확인이라는 개념은 비슷하지만, 등록 기반 이벤트 모델과 반환 구조가 달라요. 코드를 옮길 때는 관심 이벤트와 엣지·레벨 트리거 차이를 다시 확인해야 해요.
 
+
+
+![linux poll timeout 0: 비블로킹 확인과 이벤트 루프 활용 질문 카드. poll timeout 0은 논블로킹 읽기와 같은 뜻인가요?, timeout 0으로 계속 호출하면 CPU를 많이 쓰나요?, poll이 0을 반환하면 오류인가요?](/static/images/linux-poll-timeout-0/faq.webp)
 ## 자주 묻는 질문
 
 ### poll timeout 0은 논블로킹 읽기와 같은 뜻인가요?

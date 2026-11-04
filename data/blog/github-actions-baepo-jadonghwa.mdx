@@ -4,19 +4,25 @@ description: "GitHub Actions로 배포 자동화를 구성하는 방법을 정�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['CI/CD']
-images: ['/static/images/github-actions-baepo-jadonghwa/cover.webp']
+images: ['/static/images/github-actions-baepo-jadonghwa/cover.webp', '/static/images/github-actions-baepo-jadonghwa/diagram.webp', '/static/images/github-actions-baepo-jadonghwa/faq.webp']
 sources:
   - https://docs.github.com/ko/actions
   - https://docs.github.com/ko/actions/using-workflows/workflow-syntax-for-github-actions
   - https://docs.github.com/ko/actions/deployment/targeting-different-environments/using-environments-for-deployment
   - https://docs.github.com/ko/actions/security-guides/using-secrets-in-github-actions
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![GitHub Actions 배포 자동화 알아보기 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/github-actions-baepo-jadonghwa/cover.webp)
+
 
 GitHub Actions 배포 자동화는 저장소 안의 워크플로 파일로 빌드와 테스트, 배포를 하나의 흐름으로 이어 붙이는 방식입니다. 별도의 CI 서버를 따로 세우지 않아도 되고, 코드 변경과 배포 이력이 같은 저장소에 남아 추적이 쉽습니다. 이 글은 서버 운영과 배포를 담당하는 백엔드 개발자를 기준으로 구성 요소, 단계별 절차, 상황별 선택 기준, 주의할 점을 차례로 정리합니다.
 
+
+
+![GitHub Actions 배포 자동화 알아보기 소제목 카드. 한눈에 보기, 배포 파이프라인 구성 요소 비교, 단계별로 배포 자동화 구성하기, 상황별 선택 기준](/static/images/github-actions-baepo-jadonghwa/diagram.webp)
 ## 한눈에 보기
 
 GitHub Actions의 배포 자동화는 "무엇이 일어났을 때(이벤트)", "무엇을 실행할지(잡과 스텝)", "어디서 실행할지(러너)", "어떤 권한과 값으로 실행할지(권한·시크릿·환경)"로 나눠 이해하면 정리가 됩니다.
@@ -116,6 +122,9 @@ jobs:
 
 다섯째, 배포 잡에서 마이그레이션과 애플리케이션 배포를 한 스텝에 섞지 않는 편이 좋습니다. 문제가 생겼을 때 어느 단계에서 실패했는지 로그만으로 판별하기 어려워집니다.
 
+
+
+![GitHub Actions 배포 자동화 알아보기 질문 카드. 배포 자동화를 붙이면 서버에 직접 접속하지 않아도 되나요?, 시크릿은 저장소와 환경 중 어디에 두는 게 좋나요?, 셀프 호스팅 러너는 언제 도입해야 하나요?](/static/images/github-actions-baepo-jadonghwa/faq.webp)
 ## 자주 묻는 질문
 
 ### 배포 자동화를 붙이면 서버에 직접 접속하지 않아도 되나요?

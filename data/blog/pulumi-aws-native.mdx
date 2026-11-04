@@ -4,17 +4,25 @@ description: "Pulumi AWS Native 프로바이더가 Cloud Control API와 CloudFor
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/pulumi-aws-native/cover.webp']
+images: ['/static/images/pulumi-aws-native/cover.webp', '/static/images/pulumi-aws-native/diagram.webp', '/static/images/pulumi-aws-native/faq.webp']
 sources:
   - https://www.pulumi.com/registry/packages/aws-native/
   - https://www.pulumi.com/docs/iac/clouds/aws/guides/
   - https://docs.aws.amazon.com/cloudcontrolapi/latest/userguide/what-is-cloudcontrolapi.html
   - https://www.pulumi.com/docs/iac/concepts/providers/
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![pulumi aws native: CloudFormation 스키마 기반 AWS 프로바이더 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/pulumi-aws-native/cover.webp)
+
 
 pulumi aws native는 AWS Cloud Control API와 CloudFormation 리소스 스키마를 그대로 코드로 옮긴 Pulumi 프로바이더입니다. 기존 aws 프로바이더가 Terraform AWS 프로바이더를 기반으로 동작하는 것과 달리, AWS가 공개하는 스키마를 따르기 때문에 리소스 타입 이름과 속성 이름, 태그 전달 방식이 눈에 띄게 다릅니다. 새로 나온 AWS 리소스를 빠르게 코드로 관리하고 싶다면 aws native를, 풍부한 예제와 편의 기능이 필요하다면 기존 aws 프로바이더를 고르는 것이 일반적인 판단 기준입니다.
 
+
+
+![pulumi aws native: CloudFormation 스키마 기반 AWS 프로바이더 소제목 카드. 한눈에 보기, 기존 aws 프로바이더와의 비교, 단계별 도입 절차, 상황별 선택 기준](/static/images/pulumi-aws-native/diagram.webp)
 ## 한눈에 보기
 
 pulumi aws native를 한 문장으로 줄이면 "AWS가 정의한 리소스 스키마를 그대로 노출하는 프로바이더"입니다. 그래서 코드의 모양이 Terraform 스타일이 아니라 CloudFormation 템플릿에 가깝습니다. CloudFormation을 이미 다뤄 본 백엔드 개발자라면 속성 이름이 낯익게 느껴질 가능성이 큽니다.
@@ -137,6 +145,9 @@ pulumi import aws-native:s3:Bucket logs devbull-logs-example
 - 버전 고정: 프로바이더 버전을 올리면 스키마가 바뀌어 예상치 못한 차이가 생길 수 있습니다. 잠금 파일로 버전을 고정하고 업그레이드는 별도 작업으로 다루는 편이 안전합니다.
 - 상태 이관: 같은 리소스를 두 프로바이더로 관리하지 마세요. 이관이 필요하면 import나 상태 이동으로 소유권을 한쪽으로 모아야 합니다.
 
+
+
+![pulumi aws native: CloudFormation 스키마 기반 AWS 프로바이더 질문 카드. 프로젝트와 패키지 준비, 리전과 자격 증명 설정, 리소스 정의](/static/images/pulumi-aws-native/faq.webp)
 ## 자주 묻는 질문
 
 ### aws-native와 기존 aws 프로바이더를 한 프로젝트에서 같이 써도 되나요?

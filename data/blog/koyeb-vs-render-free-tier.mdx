@@ -4,19 +4,25 @@ description: "koyeb vs render free tier를 비교합니다. 무료 플랜의 슬
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['배포 플랫폼']
-images: ['/static/images/koyeb-vs-render-free-tier/cover.webp']
+images: ['/static/images/koyeb-vs-render-free-tier/cover.webp', '/static/images/koyeb-vs-render-free-tier/diagram.webp', '/static/images/koyeb-vs-render-free-tier/faq.webp']
 sources:
   - https://www.koyeb.com/pricing
   - https://www.koyeb.com/docs
   - https://render.com/pricing
   - https://render.com/docs/free
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![koyeb vs render free tier 비교: 무료 배포 플랫폼 선택 기준 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/koyeb-vs-render-free-tier/cover.webp)
+
 
 koyeb vs render free tier를 고민하는 백엔드 개발자라면, 먼저 “무료로 무엇까지 감당할 수 있는가”보다 “유휴 시 서비스가 어떻게 동작하는가”를 봐야 해요. 컨테이너 이미지를 그대로 올려 API만 빠르게 띄우는 목적이라면 Koyeb이 단순하고, 웹 서비스와 정적 사이트, 관리형 데이터베이스를 한 대시보드에서 함께 관리하고 싶다면 Render가 편해요. 두 플랫폼 모두 무료 플랜에서 유휴 시 서비스를 내려 두는 방식을 쓰기 때문에, 상시 응답이 필요한 서비스라면 유료 전환 비용까지 같이 계산해야 해요.
 
+
+
+![koyeb vs render free tier 비교: 무료 배포 플랫폼 선택 기준 소제목 카드. 한눈에 보기, 무료 플랜 비교 표, Koyeb 무료 플랜의 특징, Render 무료 플랜의 특징](/static/images/koyeb-vs-render-free-tier/diagram.webp)
 ## 한눈에 보기
 
 Koyeb와 Render는 둘 다 저장소를 연결하면 빌드와 배포를 자동으로 처리하는 배포 플랫폼이에요. 서버를 직접 만들지 않아도 컨테이너 이미지나 소스 저장소를 올려 웹 서비스를 띄울 수 있고, TLS 인증서가 자동으로 붙는 커스텀 도메인, 환경 변수와 시크릿, 빌드 로그와 런타임 로그, 이전 배포로 되돌리는 롤백 같은 기본 기능을 대시보드에서 제공해요. 즉 “서버 운영 자체”를 플랫폼에 맡기고, 애플리케이션 코드와 설정에만 집중하는 모델이에요.
@@ -92,6 +98,9 @@ Dockerfile이 있으면 그대로 쓰고, 없으면 플랫폼이 언어를 감�
 
 플랫폼 종속도 염두에 두세요. 포트 주입 방식, 빌드 환경 변수, 파일 시스템이 임시로 유지되는 특성 같은 부분은 플랫폼마다 달라요. 로컬 파일에 업로드 파일을 저장하는 구조라면 오브젝트 스토리지로 분리해 두어야 이전이 쉬워요. 마지막으로 무료 플랜의 상용 사용 가능 범위와 약관을 확인하고, 필요한 경우 지원 정책도 함께 살펴보세요.
 
+
+
+![koyeb vs render free tier 비교: 무료 배포 플랫폼 선택 기준 질문 카드. 저장소와 브랜치 연결, 빌드와 시작 명령, 환경 변수와 시크릿](/static/images/koyeb-vs-render-free-tier/faq.webp)
 ## 자주 묻는 질문
 
 ### Koyeb 무료 플랜으로 상용 서비스를 운영해도 되나요?

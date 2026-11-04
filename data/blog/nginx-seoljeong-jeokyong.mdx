@@ -4,19 +4,25 @@ description: "nginx 설정 적용은 파일 수정 뒤 문법 검사, 설정 재
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['웹서버·프록시']
-images: ['/static/images/nginx-seoljeong-jeokyong/cover.webp']
+images: ['/static/images/nginx-seoljeong-jeokyong/cover.webp', '/static/images/nginx-seoljeong-jeokyong/diagram.webp', '/static/images/nginx-seoljeong-jeokyong/faq.webp']
 sources:
   - https://nginx.org/en/docs/beginners_guide.html
   - https://nginx.org/en/docs/control.html
   - https://nginx.org/en/docs/switches.html
   - https://nginx.org/en/docs/http/ngx_http_core_module.html
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![nginx 설정 적용 하는 법: 문법 검사부터 무중단 반영까지 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/nginx-seoljeong-jeokyong/cover.webp)
+
 
 nginx 설정 적용은 설정 파일을 저장하는 것으로 끝나지 않아요. 문법 검사, 설정 재적용, 실제 응답 확인까지 함께 처리해야 해요. 이 글은 공식 문서에서 확인한 절차를 기준으로 reload와 restart의 차이, 실패 시 되돌리는 방법을 정리해요.
 
+
+
+![nginx 설정 적용 하는 법: 문법 검사부터 무중단 반영까지 소제목 카드. 한눈에 보기, 설정 파일이 적용되는 구조, 단계별 적용 방법, reload와 restart 선택](/static/images/nginx-seoljeong-jeokyong/diagram.webp)
 ## 한눈에 보기
 
 nginx 설정 적용의 핵심은 수정한 파일을 바로 운영에 반영하지 않고, 먼저 검사한 뒤 신호를 보내는 것이에요. 대부분은 `nginx -t`로 문법을 확인하고 `nginx -s reload` 또는 `systemctl reload nginx`로 기존 연결을 유지한 채 반영해요. 설정 파일 위치와 include 관계를 모르면 엉뚱한 파일을 고칠 수 있으므로 `nginx -T`로 실제 병합 결과를 먼저 확인하는 편이 안전해요.
@@ -86,6 +92,9 @@ reload 후 이전 worker가 남아 있을 수 있어요. 오래 걸리는 요청
 
 배포 도구가 관리하는 파일을 수동으로 고치면 다음 배포에서 덮어써질 수 있어요. 수동 변경이 필요했다면 템플릿이나 설정 관리 쪽에 같은 변경을 반영해 두어야 해요.
 
+
+
+![nginx 설정 적용 하는 법: 문법 검사부터 무중단 반영까지 질문 카드. nginx 설정을 바꾼 뒤 꼭 restart 해야 하나요?, `nginx -t`가 성공하면 바로 적용된 건가요?, reload 후에도 이전 설정이 보이는 이유는 무엇인가요?](/static/images/nginx-seoljeong-jeokyong/faq.webp)
 ## 자주 묻는 질문
 
 ### nginx 설정을 바꾼 뒤 꼭 restart 해야 하나요?

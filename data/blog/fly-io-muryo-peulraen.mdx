@@ -4,16 +4,24 @@ description: "fly io 무료 플랜의 제공 범위와 배포 절차, 유료 전
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['배포 플랫폼']
-images: ['/static/images/fly-io-muryo-peulraen/cover.webp']
+images: ['/static/images/fly-io-muryo-peulraen/cover.webp', '/static/images/fly-io-muryo-peulraen/diagram.webp', '/static/images/fly-io-muryo-peulraen/faq.webp']
 sources:
   - 'https://fly.io/docs/about/pricing/'
   - 'https://fly.io/docs/launch/'
   - 'https://fly.io/docs/reference/'
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![fly io 무료 플랜 한눈에 보기 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/fly-io-muryo-peulraen/cover.webp)
+
 
 fly io 무료 플랜은 소규모 서비스와 개인 프로젝트를 운영할 때 비용 부담을 낮추는 출발점으로 볼 수 있어요. 다만 무료로 제공되는 범위는 계정 상태와 시점에 따라 달라질 수 있으므로, 배포 전에 공식 가격 문서와 청구 기준을 함께 확인해야 해요. 이 글은 공식 문서에서 확인 가능한 개념과 절차를 중심으로 무료 플랜을 판단하는 방법을 정리해요.
 
+
+
+![fly io 무료 플랜 한눈에 보기 소제목 카드. fly io 무료 플랜 한눈에 보기, 무료 플랜과 유료 사용의 차이 비교, 무료 플랜으로 배포하는 단계별 방법, 상황별 선택 기준](/static/images/fly-io-muryo-peulraen/diagram.webp)
 ## fly io 무료 플랜 한눈에 보기
 
 Fly.io는 애플리케이션을 머신 단위로 실행하고 여러 리전에 배포할 수 있는 플랫폼이에요. 무료 플랜은 모든 기능을 무제한으로 쓰는 방식이 아니라, 정해진 허용량 안에서 앱과 머신, 볼륨 같은 자원을 사용하는 구조로 이해하면 쉬워요. 허용량을 넘으면 유료로 전환되거나 추가 과금이 발생할 수 있어요.
@@ -82,6 +90,9 @@ CLI를 설치한 뒤에는 `flyctl auth login`으로 계정을 연결해요. 앱
 
 외부 데이터 전송과 빌드 자원도 확인해야 해요. 앱이 작아도 이미지 빌드나 로그 전송, 외부 API 호출이 많으면 사용량이 늘 수 있어요. 모니터링 화면에서 어떤 항목이 비용에 영향을 주는지 살펴보는 습관이 필요해요.
 
+
+
+![fly io 무료 플랜 한눈에 보기 질문 카드. fly io 무료 플랜은 지금도 사용할 수 있나요?, 무료 플랜만으로 상용 서비스를 운영해도 괜찮나요?, 배포 후 예상하지 못한 청구를 막으려면 어떻게 해야 하나요?](/static/images/fly-io-muryo-peulraen/faq.webp)
 ## 자주 묻는 질문
 
 ### fly io 무료 플랜은 지금도 사용할 수 있나요?

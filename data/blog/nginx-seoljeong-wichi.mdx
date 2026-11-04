@@ -4,19 +4,25 @@ description: 'nginx 설정 파일이 어디에 있고 어떤 순서로 적용되
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['웹서버·프록시']
-images: ['/static/images/nginx-seoljeong-wichi/cover.webp']
+images: ['/static/images/nginx-seoljeong-wichi/cover.webp', '/static/images/nginx-seoljeong-wichi/diagram.webp', '/static/images/nginx-seoljeong-wichi/faq.webp']
 sources:
   - 'https://nginx.org/en/docs/beginners_guide.html'
   - 'https://nginx.org/en/docs/ngx_core_module.html'
   - 'https://nginx.org/en/docs/http/ngx_http_core_module.html'
   - 'https://docs.nginx.com/nginx/admin-guide/basic-functionality/managing-configuration-files/'
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![nginx 설정 위치와 적용 순서 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/nginx-seoljeong-wichi/cover.webp)
+
 
 nginx 설정 위치는 설치 방식에 따라 달라지고, 같은 파일 안에서도 블록이 겹치면 더 안쪽에 선언된 값이 이깁니다. 이 글은 패키지로 설치한 서버와 소스로 빌드한 서버에서 설정 파일이 놓이는 자리, include로 묶이는 순서, 그리고 지금 실제로 어떤 값이 적용되고 있는지 확인하는 방법을 정리합니다. 배포 직후 설정이 반영되지 않아 헤매는 시간을 줄이는 것이 목적입니다.
 
+
+
+![nginx 설정 위치와 적용 순서 정리 소제목 카드. 한눈에 보기, nginx 설정 파일 위치 비교, 설정이 적용되는 순서, 단계별로 위치와 순서 확인하기](/static/images/nginx-seoljeong-wichi/diagram.webp)
 ## 한눈에 보기
 
 가장 먼저 확인할 것은 "이 서버에 nginx를 어떻게 설치했는가"입니다. 배포판 패키지로 설치했다면 `/etc/nginx` 아래를 기준으로 보고, 소스에서 직접 빌드했다면 빌드할 때 지정한 prefix 아래를 봅니다. 두 경우 모두 주 설정 파일 이름은 `nginx.conf`이고, 그 파일이 `include`로 다른 파일을 끌어오는 구조도 같습니다.
@@ -91,6 +97,9 @@ nginx는 설정 파일을 한 덩어리로 해석하지 않습니다. `nginx.con
 - 설정 파일 권한을 느슨하게 두면 민감한 값이 노출될 수 있습니다. 마스터 프로세스만 읽을 수 있게 관리하는 편이 좋습니다.
 - reload는 기존 연결을 유지한 채 새 설정으로 교체하지만, 문법 오류가 있으면 조용히 이전 설정으로 남습니다. reload 후에는 반드시 결과를 확인해야 합니다.
 
+
+
+![nginx 설정 위치와 적용 순서 정리 질문 카드. nginx 설정 파일 위치는 어디인가요?, sites-available과 sites-enabled는 무엇이 다른가요?, include 순서를 바꾸면 적용 결과가 달라지나요?](/static/images/nginx-seoljeong-wichi/faq.webp)
 ## 자주 묻는 질문
 
 ### nginx 설정 파일 위치는 어디인가요?

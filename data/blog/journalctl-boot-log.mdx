@@ -4,18 +4,24 @@ description: "journalctl boot log 조회 방법을 정리했어요. --list-boots
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/journalctl-boot-log/cover.webp']
+images: ['/static/images/journalctl-boot-log/cover.webp', '/static/images/journalctl-boot-log/diagram.webp', '/static/images/journalctl-boot-log/faq.webp']
 sources:
   - https://www.freedesktop.org/software/systemd/man/latest/journalctl.html
   - https://www.freedesktop.org/software/systemd/man/latest/systemd-journald.service.html
   - https://www.freedesktop.org/software/systemd/man/latest/journald.conf.html
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![journalctl boot log로 부팅 로그 확인하는 방법 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/journalctl-boot-log/cover.webp)
+
 
 부팅 로그를 볼 때는 `journalctl --list-boots`로 부팅 회차 목록을 먼저 확인하고, `-b` 옵션에 인덱스나 부팅 ID를 붙여 원하는 회차만 조회하는 순서가 가장 안전해요. 현재 부팅은 `journalctl -b`, 직전 부팅은 `journalctl -b -1`처럼 지정하면 바로 좁혀 볼 수 있어요. 이 글은 그 조합을 상황별로 정리하고, 목록이 비어 보이거나 이전 로그가 사라졌을 때 확인할 설정까지 함께 다뤄요.
 
+
+
+![journalctl boot log로 부팅 로그 확인하는 방법 소제목 카드. 한눈에 보기, 부팅 로그 확인 명령 비교 표, 단계별로 부팅 로그 확인하기, 상황별 선택 가이드](/static/images/journalctl-boot-log/diagram.webp)
 ## 한눈에 보기
 
 `journalctl`은 systemd가 관리하는 저널(journal)에서 로그를 읽어 오는 명령이에요. 부팅 단위 조회의 핵심은 `--list-boots`, `-b`, `--boot` 세 가지이고, 여기에 서비스·커널·우선순위 필터를 조합하면 원하는 구간만 남길 수 있어요.
@@ -109,6 +115,9 @@ firstHand:
 
 `--vacuum-size`나 `--vacuum-time` 같은 정리 옵션은 조회가 아니라 삭제 동작이에요. 부팅 로그를 분석하는 중에는 실행하지 말고, 보존 정책을 정리할 때만 별도로 사용해요.
 
+
+
+![journalctl boot log로 부팅 로그 확인하는 방법 질문 카드. 1) 부팅 목록부터 확인해요, 2) 현재 부팅 로그를 봐요, 3) 직전 부팅 로그를 확인해요](/static/images/journalctl-boot-log/faq.webp)
 ## 자주 묻는 질문
 
 ### journalctl -b만 실행하면 어떤 부팅 로그가 보이나요?

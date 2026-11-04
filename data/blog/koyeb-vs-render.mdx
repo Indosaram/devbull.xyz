@@ -10,13 +10,19 @@ sources:
   - https://render.com/docs
   - https://render.com/pricing
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
-images: ['/static/images/koyeb-vs-render/cover.webp']
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
+images: ['/static/images/koyeb-vs-render/cover.webp', '/static/images/koyeb-vs-render/diagram.webp', '/static/images/koyeb-vs-render/faq.webp']
 ---
+
+![koyeb vs render: 배포 플랫폼 선택 기준 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/koyeb-vs-render/cover.webp)
+
 
 koyeb vs render는 단순히 무료 범위나 빌드 속도만으로 고르기 어려워요. 컨테이너 중심의 가벼운 배포와 글로벌 실행이 중요하면 Koyeb을, 웹 서비스와 관리형 데이터베이스·배치 작업을 한곳에서 운영하려면 Render를 먼저 검토하는 편이 좋아요. 두 플랫폼 모두 Git 연동과 자동 배포를 제공하므로, 팀의 운영 범위와 데이터 계층을 기준으로 선택해야 해요.
 
+
+
+![koyeb vs render: 배포 플랫폼 선택 기준 소제목 카드. 한눈에 보기, 비교 표, Koyeb 배포 흐름, Render 배포 흐름](/static/images/koyeb-vs-render/diagram.webp)
 ## 한눈에 보기
 
 Koyeb는 애플리케이션과 컨테이너를 빠르게 배포하고 여러 리전에서 실행하는 경험에 초점을 둔 플랫폼이에요. Dockerfile이나 빌드팩, 이미 빌드한 컨테이너 이미지를 이용해 서비스를 올리고, 대시보드와 CLI, API로 배포 흐름을 관리할 수 있어요. 서버를 직접 관리하지 않고 애플리케이션 실행 단위에 집중하고 싶은 팀에 잘 맞아요.
@@ -87,6 +93,9 @@ Render는 데이터베이스와 백그라운드 작업까지 한 제품 안에�
 
 다섯째, 관찰 가능성을 확인해야 해요. 로그와 메트릭을 어디에서 보는지, 알림을 어떻게 받는지, 장애 시 어떤 순서로 롤백하는지까지 정리해 두면 플랫폼 선택 이후의 운영이 안정적이에요.
 
+
+
+![koyeb vs render: 배포 플랫폼 선택 기준 질문 카드. Koyeb과 Render 중 무엇이 더 간단한가요?, 무료 플랜만으로 운영해도 괜찮나요?, 데이터베이스와 백그라운드 작업은 어떻게 고르나요?](/static/images/koyeb-vs-render/faq.webp)
 ## 자주 묻는 질문
 
 ### Koyeb과 Render 중 무엇이 더 간단한가요?

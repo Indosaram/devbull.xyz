@@ -4,18 +4,24 @@ description: "ssh 터널링을 로컬 포워딩, 원격 포워딩, 동적 포워
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-teoneolring/cover.webp']
+images: ['/static/images/ssh-teoneolring/cover.webp', '/static/images/ssh-teoneolring/diagram.webp', '/static/images/ssh-teoneolring/faq.webp']
 sources:
   - https://man.openbsd.org/ssh.1
   - https://man.openbsd.org/ssh_config.5
   - https://www.openssh.com/manual.html
 firstHand:
-  type: 'screenshot'
-  evidence: 'OpenSSH man page(ssh.1)의 -L·-R·-D 옵션 설명과 ssh_config.5의 LocalForward·RemoteForward·DynamicForward 항목을 공식 문서에서 확인하고 정리했습니다.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 터널링 총정리: 로컬·원격·동적 포워딩 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-teoneolring/cover.webp)
+
 
 ssh 터널링은 이미 성립된 SSH 연결을 통로로 재사용해 다른 포트의 트래픽을 안전하게 오가게 하는 기능입니다. OpenSSH 클라이언트가 제공하는 -L, -R, -D 세 가지 옵션만 이해하면 대부분의 막힌 네트워크 상황을 풀 수 있어요. 이 글은 세 방식의 차이를 표로 먼저 비교하고, 실제 설정 절차와 운영할 때 주의할 점까지 순서대로 정리합니다.
 
+
+
+![ssh 터널링 총정리: 로컬·원격·동적 포워딩 소제목 카드. 한눈에 보기, 세 가지 방식 비교, 로컬 포워딩 설정하기, 원격 포워딩 설정하기](/static/images/ssh-teoneolring/diagram.webp)
 ## 한눈에 보기
 
 ssh 터널링이 필요한 순간은 대개 "포트가 막혀 있다"는 한 문장으로 요약됩니다. 클라우드 보안 그룹이나 사내 방화벽이 특정 포트만 허용하고, 정작 필요한 데이터베이스나 내부 콘솔은 그 목록에 없는 경우가 흔합니다. 이때 SSH 포트 하나만 뚫려 있다면 나머지 트래픽은 그 연결 안으로 밀어 넣을 수 있습니다.
@@ -106,6 +112,9 @@ Host bastion
 
 넷째, 터널을 우회로로 남겨 두지 않아야 합니다. 디버깅용으로 연 포워딩을 그대로 두면 인증 정보 없이 내부 자원에 닿는 경로가 계속 열려 있게 됩니다. 작업이 끝나면 세션을 닫고, 상시 필요한 터널이라면 누가 왜 쓰는지 기록해 두는 편이 좋습니다.
 
+
+
+![ssh 터널링 총정리: 로컬·원격·동적 포워딩 질문 카드. 로컬 포워딩과 원격 포워딩은 무엇이 다른가요?, 터널이 열렸는지 어떻게 확인하나요?, 여러 서비스를 하나의 SSH 세션으로 묶을 수 있나요?](/static/images/ssh-teoneolring/faq.webp)
 ## 자주 묻는 질문
 
 ### 로컬 포워딩과 원격 포워딩은 무엇이 다른가요?

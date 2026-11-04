@@ -4,16 +4,24 @@ description: "리눅스 timeout 명령으로 오래 걸리는 작업에 시간 �
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/linux-timeout-command-examples/cover.webp']
+images: ['/static/images/linux-timeout-command-examples/cover.webp', '/static/images/linux-timeout-command-examples/diagram.webp', '/static/images/linux-timeout-command-examples/faq.webp']
 sources:
   - https://www.gnu.org/software/coreutils/manual/html_node/timeout-invocation.html
   - https://man7.org/linux/man-pages/man1/timeout.1.html
   - https://www.gnu.org/software/coreutils/timeout
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![linux timeout command examples: 리눅스 작업 시간 제한 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/linux-timeout-command-examples/cover.webp)
+
 
 리눅스에서 오래 걸리는 작업을 안전하게 끊으려면 `timeout` 명령으로 실행 시간 상한을 두는 방식이 가장 단순해요. 기본 동작은 지정한 시간이 지나면 TERM 신호를 보내는 것이고, 정리 시간이 더 필요하면 `-k`로 강제 종료 시점을 따로 둘 수 있어요. 아래에서는 linux timeout command examples를 기준으로 문법, 옵션 비교, 상황별 선택 방법을 정리해요.
 
+
+
+![linux timeout command examples: 리눅스 작업 시간 제한 소제목 카드. 한눈에 보기, 기본 문법과 시간 지정 방식, 자주 쓰는 옵션 비교, 단계별 사용 방법](/static/images/linux-timeout-command-examples/diagram.webp)
 ## 한눈에 보기
 
 `timeout`은 지정한 시간 안에 끝나지 않은 명령에 신호를 보내는 GNU Coreutils 계열 도구예요. 배포 스크립트, 외부 API 호출, 로그 압축, 오래 걸리는 조회 작업처럼 끝나지 않을 가능성이 있는 명령을 감쌀 때 유용해요.
@@ -75,6 +83,9 @@ KILL 신호는 프로세스가 무시할 수 없지만, 그만큼 정상 종료 
 
 배포판이나 환경에 따라 `timeout`의 옵션 지원 범위가 다를 수 있어요. 운영 서버에서 사용하기 전에 `timeout --help`와 매뉴얼을 확인하고, 컨테이너 이미지처럼 도구 구성이 다른 환경에서는 별도로 검증하세요.
 
+
+
+![linux timeout command examples: 리눅스 작업 시간 제한 질문 카드. timeout은 기본적으로 어떤 신호를 보내나요?, `-k`는 언제 쓰나요?, 시간 초과 종료 코드는 어떻게 확인하나요?](/static/images/linux-timeout-command-examples/faq.webp)
 ## 자주 묻는 질문
 
 ### timeout은 기본적으로 어떤 신호를 보내나요?

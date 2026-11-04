@@ -4,18 +4,26 @@ description: "ssh 터널링 툴의 개념과 OpenSSH 포워딩, 점프 호스트
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-teoneolring-tul/cover.webp']
+images: ['/static/images/ssh-teoneolring-tul/cover.webp', '/static/images/ssh-teoneolring-tul/diagram.webp', '/static/images/ssh-teoneolring-tul/faq.webp']
 sources:
   - https://man.openbsd.org/ssh
   - https://man.openbsd.org/ssh_config
   - https://man.openbsd.org/sshd_config
   - https://www.harding.motd.ca/autossh/
   - https://sshuttle.readthedocs.io/
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 터널링 툴 기초 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-teoneolring-tul/cover.webp)
+
 
 ssh 터널링 툴은 SSH 연결 안에 다른 네트워크 트래픽을 실어 보내는 도구를 말해요. 대부분의 기본 요구는 OpenSSH 클라이언트의 포워딩 옵션으로 해결할 수 있고, 연결이 자주 끊기거나 여러 호스트를 네트워크 단위로 다뤄야 할 때 autossh나 sshuttle 같은 보조 도구를 검토해요. 이 글은 서버 운영과 배포를 하는 백엔드 개발자가 터널링 방식을 고르고 안전하게 운영할 수 있도록 개념과 선택 기준을 정리해요.
 
+
+
+![ssh 터널링 툴 기초 정리 소제목 카드. 한눈에 보기, 터널링 방식 비교 표, OpenSSH로 로컬·원격·동적 포워딩 구성하기, 점프 호스트와 ProxyJump 사용하기](/static/images/ssh-teoneolring-tul/diagram.webp)
 ## 한눈에 보기
 
 ssh 터널링 툴을 고를 때 먼저 정할 것은 어느 쪽에서 포트를 열고, 어디까지 전달할지예요. 내 컴퓨터에서 시작해 원격의 특정 대상으로 보내면 로컬 포워딩이고, SSH 서버 쪽에서 포트를 열어 내 쪽으로 보내면 원격 포워딩이에요. 대상이 여러 개라서 포트마다 설정을 추가하기 어렵다면 동적 포워딩이나 네트워크 단위 도구를 검토해요.
@@ -87,6 +95,9 @@ sshuttle은 SSH 연결을 통해 트래픽을 전달하는 도구로, 개별 포
 
 원격 포워딩으로 포트를 열 때는 바인딩 주소와 방화벽을 반드시 확인해요. 기본적으로 루프백에만 열리는지, 외부 인터페이스에 열리는지에 따라 노출 범위가 크게 달라져요. 터널 프로세스가 죽었는지 확인할 수 있도록 로그와 헬스 체크를 남기고, 재시작만 반복하기보다 끊김 원인을 먼저 확인하는 편이 좋아요.
 
+
+
+![ssh 터널링 툴 기초 정리 질문 카드. 로컬 포워딩, 원격 포워딩, 동적 포워딩](/static/images/ssh-teoneolring-tul/faq.webp)
 ## 자주 묻는 질문
 
 ### ssh 터널링 툴은 OpenSSH만으로 충분한가요?

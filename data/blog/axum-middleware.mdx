@@ -4,18 +4,24 @@ description: "axum에서 middleware를 작성하고 Router에 적용하는 방�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Rust·서버']
-images: ['/static/images/axum-middleware/cover.webp']
+images: ['/static/images/axum-middleware/cover.webp', '/static/images/axum-middleware/diagram.webp', '/static/images/axum-middleware/faq.webp']
 sources:
   - https://docs.rs/axum/latest/axum/middleware/index.html
   - https://docs.rs/tower-http/latest/tower_http/
   - https://docs.rs/axum/latest/axum/routing/struct.Router.html
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![axum middleware 작성과 적용: tower 레이어로 요청 흐름 다루기 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/axum-middleware/cover.webp)
+
 
 axum의 미들웨어는 핸들러 앞뒤를 감싸는 tower 레이어예요. 그래서 직접 async 함수를 작성해 붙일 수도 있고, tower-http가 제공하는 완성된 레이어를 그대로 조합할 수도 있어요. 이 글은 미들웨어를 어떤 방식으로 작성하고 Router 어디에 적용해야 하는지, 그리고 운영 중에 자주 걸리는 지점을 순서대로 정리해요.
 
+
+
+![axum middleware 작성과 적용: tower 레이어로 요청 흐름 다루기 소제목 카드. 한눈에 보기, 미들웨어 방식 비교, 단계별로 미들웨어 작성하고 적용하기, 상황별 선택 기준](/static/images/axum-middleware/diagram.webp)
 ## 한눈에 보기
 
 axum에서 요청은 Router → 레이어 → 핸들러 순서로 흘러가요. 레이어는 요청이 핸들러에 닿기 전과 응답이 클라이언트로 나가기 전, 두 지점에 끼어들 수 있어요. 접근 방식은 크게 네 가지로 나뉘어요.
@@ -183,6 +189,9 @@ async fn inspect_body(request: Request, next: Next) -> Response {
 
 다섯째, 미들웨어에서 반환하는 에러 응답 형식을 통일하세요. 핸들러는 JSON으로 응답하는데 미들웨어만 빈 본문을 돌려주면 클라이언트 입장에서 원인을 찾기 어려워져요.
 
+
+
+![axum middleware 작성과 적용: tower 레이어로 요청 흐름 다루기 질문 카드. 의존성 준비, from_fn으로 기본 미들웨어 작성, 상태가 필요한 미들웨어 작성](/static/images/axum-middleware/faq.webp)
 ## 자주 묻는 질문
 
 ### axum middleware와 tower 레이어는 같은 건가요?

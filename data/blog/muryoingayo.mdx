@@ -4,13 +4,21 @@ description: "Nginx가 무료인지 궁금한 백엔드 개발자를 위해 오�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/muryoingayo/cover.webp']
+images: ['/static/images/muryoingayo/cover.webp', '/static/images/muryoingayo/diagram.webp', '/static/images/muryoingayo/faq.webp']
 sources: ['https://nginx.org/en/license.html', 'https://docs.nginx.com/', 'https://letsencrypt.org/docs/', 'https://nginx.org/en/docs/']
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![Nginx 무료인가요? 라이선스와 상용판 차이 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/muryoingayo/cover.webp)
+
 
 Nginx 오픈소스판은 라이선스 비용 없이 내려받아 서버에 설치하고 운영할 수 있어요. 비용이 붙는 쪽은 F5가 판매하는 상용 구독판이며, 공식 기술 지원과 상용 전용 기능이 여기에 포함돼요. 그래서 "Nginx 무료인가요?"라는 질문의 답은 "오픈소스판은 무료, 상용 구독판은 유료"로 정리할 수 있어요.
 
+
+
+![Nginx 무료인가요? 라이선스와 상용판 차이 정리 소제목 카드. 한눈에 보기, 무료와 유료를 가르는 기준, Nginx가 무료인지 직접 확인하는 순서, 무료 TLS 인증서와 함께 쓰는 구성](/static/images/muryoingayo/diagram.webp)
 ## 한눈에 보기
 
 두 제품이 같은 이름과 거의 같은 설정 문법을 공유하기 때문에 무료 여부를 헷갈리는 경우가 많아요. 하지만 배포 주체와 지원 범위, 라이선스가 분명히 다릅니다. 서버 운영 관점에서 확인해야 할 지점은 아래와 같아요.
@@ -86,6 +94,9 @@ Nginx를 무료로 운영할 때 비용 걱정이 붙는 지점은 인증서예�
 
 다섯째, 무료 소프트웨어를 쓴다고 해서 운영 비용이 사라지지는 않아요. 서버 자원, 로그 저장, 모니터링, 백업, 장애 대응 인력은 별도로 계산해야 해요. 총비용을 비교할 때는 라이선스 비용과 운영 비용을 나눠서 보는 편이 정확해요.
 
+
+
+![Nginx 무료인가요? 라이선스와 상용판 차이 정리 질문 카드. Nginx는 정말 무료인가요?, 상용 구독판과 오픈소스판의 차이가 큰가요?, 무료 인증서만으로 HTTPS 운영이 충분한가요?](/static/images/muryoingayo/faq.webp)
 ## 자주 묻는 질문
 
 ### Nginx는 정말 무료인가요?

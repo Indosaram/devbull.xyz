@@ -4,18 +4,26 @@ description: "Railway 배포 후기를 찾는 백엔드 개발자를 위해 공�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['배포 플랫폼']
-images: ['/static/images/railway-baepo-hugi/cover.webp']
+images: ['/static/images/railway-baepo-hugi/cover.webp', '/static/images/railway-baepo-hugi/diagram.webp', '/static/images/railway-baepo-hugi/faq.webp']
 sources:
   - https://docs.railway.com/
   - https://docs.railway.com/guides/deployments
   - https://docs.railway.com/guides/github-autodeploys
   - https://docs.railway.com/guides/environments
   - https://docs.railway.com/reference/healthchecks
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![railway 배포 후기 한눈에 보기: 공식 문서로 정리한 배포 흐름 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/railway-baepo-hugi/cover.webp)
+
 
 Railway 배포는 저장소를 연결하고 환경 변수와 빌드·시작 명령을 정리하면 빠르게 첫 배포까지 도달할 수 있는 편이에요. 다만 편의성만 보고 도입하기보다는 환경 분리, 헬스 체크, 로그 확인, 롤백 절차를 함께 설계해야 운영에서 덜 흔들려요. 이 글은 공식 문서에서 확인한 범위를 기준으로 Railway 배포 후기를 찾는 백엔드 개발자가 판단할 점을 차분히 정리해요.
 
+
+
+![railway 배포 후기 한눈에 보기: 공식 문서로 정리한 배포 흐름 소제목 카드. 한눈에 보기, 비교 표, 단계별 방법, 상황별 선택](/static/images/railway-baepo-hugi/diagram.webp)
 ## 한눈에 보기
 
 Railway 배포 후기를 찾는 독자라면 먼저 “얼마나 빠르게 첫 배포에 도달하는가”와 “운영에서 얼마나 통제할 수 있는가”를 나눠 보는 편이 좋아요. Railway는 저장소를 연결해 빌드와 실행을 맡기는 흐름이 단순해서 작은 서비스나 검증 단계에서 부담이 적어요. 반면 환경 변수, 헬스 체크, 로그, 롤백 같은 운영 습관은 별도로 설계해야 해요.
@@ -99,6 +107,9 @@ GitHub 저장소를 연결하면 지정한 브랜치의 변경을 기준으로 �
 - **요금과 사용량**: Railway의 요금과 사용량 정책은 바뀔 수 있어요. 도입 전 공식 사이트의 최신 안내를 확인하고, 예산 알림과 모니터링을 함께 설정해요.
 - **도메인과 TLS**: 커스텀 도메인을 연결할 때 DNS 전파와 인증서 발급 상태를 확인해야 해요. 운영 도메인은 배포 직후 외부에서 직접 접근해 검증해요.
 
+
+
+![railway 배포 후기 한눈에 보기: 공식 문서로 정리한 배포 흐름 질문 카드. 프로젝트와 서비스 구조 정리, 저장소 연결과 빌드 설정, 환경 변수와 비밀 값 분리](/static/images/railway-baepo-hugi/faq.webp)
 ## 자주 묻는 질문
 
 ### Railway 배포 후기에서 가장 먼저 확인할 점은 무엇인가요?

@@ -4,15 +4,21 @@ description: "ssh 키 생성 및 등록 방법을 ssh-keygen 명령, authorized_
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-ki-saengseong-mit-deungrok/cover.webp']
+images: ['/static/images/ssh-ki-saengseong-mit-deungrok/cover.webp', '/static/images/ssh-ki-saengseong-mit-deungrok/diagram.webp', '/static/images/ssh-ki-saengseong-mit-deungrok/faq.webp']
 sources: ['https://man.openbsd.org/ssh-keygen', 'https://man.openbsd.org/sshd', 'https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-your-ssh-agent']
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 키 생성 및 등록 정리: 서버 접속 준비 가이드 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-ki-saengseong-mit-deungrok/cover.webp)
+
 
 ssh 키 생성 및 등록은 `ssh-keygen`으로 키 쌍을 만들고, 공개키만 서버의 `authorized_keys`에 넣는 두 단계로 끝나요. 비밀키는 내 작업 환경에만 남기고 서버나 저장소로는 절대 복사하지 않는다는 점이 핵심이에요. 아래 순서를 그대로 따라 하면 암호 입력 없이 접속하는 것까지 확인할 수 있어요.
 
+
+
+![ssh 키 생성 및 등록 정리: 서버 접속 준비 가이드 소제목 카드. 한눈에 보기, 키 종류와 용도 비교, 단계별 방법, 상황별 선택](/static/images/ssh-ki-saengseong-mit-deungrok/diagram.webp)
 ## 한눈에 보기
 
 ssh 접속용 키는 공개키와 비밀키가 한 쌍으로 만들어져요. 서버는 내가 보낸 공개키를 보고 "이 요청은 비밀키를 가진 사람이 보냈다"는 것을 확인하는 구조예요. 그래서 서버에 올라가는 것은 항상 `.pub` 확장자가 붙은 공개키이고, 확장자가 없는 파일은 내 쪽에만 있어야 해요.
@@ -114,6 +120,9 @@ passphrase를 걸어 두었다면 매번 입력하지 않도록 agent에 등록�
 
 passphrase는 생략하지 않는 쪽을 권해요. 로컬 환경이 노출됐을 때 비밀키 파일만으로 접속이 가능해지는 것을 막아 주기 때문이에요. 불편하면 agent에 등록하는 방식으로 해결하면 돼요.
 
+
+
+![ssh 키 생성 및 등록 정리: 서버 접속 준비 가이드 질문 카드. 1) 키 쌍 생성하기, 2) 공개키 확인하기, 3) 서버에 공개키 등록하기](/static/images/ssh-ki-saengseong-mit-deungrok/faq.webp)
 ## 자주 묻는 질문
 
 ### ssh 키는 어디에 저장되나요?

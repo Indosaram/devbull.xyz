@@ -8,12 +8,20 @@ sources:
   - https://www.koyeb.com/docs
   - https://www.koyeb.com/docs/run-and-scale/cron-jobs
   - https://www.koyeb.com/docs/reference/cli
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
-images: ['/static/images/koyeb-cron-job/cover.webp']
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
+images: ['/static/images/koyeb-cron-job/cover.webp', '/static/images/koyeb-cron-job/diagram.webp', '/static/images/koyeb-cron-job/faq.webp']
 ---
+
+![Koyeb cron job 등록 방법과 운영 체크리스트 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/koyeb-cron-job/cover.webp)
+
 
 Koyeb에서 cron job을 등록하려면 작업 전용 진입점을 만들고, 실행 주기와 타임아웃·재시도 정책을 서비스 설정에 맞게 지정한 뒤 배포 로그로 첫 실행을 확인하면 돼요. 웹 서버와 같은 이미지를 쓰더라도 작업만 수행하고 종료하도록 분리하는 편이 안전해요. 이 글은 Koyeb 공식 문서에서 확인한 범위 안에서 등록 절차와 운영 판단 기준을 정리해요.
 
+
+
+![Koyeb cron job 등록 방법과 운영 체크리스트 소제목 카드. 한눈에 보기, Koyeb cron job이란 무엇인가요, 웹 서비스와 cron job 비교, 등록 전 준비할 것](/static/images/koyeb-cron-job/diagram.webp)
 ## 한눈에 보기
 
 - Koyeb cron job은 정해진 시점에 작업을 실행하고 끝나는 서비스로 이해하면 돼요.
@@ -100,6 +108,9 @@ Koyeb의 Job 또는 Cron Job 생성 흐름으로 들어가서 새 잡을 만들�
 
 플랫폼이 제공하는 실행 제한과 요금 정책은 시점에 따라 달라질 수 있어요. 긴 작업을 설계할 때는 Koyeb 공식 문서에서 현재 제한을 확인하고, 제한을 넘길 가능성이 있으면 작업을 나누는 방식을 검토하세요.
 
+
+
+![Koyeb cron job 등록 방법과 운영 체크리스트 질문 카드. 작업 전용 진입점 만들기, Koyeb 프로젝트와 서비스 준비하기, cron job 생성 흐름 선택하기](/static/images/koyeb-cron-job/faq.webp)
 ## 자주 묻는 질문
 
 ### Koyeb cron job은 웹 서비스와 같은 이미지를 써도 되나요?

@@ -4,13 +4,21 @@ description: "리눅스 ssh 키 생성 절차를 ssh-keygen 명령, 키 종류 �
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/rinukseu-ssh-ki-saengseong/cover.webp']
+images: ['/static/images/rinukseu-ssh-ki-saengseong/cover.webp', '/static/images/rinukseu-ssh-ki-saengseong/diagram.webp', '/static/images/rinukseu-ssh-ki-saengseong/faq.webp']
 sources: ['https://man.openbsd.org/ssh-keygen', 'https://www.openssh.com/manual.html', 'https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-your-ssh-agent']
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![리눅스 ssh 키 생성 총정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/rinukseu-ssh-ki-saengseong/cover.webp)
+
 
 리눅스 ssh 키 생성은 `ssh-keygen`으로 개인키와 공개키를 한 쌍 만들고, 공개키만 서버의 `authorized_keys`에 등록하는 흐름으로 끝납니다. 처음에는 ed25519를 기본으로 검토하고, 기존 장비나 외부 시스템과의 호환성이 필요할 때 RSA를 비교해 선택해요. 아래에서는 키 종류 선택부터 생성, 권한 설정, 서버 등록, 문제 확인까지 운영에 필요한 순서로 설명해요.
 
+
+
+![리눅스 ssh 키 생성 총정리 소제목 카드. 한눈에 보기, 키 종류 비교, 단계별 생성 방법, ssh-agent와 키 관리](/static/images/rinukseu-ssh-ki-saengseong/diagram.webp)
 ## 한눈에 보기
 
 ssh 키 인증의 핵심은 “개인키는 내 작업 환경에만 두고, 공개키만 서버에 배포한다”는 원칙이에요. 공개키는 서버의 `~/.ssh/authorized_keys`에 들어가고, 개인키는 접속을 시도하는 클라이언트가 가지고 있어야 해요. 이 둘의 역할을 헷갈리면 키를 잘못 복사하거나 권한을 느슨하게 두는 실수가 생기기 쉬워요.
@@ -101,6 +109,9 @@ ed25519가 모든 환경에서 정답은 아니에요. 서버의 OpenSSH 버전,
 
 특히 `authorized_keys`는 여러 키가 누적되기 쉬운 파일이에요. 주석을 의미 있게 남기고, 정기적으로 사용하지 않는 키를 정리하면 사고 때 추적이 쉬워져요. 키를 삭제할 때는 해당 키로 접속 중인 세션이 없는지도 확인하는 편이 좋아요.
 
+
+
+![리눅스 ssh 키 생성 총정리 질문 카드. 키 쌍 만들기, 공개키 확인, 서버에 등록](/static/images/rinukseu-ssh-ki-saengseong/faq.webp)
 ## 자주 묻는 질문
 
 ### ssh-keygen 없이도 키를 만들 수 있나요?

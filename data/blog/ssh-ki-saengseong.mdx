@@ -4,13 +4,21 @@ description: "ssh 키 생성이 필요한 백엔드 개발자를 위해 ssh-keyg
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-ki-saengseong/cover.webp']
+images: ['/static/images/ssh-ki-saengseong/cover.webp', '/static/images/ssh-ki-saengseong/diagram.webp', '/static/images/ssh-ki-saengseong/faq.webp']
 sources: ["https://www.openssh.com/manual.html", "https://man.openbsd.org/ssh-keygen", "https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent", "https://docs.gitlab.com/ee/user/ssh.html"]
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 키 생성 총정리: ssh-keygen부터 배포까지 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-ki-saengseong/cover.webp)
+
 
 ssh 키 생성은 터미널에서 `ssh-keygen`을 실행해 공개 키와 개인 키 쌍을 만드는 작업이에요. 서버 접속과 배포 자동화에서는 공개 키만 대상 서버나 Git 호스팅에 등록하고, 개인 키는 내 작업 환경에 안전하게 보관해요. 이 글은 Linux 서버 운영과 배포를 하는 백엔드 개발자가 바로 따라 할 수 있도록 생성 절차와 선택 기준을 정리해요.
 
+
+
+![ssh 키 생성 총정리: ssh-keygen부터 배포까지 소제목 카드. 한눈에 보기, 비교 표, 단계별 방법, 상황별 선택](/static/images/ssh-ki-saengseong/diagram.webp)
 ## 한눈에 보기
 
 ssh 키 생성의 핵심은 `ssh-keygen`으로 키 쌍을 만들고, 공개 키만 서버나 Git 호스팅에 등록하는 것이에요. 개인 키는 절대 외부에 공유하지 않고, 파일 권한과 보관 위치를 함께 점검해야 해요.
@@ -109,6 +117,9 @@ Windows에서도 OpenSSH 클라이언트가 설치되어 있으면 `ssh-keygen`�
 - 서버를 교체하거나 IP가 바뀌면 `known_hosts`의 이전 항목 때문에 경고가 나올 수 있어요. 이때는 호스트 키가 실제로 바뀐 것인지 먼저 확인해요.
 - 배포 자동화에 쓰는 키는 주기적으로 교체하고, 키가 노출되었다고 판단되면 즉시 폐기해요.
 
+
+
+![ssh 키 생성 총정리: ssh-keygen부터 배포까지 질문 카드. 기존 키와 디렉터리 확인, 키 쌍 만들기, 공개 키 확인](/static/images/ssh-ki-saengseong/faq.webp)
 ## 자주 묻는 질문
 
 ### ssh 키 생성 후 공개 키는 어디에 등록하나요?

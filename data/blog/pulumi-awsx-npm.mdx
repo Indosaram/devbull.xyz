@@ -4,19 +4,25 @@ description: "pulumi awsx npm 패키지가 무엇인지, 설치 절차와 코드
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/pulumi-awsx-npm/cover.webp']
+images: ['/static/images/pulumi-awsx-npm/cover.webp', '/static/images/pulumi-awsx-npm/diagram.webp', '/static/images/pulumi-awsx-npm/faq.webp']
 sources:
   - 'https://www.pulumi.com/docs/iac/libraries/awsx/'
   - 'https://www.pulumi.com/registry/packages/awsx/'
   - 'https://www.npmjs.com/package/@pulumi/awsx'
   - 'https://www.pulumi.com/docs/iac/languages-sdks/javascript/'
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![pulumi awsx npm 설치와 활용: AWS 인프라 구성 가이드 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/pulumi-awsx-npm/cover.webp)
+
 
 pulumi awsx npm이라는 검색어는 결국 "Pulumi에서 AWS 리소스를 조금 더 짧은 코드로 정의하려면 npm 패키지 @pulumi/awsx를 어떻게 설치하고 쓰는가"로 좁혀집니다. 결론부터 말하면, Pulumi CLI와 Node.js 프로젝트를 준비한 뒤 `npm install @pulumi/awsx`로 패키지를 추가하고, VPC나 로드 밸런서, ECS 서비스 같은 상위 수준 컴포넌트를 코드에서 불러 쓰면 돼요. 이 글은 설치 순서와 최소 예시, 그리고 awsx를 쓰는 편이 나은 상황과 그렇지 않은 상황을 함께 정리해요.
 
+
+
+![pulumi awsx npm 설치와 활용: AWS 인프라 구성 가이드 소제목 카드. 한눈에 보기, @pulumi/awsx 패키지가 하는 일, 클래식 프로바이더와 비교, 단계별 설치와 첫 배포](/static/images/pulumi-awsx-npm/diagram.webp)
 ## 한눈에 보기
 
 pulumi awsx npm은 서로 다른 세 가지를 한 문장에 묶은 표현이에요. 첫째는 인프라를 코드로 관리하는 도구인 Pulumi, 둘째는 AWS 리소스를 상위 수준 컴포넌트로 감싼 AWSX 라이브러리, 셋째는 그 라이브러리를 배포하는 npm 패키지 `@pulumi/awsx`입니다.
@@ -124,6 +130,9 @@ const service = new awsx.ecs.FargateService("app-service", {
 - 컨테이너 이미지 태그를 최신으로 두면 배포마다 결과가 달라져요. 태그를 고정하는 편이 재현성에 좋습니다.
 - 삭제 보호나 유지 정책 같은 안전장치는 스택 수준에서 별도로 챙겨야 해요.
 
+
+
+![pulumi awsx npm 설치와 활용: AWS 인프라 구성 가이드 질문 카드. 사전 준비, 프로젝트 만들기, 패키지 설치](/static/images/pulumi-awsx-npm/faq.webp)
 ## 자주 묻는 질문
 
 ### npm의 @pulumi/awsx와 Pulumi CLI는 무슨 관계인가요?

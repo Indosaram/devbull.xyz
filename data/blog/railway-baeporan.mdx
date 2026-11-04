@@ -4,19 +4,25 @@ description: "railway 배포란 무엇인지, 빌드부터 실행과 도메인 �
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['배포 플랫폼']
-images: ['/static/images/railway-baeporan/cover.webp']
+images: ['/static/images/railway-baeporan/cover.webp', '/static/images/railway-baeporan/diagram.webp', '/static/images/railway-baeporan/faq.webp']
 sources:
   - https://docs.railway.com/
   - https://docs.railway.com/quick-start
   - https://docs.railway.com/guides/cli
   - https://railway.com/
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![railway 배포란? 개념부터 배포 흐름까지 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/railway-baeporan/cover.webp)
+
 
 railway 배포란 저장소를 연결하는 것만으로 빌드와 실행, 도메인 연결, 로그 수집까지 플랫폼이 대신 처리해 주는 배포 방식입니다. 서버를 직접 만들고 리버스 프록시와 프로세스 관리자를 세팅하던 작업을 대시보드와 설정 파일로 옮긴 형태라서, 인프라 손질에 쓰던 시간을 애플리케이션 코드로 돌릴 수 있어요. 이 글은 Railway가 배포를 어떤 순서로 처리하는지, GitHub 연동과 CLI 배포가 어떻게 다른지, 실제 운영에서 어디를 조심해야 하는지를 정리합니다.
 
+
+
+![railway 배포란? 개념부터 배포 흐름까지 정리 소제목 카드. 한눈에 보기, Railway 배포가 처리하는 일, 빌드 방식 비교, 단계별로 배포하는 방법](/static/images/railway-baeporan/diagram.webp)
 ## 한눈에 보기
 
 Railway는 애플리케이션과 데이터베이스를 같은 프로젝트 안에서 함께 관리하는 클라우드 배포 플랫폼입니다. 구조는 크게 프로젝트, 서비스, 환경이라는 세 층으로 나뉘어요. 프로젝트는 배포 단위를 묶는 최상위 그릇이고, 서비스는 실제로 실행되는 애플리케이션 또는 데이터베이스이며, 환경은 같은 구성을 여러 벌로 나눠 쓰는 단위입니다. 예를 들어 하나의 프로젝트 안에 API 서버 서비스와 Postgres 서비스를 두고, 운영 환경과 스테이징 환경을 따로 가져가는 식이에요.
@@ -104,6 +110,9 @@ GitHub 저장소를 연결하면 지정한 브랜치에 커밋이 들어올 때�
 
 다섯째, 모노레포에서는 빌드 대상이 섞이기 쉽습니다. 서비스별 루트 디렉터리와 빌드 명령을 명시하고, 불필요한 변경에 배포가 트리거되지 않도록 감시 경로를 조정하는 편이 좋습니다.
 
+
+
+![railway 배포란? 개념부터 배포 흐름까지 정리 질문 카드. 프로젝트와 서비스 만들기, 저장소 연결하기, 빌드 설정 다듬기](/static/images/railway-baeporan/faq.webp)
 ## 자주 묻는 질문
 
 ### railway 배포란 무료로 시험해 볼 수 있는 건가요?

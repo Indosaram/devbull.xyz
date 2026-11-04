@@ -4,19 +4,25 @@ description: "systemctl 사용법을 백엔드 개발자 관점에서 정리합�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/systemctl-sayongbeop/cover.webp']
+images: ['/static/images/systemctl-sayongbeop/cover.webp', '/static/images/systemctl-sayongbeop/diagram.webp', '/static/images/systemctl-sayongbeop/faq.webp']
 sources:
   - https://www.freedesktop.org/software/systemd/man/latest/systemctl.html
   - https://www.freedesktop.org/software/systemd/man/latest/systemd.service.html
   - https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html
   - https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/using_systemd_unit_files_to_customize_and_optimize_your_system/index
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![systemctl 사용법: 서비스 상태 확인부터 자동 시작까지 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/systemctl-sayongbeop/cover.webp)
+
 
 systemctl 사용법의 핵심은 서비스의 현재 상태를 확인하는 일과 시작·중지·자동 시작을 서로 다른 명령으로 다루는 일을 구분하는 데 있어요. 장애 대부분은 `status`로 상태를 보고 `journalctl`로 로그를 확인하는 두 단계에서 원인이 드러나요. 이 글은 백엔드 개발자가 배포 직후나 장애 대응 중에 바로 따라 할 수 있는 순서로 정리했어요.
 
+
+
+![systemctl 사용법: 서비스 상태 확인부터 자동 시작까지 소제목 카드. 한눈에 보기, 자주 쓰는 명령 비교 표, 단계별 사용법, 상황별 선택](/static/images/systemctl-sayongbeop/diagram.webp)
 ## 한눈에 보기
 
 systemd는 리눅스 배포판에서 서비스(데몬)를 관리하는 기본 시스템이고, `systemctl`은 그 systemd에 명령을 전달하는 클라이언트 도구예요. 그래서 systemctl 사용법을 익힌다는 것은 유닛(unit)이라는 관리 단위를 이해한다는 뜻이에요. 유닛은 서비스뿐 아니라 타이머, 마운트, 소켓, 타깃까지 포함하는 개념이고, 실무에서 가장 자주 만나는 것은 `.service` 유닛이에요.
@@ -101,6 +107,9 @@ systemd는 리눅스 배포판에서 서비스(데몬)를 관리하는 기본 �
 
 `Restart` 정책은 편리하지만 무한 재시작을 만들 수 있어요. 애플리케이션이 뜨자마자 죽는 상황에서 재시작 정책이 켜져 있으면 로그가 빠르게 쌓이고 원인 파악이 어려워질 수 있으니, 장애 초기에는 `journalctl`로 원인을 먼저 확인하는 편이 좋아요. 마지막으로 `Type`을 잘못 지정하면 프로세스가 정상인데도 상태가 기대와 다르게 보일 수 있으니, 포그라운드 실행인지 포크하는 방식인지 확인하고 맞춰야 해요.
 
+
+
+![systemctl 사용법: 서비스 상태 확인부터 자동 시작까지 질문 카드. 상태 확인이 먼저입니다, 시작과 중지, 재시작, 부팅 시 자동 시작 설정](/static/images/systemctl-sayongbeop/faq.webp)
 ## 자주 묻는 질문
 
 ### systemctl restart와 reload는 무엇이 다른가요?

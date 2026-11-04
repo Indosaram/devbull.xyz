@@ -4,18 +4,24 @@ description: "github actions 자동배포를 처음 붙이는 백엔드 개발�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['CI/CD']
-images: ['/static/images/github-actions-jadongbaepo/cover.webp']
+images: ['/static/images/github-actions-jadongbaepo/cover.webp', '/static/images/github-actions-jadongbaepo/diagram.webp', '/static/images/github-actions-jadongbaepo/faq.webp']
 sources:
   - https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions
   - https://docs.github.com/en/actions/security-guides/using-secrets-in-github-actions
   - https://docs.github.com/en/actions/deployment/about-deployments/deploying-with-github-actions
 firstHand:
-  type: 'screenshot'
-  evidence: 'GitHub 공식 문서의 워크플로 문법, 시크릿, 배포 문서에서 확인한 범위만 정리했고, 확인되지 않은 수치나 벤치마크는 넣지 않았습니다.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![github actions 자동배포 구성과 운영 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/github-actions-jadongbaepo/cover.webp)
+
 
 github actions 자동배포는 저장소에 변경이 들어오는 순간 빌드와 서버 반영까지 하나의 흐름으로 묶는 방식이에요. 핵심은 워크플로 파일 하나에 트리거, 러너, 시크릿, 배포 명령을 역할별로 나눠 적고, 서버 접속 정보는 코드가 아니라 시크릿에 두는 것입니다. 아래에서 구성 순서와 상황별 선택 기준, 자주 걸리는 지점을 차례로 정리할게요.
 
+
+
+![github actions 자동배포 구성과 운영 정리 소제목 카드. 한눈에 보기, 배포 방식 비교, 단계별로 만드는 자동배포, 상황별 선택](/static/images/github-actions-jadongbaepo/diagram.webp)
 ## 한눈에 보기
 
 자동배포의 흐름은 생각보다 단순해요. 저장소 이벤트가 워크플로를 깨우고, 깨워진 러너가 코드를 내려받아 빌드와 테스트를 마친 뒤, 마지막 단계에서 서버에 결과물을 반영합니다. 이때 접속 정보와 배포에 필요한 값은 저장소 시크릿이나 환경 시크릿으로 빼 두고, 워크플로 파일에는 참조만 남깁니다.
@@ -123,6 +129,9 @@ jobs:
 
 다섯째, `ssh-keyscan`으로 호스트 키를 그대로 신뢰하면 중간자 공격에 노출될 수 있습니다. 서버의 공개 호스트 키를 미리 확인해 시크릿이나 저장소 파일로 고정해 두는 편이 안전해요.
 
+
+
+![github actions 자동배포 구성과 운영 정리 질문 카드. 저장소와 서버 준비, 시크릿 등록, 워크플로 파일 작성](/static/images/github-actions-jadongbaepo/faq.webp)
 ## 자주 묻는 질문
 
 ### github actions 자동배포는 무료인가요?

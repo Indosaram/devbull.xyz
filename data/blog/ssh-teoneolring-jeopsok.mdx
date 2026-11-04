@@ -4,19 +4,25 @@ description: 'ssh 터널링 접속을 로컬·원격·동적 포워딩으로 나
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-teoneolring-jeopsok/cover.webp']
+images: ['/static/images/ssh-teoneolring-jeopsok/cover.webp', '/static/images/ssh-teoneolring-jeopsok/diagram.webp', '/static/images/ssh-teoneolring-jeopsok/faq.webp']
 sources:
   - 'https://man.openbsd.org/ssh'
   - 'https://man.openbsd.org/ssh_config'
   - 'https://www.openssh.com/manual.html'
   - 'https://www.rfc-editor.org/rfc/rfc4254'
 firstHand:
-  type: 'screenshot'
-  evidence: 'OpenSSH 공식 매뉴얼과 ssh_config 문서, RFC 문서에서 확인한 옵션 설명 범위를 요약해 정리했어요.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 터널링 접속 한눈에 보기: 로컬·원격·동적 포워딩 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-teoneolring-jeopsok/cover.webp)
+
 
 ssh 터널링 접속은 이미 열려 있는 SSH 세션을 암호화된 통로로 재사용해서, 직접 닿지 않는 포트나 서비스에 접근하는 방법이에요. 핵심은 `-L`(로컬 포워딩), `-R`(원격 포워딩), `-D`(동적 포워딩) 세 가지 방향을 구분하는 것이고, 나머지는 같은 원리의 응용이에요. 이 글은 배포와 운영을 담당하는 백엔드 개발자가 현장에서 바로 쓸 수 있도록 개념, 비교, 단계별 명령, 주의점 순서로 정리했어요.
 
+
+
+![ssh 터널링 접속 한눈에 보기: 로컬·원격·동적 포워딩 정리 소제목 카드. 한눈에 보기, 로컬·원격·동적 포워딩 비교, 단계별로 ssh 터널링 접속하기, 설정 파일로 터널 자동화하기](/static/images/ssh-teoneolring-jeopsok/diagram.webp)
 ## 한눈에 보기
 
 ssh 터널링 접속은 별도의 프로토콜이 아니에요. 하나의 SSH 연결 안에서 여러 개의 논리 채널을 열고, 그 채널을 TCP 트래픽 전달에 쓰는 구조예요. 연결 자체는 항상 SSH 클라이언트가 서버로 먼저 맺고, 그 위에 "이 주소와 이 포트로 보내 달라"는 요청을 얹는 방식이에요.
@@ -92,6 +98,9 @@ ssh 터널링 접속은 별도의 프로토콜이 아니에요. 하나의 SSH �
 
 서버 쪽에서 포워딩을 제한해 둔 경우에는 명령이 거부돼요. `AllowTcpForwarding`이나 `GatewayPorts` 같은 설정은 관리자 권한 영역이므로, 임의로 우회하려 하지 말고 정해진 절차를 따르는 것이 맞습니다.
 
+
+
+![ssh 터널링 접속 한눈에 보기: 로컬·원격·동적 포워딩 정리 질문 카드. 준비: 접속 정보와 포트 확인, 로컬 포워딩으로 내부 서비스 접근하기, 원격 포워딩으로 안쪽 서비스 노출하기](/static/images/ssh-teoneolring-jeopsok/faq.webp)
 ## 자주 묻는 질문
 
 ### ssh 터널링 접속은 VPN과 무엇이 다른가요?

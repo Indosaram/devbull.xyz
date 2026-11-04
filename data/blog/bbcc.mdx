@@ -4,19 +4,25 @@ description: "서버 운영과 배포 문서에 등장하는 bbcc 표기를 문�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/bbcc/cover.webp']
+images: ['/static/images/bbcc/cover.webp', '/static/images/bbcc/diagram.webp', '/static/images/bbcc/faq.webp']
 sources:
   - https://www.rfc-editor.org/rfc/rfc2119.html
   - https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml
   - https://developer.mozilla.org/ko/docs/Web/HTTP/Overview
   - https://semver.org/lang/ko/
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약: 표준 문서, 등록 목록, 명명 규칙 안내를 대조한 내용'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![bbcc 표기, 서버 운영 문서에서 의미를 확정하는 방법 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/bbcc/cover.webp)
+
 
 bbcc는 하나의 표준으로 뜻이 고정된 약어가 아니라, 등장하는 문맥에 따라 서로 다른 대상을 가리키는 축약 표기입니다. 그래서 배포 스크립트나 운영 문서에서 이 표기를 만났을 때 가장 먼저 할 일은 뜻을 추측하는 것이 아니라, 어느 계층의 이름으로 쓰였는지 확인하는 것입니다. 이 글은 그 확인 순서와, 확정한 뜻을 팀에 남기는 방법을 다룹니다.
 
+
+
+![bbcc 표기, 서버 운영 문서에서 의미를 확정하는 방법 소제목 카드. 한눈에 보기, bbcc의 뜻이 하나로 정해지지 않는 이유, 비교 표: 확인 지점별로 보는 신호, 단계별로 뜻을 확정하는 방법](/static/images/bbcc/diagram.webp)
 ## 한눈에 보기
 
 - bbcc는 단일 표준으로 확정된 약어가 아니므로, 뜻을 추측하기 전에 등장 위치를 먼저 확인합니다.
@@ -86,6 +92,9 @@ bbcc는 하나의 표준으로 뜻이 고정된 약어가 아니라, 등장하�
 
 로그에 이름을 남길 때는 개인정보나 인증 정보가 함께 출력되지 않도록 마스킹 규칙을 확인합니다.
 
+
+
+![bbcc 표기, 서버 운영 문서에서 의미를 확정하는 방법 질문 카드. 첫 단계: 최초 등장 지점을 찾습니다, 둘째 단계: 붙는 계층을 나눕니다, 셋째 단계: 공식 문서와 대조합니다](/static/images/bbcc/faq.webp)
 ## 자주 묻는 질문
 
 ### bbcc가 사내 약어인지 표준 약어인지 어떻게 구분하나요?

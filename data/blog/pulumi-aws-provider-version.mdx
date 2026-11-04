@@ -4,13 +4,21 @@ description: "Pulumi에서 AWS provider 버전을 확인하고 고정하는 방�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/pulumi-aws-provider-version/cover.webp']
+images: ['/static/images/pulumi-aws-provider-version/cover.webp', '/static/images/pulumi-aws-provider-version/diagram.webp', '/static/images/pulumi-aws-provider-version/faq.webp']
 sources: ['https://www.pulumi.com/registry/packages/aws/', 'https://www.pulumi.com/docs/iac/concepts/providers/', 'https://www.pulumi.com/docs/iac/cli/commands/pulumi_plugin/', 'https://www.pulumi.com/docs/iac/cli/commands/pulumi_about/']
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![pulumi aws provider version: 안전하게 고정하고 관리하는 방법 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/pulumi-aws-provider-version/cover.webp)
+
 
 Pulumi에서 AWS provider 버전은 코드의 패키지 의존성과 실행 환경의 플러그인 설치 상태를 함께 맞춰야 안전해요. 먼저 `pulumi about`과 `pulumi plugin ls`로 현재 상태를 확인하고, 패키지 파일에 원하는 버전을 명시한 뒤 `pulumi up`으로 일치시키는 흐름이 기본이에요. 버전을 올릴 때는 변경 범위를 작게 나누고 미리보기와 실제 배포를 분리하는 편이 좋아요.
 
+
+
+![pulumi aws provider version: 안전하게 고정하고 관리하는 방법 소제목 카드. 한눈에 보기, provider 버전과 CLI 버전의 차이, 버전 관리 방식 비교, 단계별로 버전 확인하고 고정하기](/static/images/pulumi-aws-provider-version/diagram.webp)
 ## 한눈에 보기
 
 Pulumi의 AWS provider는 AWS 리소스를 실제로 다루는 플러그인이에요. 언어별 SDK 패키지는 그 provider를 사용하는 코드 인터페이스 역할을 해요. 따라서 `package.json`, `requirements.txt`, `go.mod`, 프로젝트 파일 같은 의존성 선언과 실행 환경의 플러그인 설치 상태를 같이 봐야 해요.
@@ -73,6 +81,9 @@ AWS provider의 major 버전 업그레이드는 리소스 기본값이나 스키
 
 플러그인 캐시를 사용할 때는 캐시 키에 provider 버전을 넣어요. 캐시를 재사용하면서 버전이 섞이면 오래된 플러그인이 실행될 수 있어요.
 
+
+
+![pulumi aws provider version: 안전하게 고정하고 관리하는 방법 질문 카드. Pulumi AWS provider 버전은 어디에서 확인하나요?, package.json의 버전과 설치된 플러그인 버전이 다르면 어떻게 되나요?, 운영 중인 스택의 provider 버전을 바로 올려도 되나요?](/static/images/pulumi-aws-provider-version/faq.webp)
 ## 자주 묻는 질문
 
 ### Pulumi AWS provider 버전은 어디에서 확인하나요?

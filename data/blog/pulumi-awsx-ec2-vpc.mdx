@@ -4,19 +4,25 @@ description: "Pulumi AWSX로 VPC를 만들고 EC2 인스턴스를 연결하는 �
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/pulumi-awsx-ec2-vpc/cover.webp']
+images: ['/static/images/pulumi-awsx-ec2-vpc/cover.webp', '/static/images/pulumi-awsx-ec2-vpc/diagram.webp', '/static/images/pulumi-awsx-ec2-vpc/faq.webp']
 sources:
   - https://www.pulumi.com/registry/packages/awsx/
   - https://www.pulumi.com/registry/packages/aws/
   - https://www.pulumi.com/docs/iac/concepts/
   - https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![pulumi awsx ec2 vpc 구성 가이드 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/pulumi-awsx-ec2-vpc/cover.webp)
+
 
 Pulumi에서 AWSX와 EC2를 함께 쓸 때 가장 단순한 조합은 AWSX의 VPC 헬퍼로 네트워크를 만들고, 인스턴스는 AWS 프로바이더의 EC2 리소스로 선언하는 방식이에요. AWSX는 서브넷과 라우팅, NAT 게이트웨이처럼 반복되는 네트워크 작업을 줄여 주지만 인스턴스의 세부 설정까지 대신해 주지는 않아요. 그래서 네트워크는 AWSX에 맡기고 인스턴스는 명시적으로 관리하는 쪽이 운영에서 예측하기 쉬워요.
 
+
+
+![pulumi awsx ec2 vpc 구성 가이드 소제목 카드. 한눈에 보기, AWSX와 AWS 프로바이더 비교, 단계별 구성 방법, 상황별 선택 기준](/static/images/pulumi-awsx-ec2-vpc/diagram.webp)
 ## 한눈에 보기
 
 구성 요소의 역할을 먼저 나눠 두면 코드가 훨씬 단순해져요.
@@ -107,6 +113,9 @@ AMI 조회 방식도 조심해야 해요. 필터로 최신 이미지를 가져�
 
 스택 분리도 운영의 기본이에요. 개발과 운영이 같은 스택을 공유하면 한쪽 변경이 다른 쪽에 그대로 전파돼요. 리전과 계정이 다르면 스택도 반드시 나눠야 해요.
 
+
+
+![pulumi awsx ec2 vpc 구성 가이드 질문 카드. 프로젝트와 스택 준비, AWSX로 VPC 선언, 보안 그룹 정의](/static/images/pulumi-awsx-ec2-vpc/faq.webp)
 ## 자주 묻는 질문
 
 ### AWSX만으로 EC2 인스턴스까지 만들 수 있나요?

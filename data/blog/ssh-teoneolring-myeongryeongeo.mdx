@@ -4,18 +4,24 @@ description: "ssh 터널링 명령어를 로컬 포워딩, 원격 포워딩, 동
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-teoneolring-myeongryeongeo/cover.webp']
+images: ['/static/images/ssh-teoneolring-myeongryeongeo/cover.webp', '/static/images/ssh-teoneolring-myeongryeongeo/diagram.webp', '/static/images/ssh-teoneolring-myeongryeongeo/faq.webp']
 sources:
   - https://man.openbsd.org/ssh
   - https://man.openbsd.org/ssh_config
   - https://www.openssh.com/manual.html
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 터널링 명령어: 로컬·원격·동적 포워딩 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-teoneolring-myeongryeongeo/cover.webp)
+
 
 ssh 터널링 명령어는 목적에 따라 로컬 포워딩 `-L`, 원격 포워딩 `-R`, 동적 포워딩 `-D`로 나누어 쓰면 돼요. 핵심은 어느 쪽이 포트를 열고 연결을 받는지, 목적지 주소를 어느 쪽에서 해석하는지 구분하는 거예요. 이 글에서는 각 명령의 의미와 운영 환경에서 선택하는 기준, 주의할 점을 공식 문서 기준으로 정리해요.
 
+
+
+![ssh 터널링 명령어: 로컬·원격·동적 포워딩 정리 소제목 카드. 한눈에 보기, 포워딩 방식 비교, 단계별로 실행하기, 상황별 선택](/static/images/ssh-teoneolring-myeongryeongeo/diagram.webp)
 ## 한눈에 보기
 
 ssh 터널링은 SSH 클라이언트와 SSH 서버 사이에 암호화된 연결을 만들어 두고, 그 안에서 특정 포트의 트래픽을 다른 목적지로 전달하는 방식이에요. OpenSSH의 `ssh` 명령은 이 기능을 `-L`, `-R`, `-D` 옵션으로 제공해요. 먼저 전체 구조를 보면 어떤 옵션을 골라야 하는지 빨리 판단할 수 있어요.
@@ -100,6 +106,9 @@ ssh 터널링은 SSH 연결을 암호화하지만, SSH 서버에서 최종 목�
 
 운영 환경에서는 목적이 분명한 터널만 짧게 유지하는 편이 좋아요. 광범위한 포트를 오래 열어 두거나, 여러 사용자가 같은 터널을 공유하면 접근 범위를 추적하기 어려워져요. SSH 키 관리, 사용자별 권한, 로그 모니터링을 함께 갖추고, 서버 설정에서 `AllowTcpForwarding`이나 `GatewayPorts`를 적절히 제한하는 것도 도움이 돼요.
 
+
+
+![ssh 터널링 명령어: 로컬·원격·동적 포워딩 정리 질문 카드. 로컬 포워딩으로 원격 서비스 접근, 원격 포워딩으로 내 쪽 서비스 노출, 동적 포워딩으로 SOCKS 프록시 만들기](/static/images/ssh-teoneolring-myeongryeongeo/faq.webp)
 ## 자주 묻는 질문
 
 ### ssh 터널링 명령어에서 `-L`과 `-R`은 무엇이 다른가요?

@@ -4,19 +4,25 @@ description: "cron 주기 설정을 위해 crontab의 필드 순서, 자주 쓰�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/cron-jugi-seoljeong/cover.webp']
+images: ['/static/images/cron-jugi-seoljeong/cover.webp', '/static/images/cron-jugi-seoljeong/diagram.webp', '/static/images/cron-jugi-seoljeong/faq.webp']
 sources:
   - https://man7.org/linux/man-pages/man5/crontab.5.html
   - https://man7.org/linux/man-pages/man8/cron.8.html
   - https://man7.org/linux/man-pages/man1/crontab.1.html
   - https://www.freedesktop.org/software/systemd/man/latest/systemd.timer.html
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약: man7.org의 crontab(5), cron(8), crontab(1) 문서를 기준으로 필드 순서와 실행 환경, 로그 확인 방법을 정리했습니다.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![cron 주기 설정: crontab 필드와 실행 주기 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/cron-jugi-seoljeong/cover.webp)
+
 
 cron 주기 설정은 crontab의 필드 순서를 정확히 이해하고, 실행 환경과 로그 확인 절차를 함께 갖추는 일이 핵심입니다. 분, 시, 일, 월, 요일 필드에 원하는 시점을 적고, 서버의 시간대와 실행 사용자 권한을 먼저 확인하세요. 아래 내용은 공식 문서에서 확인한 범위를 기준으로 설정 방법과 점검 절차를 정리합니다.
 
+
+
+![cron 주기 설정: crontab 필드와 실행 주기 정리 소제목 카드. 한눈에 보기, cron 주기 설정 표, 단계별 설정 방법, 상황별 선택](/static/images/cron-jugi-seoljeong/diagram.webp)
 ## 한눈에 보기
 
 cron 주기 설정은 `crontab -e`로 사용자별 작업을 편집하는 방식이 가장 기본입니다. crontab의 필드 순서는 분, 시, 일, 월, 요일이며 그 뒤에 실행할 명령이 옵니다. 시스템 전체 작업은 `/etc/crontab`이나 `/etc/cron.d/` 아래 파일에 두며, 이 파일들은 명령 앞에 실행 사용자를 추가로 적습니다.
@@ -92,6 +98,9 @@ crontab 저장은 보통 cron 서비스가 자동으로 감지하지만, 실행�
 
 cron 작업이 실행되는 셸과 대화형 셸의 차이를 고려해, 스크립트에서 필요한 환경을 스스로 설정하도록 만드는 것이 안전합니다. 또한 운영 서버에서 처음 적용할 때는 알림을 켜 두고 로그를 확인한 뒤 범위를 넓히는 편이 좋습니다.
 
+
+
+![cron 주기 설정: crontab 필드와 실행 주기 정리 질문 카드. 현재 작업과 권한 확인, crontab 편집과 주기 작성, 환경 변수와 작업 디렉터리 정리](/static/images/cron-jugi-seoljeong/faq.webp)
 ## 자주 묻는 질문
 
 ### cron이 실행되지 않을 때 무엇을 먼저 확인해야 하나요?

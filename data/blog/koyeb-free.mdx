@@ -4,13 +4,21 @@ description: "koyeb free 무료 플랜의 구조와 한도, GitHub 연동 배포
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['배포 플랫폼']
-images: ['/static/images/koyeb-free/cover.webp']
+images: ['/static/images/koyeb-free/cover.webp', '/static/images/koyeb-free/diagram.webp', '/static/images/koyeb-free/faq.webp']
 sources: ['https://www.koyeb.com/docs', 'https://www.koyeb.com/pricing', 'https://www.koyeb.com/']
-firstHand: {type: 'screenshot', evidence: '공식 문서와 공식 가격 페이지에서 무료 플랜 구성, 배포 방식, 서비스 생성 흐름, 리전과 절전 동작 표기 범위를 확인하고 정리했어요.'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![koyeb free 무료 플랜 배포 구조와 선택 기준 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/koyeb-free/cover.webp)
+
 
 koyeb free는 Koyeb이 제공하는 무료 플랜을 가리키며, 소규모 백엔드 API나 실습용 서비스를 비용 부담 없이 배포해 볼 때 유용해요. 다만 무료 플랜은 유료 플랜과 같은 자원을 주지 않기 때문에, 어떤 제약이 있는지 먼저 확인하고 배포하는 편이 안전해요. 이 글은 공식 문서와 공식 가격 페이지에서 확인한 범위 안에서 무료 플랜의 구조와 배포 절차, 판단 기준을 정리해요.
 
+
+
+![koyeb free 무료 플랜 배포 구조와 선택 기준 소제목 카드. 한눈에 보기, 무료 플랜과 유료 플랜 비교, 무료 플랜으로 배포하는 단계별 방법, 상황별 선택 기준](/static/images/koyeb-free/diagram.webp)
 ## 한눈에 보기
 
 - Koyeb은 GitHub 저장소나 컨테이너 이미지를 올려 웹 서비스와 워커를 배포하는 관리형 플랫폼이에요. 서버를 직접 만들고 SSH로 들어가 설정하는 방식이 아니라, 빌드와 실행 환경을 플랫폼이 맡는 구조예요.
@@ -89,6 +97,9 @@ koyeb free는 Koyeb이 제공하는 무료 플랜을 가리키며, 소규모 백
 
 여섯째, 시크릿 관리 규칙을 정해야 해요. 저장소에 값을 커밋하는 사고는 대부분 급한 배포 과정에서 생기므로, 환경 변수 등록 절차를 문서로 남겨 두는 편이 좋아요.
 
+
+
+![koyeb free 무료 플랜 배포 구조와 선택 기준 질문 카드. 저장소와 빌드 방식 정리, 포트와 시작 명령 지정, Koyeb에서 서비스 생성](/static/images/koyeb-free/faq.webp)
 ## 자주 묻는 질문
 
 ### koyeb free 플랜으로 상시 운영할 수 있나요?

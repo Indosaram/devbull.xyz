@@ -4,16 +4,24 @@ description: "nginx 설정 테스트는 nginx -t로 문법과 파일 경로를 �
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['웹서버·프록시']
-images: ['/static/images/nginx-seoljeong-teseuteu/cover.webp']
+images: ['/static/images/nginx-seoljeong-teseuteu/cover.webp', '/static/images/nginx-seoljeong-teseuteu/diagram.webp', '/static/images/nginx-seoljeong-teseuteu/faq.webp']
 sources:
   - https://nginx.org/en/docs/beginners_guide.html
   - https://nginx.org/en/docs/switches.html
   - https://nginx.org/en/docs/control.html
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![nginx 설정 테스트 하는 법: nginx -t부터 reload까지 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/nginx-seoljeong-teseuteu/cover.webp)
+
 
 nginx 설정 테스트는 설정 파일을 바꾼 뒤 바로 재시작하지 않고, 먼저 문법과 구조를 확인하는 절차예요. 기본은 `nginx -t`로 검사하고, 통과하면 `systemctl reload nginx`나 `nginx -s reload`로 반영해요. 이 순서를 지키면 오타나 잘못된 include 경로 때문에 서비스가 중단되는 일을 줄일 수 있어요.
 
+
+
+![nginx 설정 테스트 하는 법: nginx -t부터 reload까지 소제목 카드. 한눈에 보기, 명령별 비교 표, 단계별 테스트 방법, 상황별 선택 기준](/static/images/nginx-seoljeong-teseuteu/diagram.webp)
 ## 한눈에 보기
 
 설정을 바꾼 뒤에는 “검사, 확인, 반영, 관찰” 순서로 움직이면 안전해요. `nginx -t`는 설정을 실제로 적용하지 않고 검사만 해요. `nginx -T`는 include까지 포함한 전체 설정을 출력해서, 내가 고친 파일이 정말 읽히는지 확인할 때 유용해요. 검사를 통과해도 업스트림 서버의 상태나 인증서 권한까지 자동으로 보장되는 것은 아니에요. 따라서 reload 후에는 로그와 실제 응답을 함께 확인하는 습관이 필요해요.
@@ -74,6 +82,9 @@ reload와 restart는 같은 동작이 아니에요. 설정만 바꿨다면 reloa
 
 검사와 반영을 한 번에 처리하는 스크립트를 만들 때도 실패 처리를 넣어요. `nginx -t`가 실패하면 reload를 실행하지 않도록 하고, reload 후에도 로그 확인 단계를 남겨요. 자동화가 편하더라도 마지막 확인 지점은 사람이 볼 수 있게 두는 것이 좋아요.
 
+
+
+![nginx 설정 테스트 하는 법: nginx -t부터 reload까지 질문 카드. `nginx -t`만 통과하면 바로 적용해도 되나요?, `nginx -t`와 `nginx -T`는 무엇이 다른가요?, 설정 파일 경로가 기본과 다르면 어떻게 하나요?](/static/images/nginx-seoljeong-teseuteu/faq.webp)
 ## 자주 묻는 질문
 
 ### `nginx -t`만 통과하면 바로 적용해도 되나요?

@@ -4,19 +4,25 @@ description: "postgres db 백업을 논리 백업과 물리 백업으로 나누�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['DB']
-images: ['/static/images/postgres-db-baekeop/cover.webp']
+images: ['/static/images/postgres-db-baekeop/cover.webp', '/static/images/postgres-db-baekeop/diagram.webp', '/static/images/postgres-db-baekeop/faq.webp']
 sources:
   - https://www.postgresql.org/docs/current/app-pgdump.html
   - https://www.postgresql.org/docs/current/app-pgbasebackup.html
   - https://www.postgresql.org/docs/current/continuous-archiving.html
   - https://www.postgresql.org/docs/current/app-pgrestore.html
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![postgres db 백업 정리: pg_dump와 PITR 선택 기준 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/postgres-db-baekeop/cover.webp)
+
 
 postgres db 백업은 결국 두 갈래로 정리됩니다. 스키마와 데이터를 파일로 뽑아내는 논리 백업과, 데이터 디렉터리와 WAL을 그대로 복사하는 물리 백업이에요. 운영 중인 클러스터라면 물리 백업과 WAL 아카이빙을 기본으로 두고, 이전과 부분 복구를 위한 논리 백업을 함께 잡는 구성이 가장 안전해요.
 
+
+
+![postgres db 백업 정리: pg_dump와 PITR 선택 기준 소제목 카드. 한눈에 보기, 백업 방식 비교, pg_dump로 논리 백업하기, pg_basebackup으로 물리 백업하기](/static/images/postgres-db-baekeop/diagram.webp)
 ## 한눈에 보기
 
 - 논리 백업은 `pg_dump`로 뜨고, 특정 데이터베이스나 특정 테이블만 골라 복원할 때 유리해요.
@@ -110,6 +116,9 @@ pg_basebackup -h db.internal -U replicator -D /backup/base -Ft -z -P -X stream
 
 복원 환경도 미리 점검하세요. 확장 모듈이 설치되어 있지 않거나, 롤과 권한이 없거나, 대상 주 버전이 다르면 복원이 중간에 멈춥니다. 백업 파일만 검사하지 말고 실제 인스턴스에 복원해 보는 리허설을 정기적으로 돌리는 것이 가장 확실한 검증이에요.
 
+
+
+![postgres db 백업 정리: pg_dump와 PITR 선택 기준 질문 카드. pg_dump는 서비스 중에 실행해도 괜찮나요?, 논리 백업과 물리 백업 중 무엇을 먼저 갖춰야 하나요?, 백업 파일이 정상인지 어떻게 확인하나요?](/static/images/postgres-db-baekeop/faq.webp)
 ## 자주 묻는 질문
 
 ### pg_dump는 서비스 중에 실행해도 괜찮나요?

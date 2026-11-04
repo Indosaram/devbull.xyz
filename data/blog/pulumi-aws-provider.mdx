@@ -4,18 +4,24 @@ description: "pulumi aws provider의 역할과 설치, 자격 증명 설정 방�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/pulumi-aws-provider/cover.webp']
+images: ['/static/images/pulumi-aws-provider/cover.webp', '/static/images/pulumi-aws-provider/diagram.webp', '/static/images/pulumi-aws-provider/faq.webp']
 sources:
   - https://www.pulumi.com/registry/packages/aws/
   - https://www.pulumi.com/registry/packages/aws/installation-configuration/
   - https://www.pulumi.com/docs/iac/concepts/providers/
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![pulumi aws provider 설정과 버전 관리 핵심 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/pulumi-aws-provider/cover.webp)
+
 
 pulumi aws provider는 Pulumi 프로그램이 선언한 AWS 리소스를 실제 API 호출로 옮겨 주는 플러그인입니다. 그래서 배포가 갑자기 실패하거나 예상하지 못한 교체가 계획에 잡힐 때 가장 먼저 확인해야 할 곳은 프로그램 코드가 아니라 provider 설정과 버전이에요. 이 글은 설치 경로, 자격 증명 전달 방식, 버전 고정 정책을 어떤 순서로 정리하면 좋은지 다뤄요.
 
+
+
+![pulumi aws provider 설정과 버전 관리 핵심 정리 소제목 카드. 한눈에 보기, pulumi aws provider가 하는 일, 자격 증명과 리전 설정 비교, 단계별 설정 방법](/static/images/pulumi-aws-provider/diagram.webp)
 ## 한눈에 보기
 
 Pulumi 엔진은 원하는 상태와 현재 상태를 비교해 변경 계획을 세우고, 그 계획을 실제 호출로 바꾸는 일은 provider가 맡아요. 즉 "무엇을 바꿀지"는 엔진이, "어떻게 바꿀지"는 provider가 결정하는 구조예요. 이 분업을 이해하면 오류 메시지가 어느 쪽에서 나온 것인지 빠르게 구분할 수 있어요.
@@ -80,6 +86,9 @@ AWS provider는 Pulumi CLI나 언어 런타임과 별도로 배포되고 버전�
 
 삭제 보호와 교체 동작은 리소스 속성에 따라 갈려요. 이름이나 일부 네트워크 속성을 바꾸면 같은 리소스가 교체 대상으로 잡힐 수 있으므로, 미리보기에서 교체 표시를 확인하는 절차를 생략하지 않는 편이 좋아요.
 
+
+
+![pulumi aws provider 설정과 버전 관리 핵심 정리 질문 카드. pulumi aws provider 버전은 어떻게 고정하나요?, 자격 증명이 적용되지 않을 때는 무엇을 먼저 확인해야 하나요?, 스택마다 다른 리전을 쓰려면 어떻게 하나요?](/static/images/pulumi-aws-provider/faq.webp)
 ## 자주 묻는 질문
 
 ### pulumi aws provider 버전은 어떻게 고정하나요?

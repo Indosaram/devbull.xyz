@@ -4,19 +4,25 @@ description: "pulumi aws native provider가 AWS Cloud Control API를 어떻게 �
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/pulumi-aws-native-provider/cover.webp']
+images: ['/static/images/pulumi-aws-native-provider/cover.webp', '/static/images/pulumi-aws-native-provider/diagram.webp', '/static/images/pulumi-aws-native-provider/faq.webp']
 sources:
   - https://www.pulumi.com/registry/packages/aws-native/
   - https://www.pulumi.com/registry/packages/aws/
   - https://www.pulumi.com/docs/iac/clouds/aws/
   - https://docs.aws.amazon.com/cloudcontrolapi/latest/userguide/what-is-cloudcontrolapi.html
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![pulumi aws native provider 이해와 선택 기준 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/pulumi-aws-native-provider/cover.webp)
+
 
 pulumi aws native provider는 AWS Cloud Control API와 CloudFormation 리소스 스키마를 기반으로 AWS 리소스를 Pulumi 코드로 관리하는 선택지입니다. 기존 AWS provider를 무조건 대체하는 도구가 아니라, 리소스 커버리지와 생태계 성숙도를 비교해 선택해야 합니다. 이 글은 두 provider의 차이와 도입 절차, 운영 시 주의할 점을 정리해요.
 
+
+
+![pulumi aws native provider 이해와 선택 기준 소제목 카드. 한눈에 보기, AWS Native provider란 무엇인가요?, 기존 AWS provider와 비교, 도입 전 확인할 선택 기준](/static/images/pulumi-aws-native-provider/diagram.webp)
 ## 한눈에 보기
 
 AWS Native provider는 CloudFormation 스키마와 가까운 리소스 모델을 원할 때 검토할 수 있습니다. 반면 기존 AWS provider는 Pulumi 사용자에게 익숙한 리소스 모델과 풍부한 예제, 고수준 편의 기능을 제공하는 성숙한 선택지입니다.
@@ -97,6 +103,9 @@ Cloud Control API가 지원하는 범위 밖의 리소스는 AWS Native provider
 
 배포 전에는 항상 변경 계획을 확인해야 합니다. 특히 삭제와 재생성이 필요한 변경은 데이터 손실로 이어질 수 있으므로, 운영 환경에서는 별도 승인 절차와 백업 계획을 함께 두는 것이 좋습니다.
 
+
+
+![pulumi aws native provider 이해와 선택 기준 질문 카드. AWS Native provider는 기존 AWS provider를 대체하나요?, 어떤 경우 AWS Native provider를 먼저 검토하면 좋나요?, 두 provider를 한 스택에서 함께 쓸 수 있나요?](/static/images/pulumi-aws-native-provider/faq.webp)
 ## 자주 묻는 질문
 
 ### AWS Native provider는 기존 AWS provider를 대체하나요?

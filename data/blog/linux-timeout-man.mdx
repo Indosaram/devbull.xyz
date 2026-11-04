@@ -4,16 +4,22 @@ description: "linux timeout man 페이지를 기준으로 timeout 명령의 문�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/linux-timeout-man/cover.webp']
+images: ['/static/images/linux-timeout-man/cover.webp', '/static/images/linux-timeout-man/diagram.webp', '/static/images/linux-timeout-man/faq.webp']
 sources:
   - https://man7.org/linux/man-pages/man1/timeout.1.html
   - https://www.gnu.org/software/coreutils/manual/html_node/timeout-invocation.html
   - https://www.gnu.org/software/coreutils/
 firstHand:
-  type: 'screenshot'
-  evidence: 'man7.org의 timeout(1) 매뉴얼 페이지와 GNU coreutils 공식 매뉴얼의 timeout invocation 항목에서 확인한 문법·옵션·종료 코드 설명 범위를 요약했습니다.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
 
+![linux timeout man: 타임아웃 명령어 사용법과 옵션 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/linux-timeout-man/cover.webp)
+
+
+
+
+![linux timeout man: 타임아웃 명령어 사용법과 옵션 정리 소제목 카드. 한눈에 보기, 기본 문법과 주요 옵션, 단계별 사용 방법, 상황별 선택 기준](/static/images/linux-timeout-man/diagram.webp)
 ## 한눈에 보기
 
 `timeout`은 GNU coreutils에 포함된 명령으로, 자식 프로세스를 실행하고 정해진 시간이 지나면 시그널을 보내 종료시키는 역할을 합니다. man 페이지의 개요는 `timeout [OPTION] DURATION COMMAND [ARG]...` 형태라서, 옵션 다음에 시간, 그다음에 실행할 명령이 온다는 순서만 익히면 바로 쓸 수 있습니다.
@@ -66,6 +72,9 @@ firstHand:
 
 또한 `timeout`은 자식 프로세스 하나를 대상으로 동작합니다. 명령이 내부에서 워커를 여러 개 띄우는 구조라면 종료 후 잔여 프로세스가 남지 않는지 확인해야 하고, 필요하면 프로세스 그룹 단위로 정리하는 별도 수단을 함께 써야 합니다. 셸 내장 명령에 직접 걸면 의도한 프로세스가 아닌 셸이 대상이 될 수 있으므로, 내장 명령은 별도 셸로 감싸 실행하는 편이 안전합니다.
 
+
+
+![linux timeout man: 타임아웃 명령어 사용법과 옵션 정리 질문 카드. timeout의 기본 시간 단위는 무엇인가요?, 종료 코드 124는 무엇을 뜻하나요?, TERM을 보냈는데 프로세스가 계속 살아 있으면 어떻게 하나요?](/static/images/linux-timeout-man/faq.webp)
 ## 자주 묻는 질문
 
 ### timeout의 기본 시간 단위는 무엇인가요?

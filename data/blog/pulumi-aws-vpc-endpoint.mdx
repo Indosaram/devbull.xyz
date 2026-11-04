@@ -4,19 +4,25 @@ description: "Pulumi로 AWS VPC 엔드포인트를 만들 때 게이트웨이와
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/pulumi-aws-vpc-endpoint/cover.webp']
+images: ['/static/images/pulumi-aws-vpc-endpoint/cover.webp', '/static/images/pulumi-aws-vpc-endpoint/diagram.webp', '/static/images/pulumi-aws-vpc-endpoint/faq.webp']
 sources:
   - https://www.pulumi.com/registry/packages/aws/api-docs/ec2/vpcendpoint/
   - https://docs.aws.amazon.com/vpc/latest/privatelink/what-is-privatelink.html
   - https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints.html
   - https://www.pulumi.com/registry/packages/aws/api-docs/ec2/vpcendpointservice/
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![pulumi aws vpc endpoint 구성과 선택 기준 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/pulumi-aws-vpc-endpoint/cover.webp)
+
 
 Pulumi에서 AWS VPC 엔드포인트는 `aws.ec2.VpcEndpoint` 리소스 하나로 게이트웨이형과 인터페이스형을 모두 다룹니다. 먼저 서비스가 S3나 DynamoDB처럼 라우트 테이블 기반인지, 아니면 서브넷과 보안 그룹이 필요한 PrivateLink 기반인지 판단하는 것이 핵심이에요. 유형을 잘못 고르면 코드가 배포는 되지만 실제 트래픽이 프라이빗 경로로 흐르지 않기 때문에, 리소스 속성보다 서비스 연결 방식를 먼저 확인해야 해요.
 
+
+
+![pulumi aws vpc endpoint 구성과 선택 기준 소제목 카드. 한눈에 보기, 게이트웨이와 인터페이스 비교, 단계별 구성 방법, 상황별 선택 기준](/static/images/pulumi-aws-vpc-endpoint/diagram.webp)
 ## 한눈에 보기
 
 VPC 엔드포인트는 인터넷 게이트웨이나 NAT 게이트웨이를 거치지 않고 AWS 서비스에 접근할 수 있게 해주는 진입점입니다. Pulumi 코드에서는 `vpcEndpointType` 값으로 유형이 갈리고, 같은 리소스 타입 안에서 필요한 인자만 달라져요.
@@ -190,6 +196,9 @@ export const s3EndpointId = s3Gateway.id;
 
 다섯째, 정책과 보안 그룹을 코드로 관리하면 변경 이력이 남지만, 콘솔에서 수동으로 바꾼 내용은 다음 배포에서 되돌아갑니다. 운영 중 임시 변경이 필요했다면 반드시 코드에 반영해 두세요.
 
+
+
+![pulumi aws vpc endpoint 구성과 선택 기준 질문 카드. 1. 서비스 이름 확인하기, 2. VPC의 DNS 설정 확인하기, 3. 게이트웨이 엔드포인트 선언하기](/static/images/pulumi-aws-vpc-endpoint/faq.webp)
 ## 자주 묻는 질문
 
 ### 게이트웨이 엔드포인트와 인터페이스 엔드포인트 중 무엇을 먼저 판단해야 하나요?

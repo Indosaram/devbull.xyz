@@ -4,7 +4,7 @@ description: "ssh 터널링 프로그램을 OpenSSH, PuTTY, autossh, MobaXterm, 
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-teoneolring-peurogeuraem/cover.webp']
+images: ['/static/images/ssh-teoneolring-peurogeuraem/cover.webp', '/static/images/ssh-teoneolring-peurogeuraem/diagram.webp', '/static/images/ssh-teoneolring-peurogeuraem/faq.webp']
 sources:
   - https://man.openbsd.org/ssh.1
   - https://man.openbsd.org/ssh_config.5
@@ -13,12 +13,18 @@ sources:
   - https://mobaxterm.mobatek.net/documentation.html
   - https://github.com/sshuttle/sshuttle
 firstHand:
-  type: 'screenshot'
-  evidence: 'OpenSSH ssh(1)·ssh_config(5) 매뉴얼, PuTTY 공식 문서, autossh 공식 페이지, MobaXterm 공식 문서, sshuttle 공식 저장소에서 확인한 포워딩 옵션과 프로그램 설명 범위를 요약했습니다.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 터널링 프로그램 총정리: 비교와 설정 방법 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-teoneolring-peurogeuraem/cover.webp)
+
 
 ssh 터널링 프로그램은 이미 성립한 SSH 연결을 암호화된 통로로 재사용해서, 방화벽이나 사설망 뒤에 있는 서비스에 안전하게 접근하게 해주는 도구예요. 대부분은 SSH 클라이언트에 내장된 포트 포워딩 기능을 그대로 쓰고, 여기에 자동 재연결이나 GUI, 다중 세션 관리 같은 편의 기능을 얹은 형태입니다. 결론부터 말하면 서버에서 자동화해야 하면 OpenSSH와 autossh, 데스크톱에서 손으로 붙는다면 PuTTY나 MobaXterm, 여러 목적지를 한 번에 넘겨야 한다면 동적 포워딩이나 sshuttle 쪽이 잘 맞아요.
 
+
+
+![ssh 터널링 프로그램 총정리: 비교와 설정 방법 소제목 카드. 한눈에 보기, ssh 터널링 프로그램 비교 표, OpenSSH로 터널 여는 절차, GUI 프로그램에서 설정하는 방법](/static/images/ssh-teoneolring-peurogeuraem/diagram.webp)
 ## 한눈에 보기
 
 ssh 터널링은 방향에 따라 세 갈래로 나뉘고, 프로그램은 이 세 가지를 얼마나 편하게 다룰 수 있느냐로 갈립니다.
@@ -95,6 +101,9 @@ Termius는 호스트 편집 화면에서 포워딩 규칙을 추가하는 구조
 
 보안 측면에서는 터널을 우회로로 쓰지 않는 것이 중요합니다. 동적 포워딩은 편한 만큼 접근 통제를 흐리기 쉬워서, 업무에 필요한 목적지만 허용하는 정책과 함께 써야 해요. 키와 에이전트 권한을 최소화하고, 누가 어느 포트를 열었는지 서버 로그와 클라이언트 로그로 남겨두면 문제가 생겼을 때 원인을 빨리 찾을 수 있습니다.
 
+
+
+![ssh 터널링 프로그램 총정리: 비교와 설정 방법 질문 카드. ssh 터널링과 VPN은 무엇이 다른가요?, 터널이 끊기면 자동으로 다시 연결할 수 있나요?, 운영 서버에서 원격 포워딩을 열어도 되나요?](/static/images/ssh-teoneolring-peurogeuraem/faq.webp)
 ## 자주 묻는 질문
 
 ### ssh 터널링과 VPN은 무엇이 다른가요?

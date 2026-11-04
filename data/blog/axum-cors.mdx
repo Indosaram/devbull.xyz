@@ -4,19 +4,25 @@ description: "axum에서 tower-http의 CorsLayer로 CORS를 설정하는 방법�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Rust·서버']
-images: ['/static/images/axum-cors/cover.webp']
+images: ['/static/images/axum-cors/cover.webp', '/static/images/axum-cors/diagram.webp', '/static/images/axum-cors/faq.webp']
 sources:
   - https://docs.rs/axum/latest/axum/
   - https://docs.rs/tower-http/latest/tower_http/cors/index.html
   - https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS
   - https://github.com/tower-rs/tower-http
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![axum cors 설정: CorsLayer로 허용 정책 만들기 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/axum-cors/cover.webp)
+
 
 axum에서 CORS는 프레임워크에 내장된 기능이 아니라 tower-http의 CorsLayer 미들웨어로 처리해요. 그래서 Router에 `.layer()`로 CorsLayer를 씌우는 형태가 가장 일반적이고, 허용 출처를 명시하지 않으면 브라우저 요청이 조용히 차단돼요. 이 글은 공식 문서에서 확인한 범위 안에서 설정 순서와 정책 설계 기준, 그리고 운영에서 자주 밟는 함정을 정리해요.
 
+
+
+![axum cors 설정: CorsLayer로 허용 정책 만들기 소제목 카드. 한눈에 보기, axum에서 CORS가 처리되는 위치, 설정 항목 비교, 단계별로 CorsLayer 적용하기](/static/images/axum-cors/diagram.webp)
 ## 한눈에 보기
 
 - axum 자체에는 CORS 설정이 없어요. tower-http 크레이트의 `cors` 기능을 켜고 `CorsLayer`를 라우터에 적용해요.
@@ -118,6 +124,9 @@ Router::new()
 - 리버스 프록시나 게이트웨이를 앞에 두었다면 CORS 관련 헤더를 제거하거나 덮어쓰지 않는지 확인해야 해요.
 - 허용 헤더 목록에 커스텀 헤더를 빠뜨리면 프리플라이트에서 막혀요. 프론트에서 실제로 보내는 헤더를 기준으로 목록을 만들어야 해요.
 
+
+
+![axum cors 설정: CorsLayer로 허용 정책 만들기 질문 카드. 로컬 개발 환경, 단일 프론트 도메인, 여러 도메인, 서브도메인](/static/images/axum-cors/faq.webp)
 ## 자주 묻는 질문
 
 ### axum에서 CORS 설정은 어디에 두나요?

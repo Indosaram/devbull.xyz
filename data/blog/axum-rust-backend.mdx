@@ -4,19 +4,25 @@ description: "axum rust backend 구성을 처음부터 정리합니다. 라우�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Rust·서버']
-images: ['/static/images/axum-rust-backend/cover.webp']
+images: ['/static/images/axum-rust-backend/cover.webp', '/static/images/axum-rust-backend/diagram.webp', '/static/images/axum-rust-backend/faq.webp']
 sources:
   - https://docs.rs/axum/latest/axum/
   - https://github.com/tokio-rs/axum
   - https://tokio.rs/
   - https://docs.rs/tower/latest/tower/
 firstHand:
-  type: 'screenshot'
-  evidence: 'axum 공식 문서와 GitHub 저장소, Tokio 공식 사이트, Tower 문서에서 확인한 범위만 정리했고, 확인되지 않은 성능 수치나 버전별 세부 동작은 본문에서 단정하지 않았습니다.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![axum rust backend: Rust로 안정적인 API 서버 만들기 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/axum-rust-backend/cover.webp)
+
 
 axum은 Tokio 팀이 관리하는 Rust 웹 프레임워크이고, 백엔드 API 서버를 새로 만들 때 가장 먼저 검토할 만한 선택지예요. 라우팅과 미들웨어를 Tower의 서비스 모델로 통일했기 때문에, 프레임워크 전용 문법보다 표준 생태계 지식이 그대로 쓰여요. 이 글은 axum rust backend 구성을 처음 잡는 백엔드 개발자를 위해 라우팅 설계부터 배포와 운영 점검까지 순서대로 정리해요.
 
+
+
+![axum rust backend: Rust로 안정적인 API 서버 만들기 소제목 카드. 한눈에 보기, axum과 다른 Rust 웹 프레임워크 비교, 단계별로 axum 백엔드 구성하기, 라우팅과 추출기 설계 요령](/static/images/axum-rust-backend/diagram.webp)
 ## 한눈에 보기
 
 axum의 핵심은 "핸들러는 그냥 async 함수"라는 점이에요. 라우터에 경로와 메서드를 등록하고, 핸들러의 인자로 필요한 값을 선언하면 프레임워크가 알아서 꺼내 줘요. 이때 인자 타입이 곧 검증 규칙이 돼서, 형식이 잘못된 요청은 핸들러 본문에 들어오기 전에 거절돼요.
@@ -111,6 +117,9 @@ axum의 미들웨어는 Tower의 Layer예요. `Router::layer`는 모든 경로�
 
 gRPC나 다른 프로토콜을 함께 다뤄야 한다면 HTTP 계층과 비즈니스 계층을 분리해 두세요. axum은 HTTP 계층으로 두고, 핵심 로직은 프레임워크에 의존하지 않는 모듈로 빼면 교체 비용이 줄어요.
 
+
+
+![axum rust backend: Rust로 안정적인 API 서버 만들기 질문 카드. axum은 Tokio 없이도 동작하나요?, actix-web 대신 axum을 고르는 기준은 무엇인가요?, 핸들러에서 데이터베이스 커넥션은 어떻게 꺼내나요?](/static/images/axum-rust-backend/faq.webp)
 ## 자주 묻는 질문
 
 ### axum은 Tokio 없이도 동작하나요?

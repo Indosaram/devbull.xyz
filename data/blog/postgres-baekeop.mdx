@@ -4,19 +4,25 @@ description: 'postgres 백업을 pg_dump, pg_dumpall, pg_basebackup, WAL 아카�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['DB']
-images: ['/static/images/postgres-baekeop/cover.webp']
+images: ['/static/images/postgres-baekeop/cover.webp', '/static/images/postgres-baekeop/diagram.webp', '/static/images/postgres-baekeop/faq.webp']
 sources:
   - 'https://www.postgresql.org/docs/current/backup.html'
   - 'https://www.postgresql.org/docs/current/app-pgdump.html'
   - 'https://www.postgresql.org/docs/current/app-pgbasebackup.html'
   - 'https://www.postgresql.org/docs/current/continuous-archiving.html'
 firstHand:
-  type: 'screenshot'
-  evidence: 'PostgreSQL 공식 문서의 백업·복원·연속 아카이빙 장과 pg_dump, pg_dumpall, pg_basebackup 유틸리티 문서에서 확인한 범위를 요약했어요.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![postgres 백업 정리: pg_dump부터 PITR까지 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/postgres-baekeop/cover.webp)
+
 
 postgres 백업은 논리 백업과 물리 백업을 목적에 따라 나누고, 복원까지 검증하는 것이 핵심이에요. 일상적인 부분 복구와 이관에는 `pg_dump`를, 클러스터 전체와 장애 복구에는 `pg_basebackup`과 WAL 아카이빙을 조합하는 방식이 일반적입니다. 이 글은 백엔드 개발자가 운영 환경에서 백업 전략을 정리할 때 참고할 수 있도록 절차와 선택 기준을 차분히 설명해요.
 
+
+
+![postgres 백업 정리: pg_dump부터 PITR까지 소제목 카드. 한눈에 보기, 논리 백업과 물리 백업 비교, 단계별 백업 방법, 상황별 선택 기준](/static/images/postgres-baekeop/diagram.webp)
 ## 한눈에 보기
 
 postgres 백업을 처음 정리할 때는 “무엇을 복구해야 하는가”를 먼저 정하는 편이 좋아요. 특정 테이블만 되살리고 싶은지, 데이터베이스 전체를 다른 서버로 옮기고 싶은지, 아니면 서버 장애 시 특정 시점으로 되돌리고 싶은지에 따라 도구가 달라집니다.
@@ -117,6 +123,9 @@ WAL 아카이빙을 사용한다면 아카이빙 실패를 감지하는 모니�
 
 마지막으로 백업과 복원 절차를 문서화하고 정기적으로 리허설해야 해요. 담당자가 바뀌어도 같은 절차를 재현할 수 있도록 명령, 권한, 복원 순서, 롤백 기준을 남겨 두세요.
 
+
+
+![postgres 백업 정리: pg_dump부터 PITR까지 질문 카드. pg_dump로 논리 백업, pg_dumpall로 클러스터 전체 백업, pg_basebackup으로 물리 백업](/static/images/postgres-baekeop/faq.webp)
 ## 자주 묻는 질문
 
 ### pg_dump와 pg_basebackup 중 무엇을 먼저 도입해야 하나요?

@@ -4,18 +4,24 @@ description: "리눅스 timeout 명령어의 기본 문법과 주요 옵션, 종
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/linux-timeout-example/cover.webp']
+images: ['/static/images/linux-timeout-example/cover.webp', '/static/images/linux-timeout-example/diagram.webp', '/static/images/linux-timeout-example/faq.webp']
 sources:
   - https://man7.org/linux/man-pages/man1/timeout.1.html
   - https://www.gnu.org/software/coreutils/manual/html_node/timeout-invocation.html
   - https://man7.org/linux/man-pages/man7/systemd.time.7.html
 firstHand:
-  type: 'screenshot'
-  evidence: 'GNU coreutils 공식 매뉴얼의 timeout 항목과 man7.org의 timeout(1), systemd.time(7) 문서에서 확인한 옵션 이름과 시간 표기 방식을 요약했습니다.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![linux timeout example: 리눅스 timeout 명령어 사용법 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/linux-timeout-example/cover.webp)
+
 
 리눅스에서 오래 걸리는 작업이 끝없이 매달리는 상황을 막는 가장 간단한 방법은 `timeout` 명령어로 실행 시간 상한을 거는 것입니다. 이 글은 `timeout`의 기본 문법과 자주 쓰는 옵션, 배포 스크립트와 cron에서 어떤 값을 골라야 하는지를 예제 중심으로 정리해요. 서버 운영 중 무한 대기로 배포가 멈추는 사고를 줄이는 데 바로 적용할 수 있습니다.
 
+
+
+![linux timeout example: 리눅스 timeout 명령어 사용법 소제목 카드. 한눈에 보기, timeout 명령어 기본 문법, 주요 옵션 비교 표, 단계별 사용 방법](/static/images/linux-timeout-example/diagram.webp)
 ## 한눈에 보기
 
 `timeout`은 "정해진 시간 안에 끝나지 않으면 프로세스에 신호를 보내 종료시킨다"는 단일 목적의 명령어입니다. 데몬을 따로 띄우거나 래퍼 스크립트를 만들 필요 없이, 실행하려는 명령 앞에 붙이기만 하면 됩니다. 그래서 배포 자동화나 정기 작업에서 가장 먼저 추가하는 안전장치로 쓰여요.
@@ -127,6 +133,9 @@ TERM을 무시하도록 작성된 프로그램은 `-k` 없이는 종료되지 �
 
 `--foreground`는 TTY 입력이 필요한 대화형 프로그램을 감쌀 때 씁니다. 이 옵션을 쓰면 `timeout`이 별도 프로세스 그룹을 만들지 않아, 프로그램이 터미널을 직접 제어할 수 있습니다.
 
+
+
+![linux timeout example: 리눅스 timeout 명령어 사용법 질문 카드. 가장 단순한 형태로 감싸기, 종료 신호를 바꾸기, 강제 종료 시점을 추가하기](/static/images/linux-timeout-example/faq.webp)
 ## 자주 묻는 질문
 
 ### 시간 초과로 종료됐는지 어떻게 확인하나요?

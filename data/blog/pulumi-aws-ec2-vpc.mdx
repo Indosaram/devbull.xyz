@@ -4,16 +4,24 @@ description: "pulumi aws.ec2.vpc 리소스의 입력 값과 출력 값, 서브�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/pulumi-aws-ec2-vpc/cover.webp']
+images: ['/static/images/pulumi-aws-ec2-vpc/cover.webp', '/static/images/pulumi-aws-ec2-vpc/diagram.webp', '/static/images/pulumi-aws-ec2-vpc/faq.webp']
 sources:
   - https://www.pulumi.com/registry/packages/aws/api-docs/ec2/vpc/
   - https://www.pulumi.com/registry/packages/awsx/api-docs/ec2/vpc/
   - https://docs.aws.amazon.com/vpc/latest/userguide/what-is-amazon-vpc.html
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![pulumi aws.ec2.vpc로 VPC를 코드로 정의하는 방법 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/pulumi-aws-ec2-vpc/cover.webp)
+
 
 pulumi aws.ec2.vpc는 AWS Classic provider에서 VPC 한 개의 경계를 선언하는 리소스입니다. CIDR 대역과 DNS 옵션, 테넌시처럼 VPC 본체에 속한 값만 다루고, 서브넷과 라우팅 테이블, 게이트웨이는 각각 다른 리소스로 조합해야 합니다. 이 글은 그 경계를 기준으로 입력 값과 출력 값, 실제 구성 순서, 임포트와 삭제에서 걸리는 지점을 정리합니다.
 
+
+
+![pulumi aws.ec2.vpc로 VPC를 코드로 정의하는 방법 소제목 카드. 한눈에 보기, 주요 입력 값과 출력 값, aws.ec2.Vpc와 awsx.ec2.Vpc 비교, 단계별 구성 방법](/static/images/pulumi-aws-ec2-vpc/diagram.webp)
 ## 한눈에 보기
 
 pulumi aws.ec2.vpc를 처음 마주하면 "VPC를 만들어 주는 리소스"라는 설명만 보고 서브넷까지 자동으로 생길 것이라 기대하기 쉽습니다. 실제로는 반대입니다. 이 리소스는 VPC라는 논리적 컨테이너 하나만 만들고, 그 안을 채우는 일은 전부 다른 리소스에 위임합니다. 그래서 코드가 길어지지만, 대신 어떤 서브넷이 어느 라우팅 테이블을 쓰는지가 코드에 그대로 드러납니다.
@@ -165,6 +173,9 @@ VPC 삭제는 그 안에 남은 리소스가 모두 정리된 뒤에만 성공�
 
 기본 보안 그룹과 기본 라우팅 테이블은 VPC와 함께 자동으로 생깁니다. 이들을 그대로 쓸지, 별도 보안 그룹으로 대체할지 코드에서 분명히 정해 두지 않으면, 나중에 규칙이 어디서 왔는지 추적하기 어려워집니다. 태그 규칙도 함께 정해 두면 비용 추적과 소유자 파악이 쉬워집니다.
 
+
+
+![pulumi aws.ec2.vpc로 VPC를 코드로 정의하는 방법 질문 카드. 1. 프로젝트와 provider 준비, 2. VPC 리소스 선언, 3. 서브넷과 라우팅 연결](/static/images/pulumi-aws-ec2-vpc/faq.webp)
 ## 자주 묻는 질문
 
 ### pulumi aws.ec2.vpc와 awsx.ec2.Vpc 중 무엇부터 봐야 하나요?

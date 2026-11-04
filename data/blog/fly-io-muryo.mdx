@@ -4,17 +4,25 @@ description: "fly.io 무료 플랜의 개념과 배포 전 확인할 점을 공�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['배포 플랫폼']
-images: ['/static/images/fly-io-muryo/cover.webp']
+images: ['/static/images/fly-io-muryo/cover.webp', '/static/images/fly-io-muryo/diagram.webp', '/static/images/fly-io-muryo/faq.webp']
 sources:
   - https://fly.io/docs/about/pricing/
   - https://fly.io/docs/launch/
   - https://fly.io/docs/volumes/overview/
   - https://fly.io/docs/machines/overview/
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![fly.io 무료 한눈에 보기: 무료 한도와 배포 전 확인 사항 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/fly-io-muryo/cover.webp)
+
 
 fly.io 무료 사용은 고정된 서버를 계속 제공받는 개념이 아니라, 공식 가격 정책이 정한 무료 한도 안에서 머신과 볼륨, 네트워크를 사용하는 방식으로 이해해야 합니다. 따라서 배포 전에는 공식 가격 문서에서 현재 무료 범위와 결제 조건을 확인하고, 작은 프로토타입부터 시작해 사용량을 관찰하는 편이 안전합니다. 이 글은 공식 문서에서 확인 가능한 범위 안에서 무료 플랜의 개념과 배포 절차, 주의점을 정리합니다.
 
+
+
+![fly.io 무료 한눈에 보기: 무료 한도와 배포 전 확인 사항 소제목 카드. 한눈에 보기, 무료 한도와 운영 환경 비교, 단계별 무료 배포 절차, 상황별 선택 기준](/static/images/fly-io-muryo/diagram.webp)
 ## 한눈에 보기
 
 fly.io는 애플리케이션을 여러 지역의 머신으로 배포하고 운영할 수 있는 플랫폼입니다. 무료로 시작할 수 있는 범위가 마련되어 있지만, 이는 모든 자원을 무제한으로 쓸 수 있다는 뜻이 아닙니다. 공식 가격 페이지에서 안내하는 무료 플랜 또는 무료 한도의 조건 안에서 비용이 발생하지 않는 구조에 가깝습니다.
@@ -75,6 +83,9 @@ fly.io의 핵심 단위는 Machines로 불리는 가상 머신, 영속 볼륨, �
 
 헬스 체크와 로그를 먼저 보는 습관이 필요합니다. 배포 후 문제가 생기면 머신 상태, 헬스 체크 결과, 애플리케이션 로그를 함께 확인해야 원인을 빠르게 찾을 수 있습니다.
 
+
+
+![fly.io 무료 한눈에 보기: 무료 한도와 배포 전 확인 사항 질문 카드. fly.io 무료로 앱을 계속 운영할 수 있나요?, 무료 사용에도 결제 수단 등록이 필요한가요?, 무료 한도를 넘으면 바로 서비스가 중단되나요?](/static/images/fly-io-muryo/faq.webp)
 ## 자주 묻는 질문
 
 ### fly.io 무료로 앱을 계속 운영할 수 있나요?

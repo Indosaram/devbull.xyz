@@ -4,19 +4,25 @@ description: "nginx 설정 변경 적용 방법을 문법 검사, reload와 rest
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['웹서버·프록시']
-images: ['/static/images/nginx-seoljeong-byeongyeong-jeokyong/cover.webp']
+images: ['/static/images/nginx-seoljeong-byeongyeong-jeokyong/cover.webp', '/static/images/nginx-seoljeong-byeongyeong-jeokyong/diagram.webp', '/static/images/nginx-seoljeong-byeongyeong-jeokyong/faq.webp']
 sources:
   - https://nginx.org/en/docs/beginners_guide.html
   - https://nginx.org/en/docs/control.html
   - https://nginx.org/en/docs/switches.html
   - https://nginx.org/en/docs/basics.html
 firstHand:
-  type: 'screenshot'
-  evidence: 'nginx 공식 문서의 초급자 안내, 프로세스 제어 문서, 명령행 인자 문서에서 reload 신호 전달 방식과 설정 문법 검사 옵션, 설정 파일 탐색 순서를 확인한 범위를 요약했습니다.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![nginx 설정 변경 적용 방법: reload와 restart 차이와 점검 순서 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/nginx-seoljeong-byeongyeong-jeokyong/cover.webp)
+
 
 nginx 설정 변경 적용은 대부분 reload로 끝낼 수 있고, restart는 프로세스를 새로 띄워야 하는 변경에만 쓰면 됩니다. 설정 파일을 고친 뒤에는 먼저 문법 검사를 통과시키고, 그다음 마스터 프로세스에 reload 신호를 보내는 순서가 안전해요. 이 글은 그 판단 기준과 실제 명령 순서, 반영이 안 될 때 확인할 지점을 정리해요.
 
+
+
+![nginx 설정 변경 적용 방법: reload와 restart 차이와 점검 순서 소제목 카드. 한눈에 보기, reload와 restart는 무엇이 다른가요, 단계별 적용 방법, 상황별 선택 기준](/static/images/nginx-seoljeong-byeongyeong-jeokyong/diagram.webp)
 ## 한눈에 보기
 
 nginx 설정 변경 적용은 "수정 → 검사 → 신호 → 확인" 네 단계로 진행해요. 이 순서를 지키면 오타 하나로 트래픽이 끊기는 상황을 대부분 피할 수 있어요.
@@ -103,6 +109,9 @@ reload가 실패하면 nginx는 이전 설정을 유지해요. 그래서 "reload
 
 컨테이너에서는 설정 파일이 이미지 안에 들어 있는지, 볼륨으로 마운트되는지도 확인해야 해요. 마운트된 파일을 호스트에서 교체하는 방식은 편집기 저장 동작에 따라 inode가 바뀌면서 컨테이너가 보는 파일과 어긋날 수 있어요.
 
+
+
+![nginx 설정 변경 적용 방법: reload와 restart 차이와 점검 순서 질문 카드. 설정 파일 위치와 include 구조 확인, 문법 검사, 병합된 설정 확인](/static/images/nginx-seoljeong-byeongyeong-jeokyong/faq.webp)
 ## 자주 묻는 질문
 
 ### nginx -t는 통과하는데 reload 후에도 이전 설정이 적용된 것 같아요.

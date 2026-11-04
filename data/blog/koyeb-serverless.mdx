@@ -4,18 +4,24 @@ description: "koyeb serverless가 어떤 플랫폼인지, Git 저장소와 컨�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['배포 플랫폼']
-images: ['/static/images/koyeb-serverless/cover.webp']
+images: ['/static/images/koyeb-serverless/cover.webp', '/static/images/koyeb-serverless/diagram.webp', '/static/images/koyeb-serverless/faq.webp']
 sources:
   - 'https://www.koyeb.com/docs'
   - 'https://www.koyeb.com/pricing'
   - 'https://www.koyeb.com/docs/reference/cli'
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![koyeb serverless: 개념과 배포 절차, 선택 기준 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/koyeb-serverless/cover.webp)
+
 
 koyeb serverless는 컨테이너를 그대로 올려 두고 트래픽에 따라 인스턴스를 자동으로 늘리고 줄이는 배포 플랫폼이에요. 함수 단위로 코드를 잘게 쪼개는 방식이 아니라, 이미 만들어 둔 웹 서비스와 워커 프로세스를 거의 그대로 옮길 수 있다는 점이 가장 큰 차별점이에요. 아래에서는 공식 문서에서 확인한 범위 안에서 개념, 배포 절차, 선택 기준, 주의할 점을 차례로 정리해요.
 
+
+
+![koyeb serverless: 개념과 배포 절차, 선택 기준 정리 소제목 카드. 한눈에 보기, Koyeb serverless와 다른 배포 방식 비교, 단계별 배포 절차, 배포 후 운영에서 봐야 할 지표](/static/images/koyeb-serverless/diagram.webp)
 ## 한눈에 보기
 
 Koyeb은 애플리케이션을 앱(App)과 서비스(Service)라는 두 층으로 나눠 관리해요. 앱은 여러 서비스를 묶는 논리적 단위이고, 실제로 트래픽을 받거나 작업을 처리하는 것은 서비스예요. 서비스는 다시 배포 단위로 나뉘고, 각 배포는 하나 이상의 인스턴스로 실행돼요. 이 구조를 먼저 이해하면 대시보드 화면과 CLI 출력이 훨씬 읽기 쉬워져요.
@@ -97,6 +103,9 @@ Koyeb은 애플리케이션을 앱(App)과 서비스(Service)라는 두 층으�
 
 비용은 트래픽 패턴에 따라 달라지므로, 도입 전에 공식 가격 페이지에서 과금 기준을 확인하는 게 좋아요. 특히 유휴 시 인스턴스를 줄이는 구조에서는 요청 분포와 기동 시간이 비용과 체감 속도를 동시에 좌우해요(https://www.koyeb.com/pricing).
 
+
+
+![koyeb serverless: 개념과 배포 절차, 선택 기준 정리 질문 카드. Koyeb serverless는 함수 단위 FaaS인가요?, 무료로 시작할 수 있나요?, 콜드 스타트가 걱정되는 서비스에도 쓸 수 있나요?](/static/images/koyeb-serverless/faq.webp)
 ## 자주 묻는 질문
 
 ### Koyeb serverless는 함수 단위 FaaS인가요?

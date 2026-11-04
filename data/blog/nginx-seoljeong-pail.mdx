@@ -4,19 +4,25 @@ description: "nginx 설정 파일을 처음 열어 봐도 바로 적용할 수 �
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['웹서버·프록시']
-images: ['/static/images/nginx-seoljeong-pail/cover.webp']
+images: ['/static/images/nginx-seoljeong-pail/cover.webp', '/static/images/nginx-seoljeong-pail/diagram.webp', '/static/images/nginx-seoljeong-pail/faq.webp']
 sources:
   - https://nginx.org/en/docs/beginners_guide.html
   - https://nginx.org/en/docs/http/ngx_http_core_module.html
   - https://docs.nginx.com/nginx/admin-guide/basic-functionality/managing-configuration-files/
   - https://nginx.org/en/docs/http/server_names.html
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![nginx 설정 파일 쉽게 하는 법: 구조부터 적용까지 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/nginx-seoljeong-pail/cover.webp)
+
 
 nginx 설정 파일은 main, events, http, server, location이라는 블록의 역할만 구분하면 읽는 속도가 눈에 띄게 빨라집니다. 이 글은 기본 설정 파일을 열어 본 상태에서 시작해 블록 구조를 파악하고, include로 파일을 나누고, 리버스 프록시를 붙인 뒤, 문법 검사와 무중단 재적용으로 마무리하는 순서를 다룹니다. 설정 항목은 nginx 공식 문서와 nginx 공식 관리 가이드에 나온 범위 안에서만 설명하고, 배포판마다 다른 경로는 따로 구분해 정리합니다.
 
+
+
+![nginx 설정 파일 쉽게 하는 법: 구조부터 적용까지 소제목 카드. 한눈에 보기, 설정 블록 구조 비교, 설정 파일이 놓이는 위치, 단계별로 설정 파일 작성하기](/static/images/nginx-seoljeong-pail/diagram.webp)
 ## 한눈에 보기
 
 nginx 설정 파일은 "블록 안에 디렉티브를 나열한다"는 규칙 하나로 읽힙니다. 디렉티브는 이름과 인자로 이루어지고 세미콜론으로 끝나며, 블록은 중괄호로 범위를 표시합니다. 주석은 샵 기호로 시작하고, 줄바꿈과 들여쓰기는 문법에 영향을 주지 않으므로 사람이 읽기 좋게 정리하면 됩니다.
@@ -205,6 +211,9 @@ server {
 - 재적용 전에는 항상 문법 검사를 먼저 합니다. 검사 없이 재적용하면 오류가 있는 설정이 그대로 반영되어 서비스가 멈출 수 있습니다.
 - 설정 파일과 인증서 파일의 권한을 실행 계정 기준으로 확인합니다. 읽기 권한이 없으면 시작 단계에서 실패합니다.
 
+
+
+![nginx 설정 파일 쉽게 하는 법: 구조부터 적용까지 질문 카드. 1. 현재 설정을 먼저 백업합니다, 2. main과 events 블록을 확인합니다, 3. http 블록에 공통 설정을 모읍니다](/static/images/nginx-seoljeong-pail/faq.webp)
 ## 자주 묻는 질문
 
 ### 설정을 바꾼 뒤에는 꼭 재시작해야 하나요?

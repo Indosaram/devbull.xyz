@@ -4,18 +4,24 @@ description: "SSH 터널링이란 암호화된 SSH 연결 안에 다른 네트�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-teoneolringiran/cover.webp']
+images: ['/static/images/ssh-teoneolringiran/cover.webp', '/static/images/ssh-teoneolringiran/diagram.webp', '/static/images/ssh-teoneolringiran/faq.webp']
 sources:
   - https://man.openbsd.org/ssh
   - https://www.rfc-editor.org/rfc/rfc4254
   - https://manpages.ubuntu.com/manpages/noble/en/man1/ssh.1.html
 firstHand:
-  type: 'screenshot'
-  evidence: 'OpenSSH ssh 매뉴얼과 RFC 4254, Ubuntu manpage에서 포워딩 옵션 설명을 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 터널링이란? 기초 개념과 실무 사용법 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-teoneolringiran/cover.webp)
+
 
 SSH 터널링이란 이미 암호화된 SSH 연결 안에 다른 서비스의 트래픽을 실어 보내는 방식입니다. 핵심은 포트 포워딩을 통해 접근이 제한된 네트워크의 서비스에 안전하게 도달하는 데 있습니다. 이 글은 로컬·원격·동적 포워딩의 차이와 운영 서버에서 확인해야 할 기준을 차례로 설명합니다.
 
+
+
+![ssh 터널링이란? 기초 개념과 실무 사용법 정리 소제목 카드. 한눈에 보기, 로컬·원격·동적 포워딩 비교, 단계별 설정 방법, 상황별 선택 기준](/static/images/ssh-teoneolringiran/diagram.webp)
 ## 한눈에 보기
 
 SSH 터널링은 SSH 클라이언트와 SSH 서버 사이에 만들어진 암호화 채널을 재사용합니다. 사용자는 SSH 클라이언트 쪽 또는 SSH 서버 쪽에 리스너를 만들고, 그 리스너로 들어온 연결을 다른 호스트와 포트로 전달합니다. 이때 실제 데이터는 SSH 세션 안에서 암호화되어 이동합니다.
@@ -80,6 +86,9 @@ SSH 접속 자체의 보안도 중요합니다. 호스트 키 검증을 생략�
 
 대상 서비스가 인증을 요구한다면 SSH 터널이 그 인증을 대신하지 않습니다. 터널은 연결 경로를 제공할 뿐이므로, 데이터베이스 계정이나 관리 도구의 권한은 별도로 최소화해야 합니다.
 
+
+
+![ssh 터널링이란? 기초 개념과 실무 사용법 정리 질문 카드. 로컬 포워딩 설정, 원격 포워딩 설정, 동적 포워딩 설정](/static/images/ssh-teoneolringiran/faq.webp)
 ## 자주 묻는 질문
 
 ### SSH 터널링과 VPN은 무엇이 다른가요?

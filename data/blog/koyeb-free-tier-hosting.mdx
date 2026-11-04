@@ -4,18 +4,24 @@ description: "Koyeb free tier hosting을 검토하는 백엔드 개발자를 위
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['배포 플랫폼']
-images: ['/static/images/koyeb-free-tier-hosting/cover.webp']
+images: ['/static/images/koyeb-free-tier-hosting/cover.webp', '/static/images/koyeb-free-tier-hosting/diagram.webp', '/static/images/koyeb-free-tier-hosting/faq.webp']
 sources:
   - https://www.koyeb.com/docs
   - https://www.koyeb.com/pricing
   - https://www.koyeb.com
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![koyeb free tier hosting: 무료 플랜 배포 구조와 절차 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/koyeb-free-tier-hosting/cover.webp)
+
 
 Koyeb free tier hosting은 서버를 직접 준비하지 않고 컨테이너 이미지를 올려 애플리케이션을 공개하는 관리형 배포 방식이에요. 무료 플랜은 인스턴스 유형과 서비스 구성에 제약이 있지만, 소규모 API나 포트폴리오용 백엔드를 인터넷에 노출하는 용도라면 충분히 검토할 만해요. 이 글은 공식 문서와 가격 페이지에서 확인할 수 있는 범위만 가지고 무료 플랜의 구조, 배포 절차, 한도 확인 방법, 상황별 판단 기준을 정리해요.
 
+
+
+![koyeb free tier hosting: 무료 플랜 배포 구조와 절차 소제목 카드. 한눈에 보기, 무료 플랜과 유료 플랜 비교, 단계별 배포 방법, 상황별 선택 기준](/static/images/koyeb-free-tier-hosting/diagram.webp)
 ## 한눈에 보기
 
 Koyeb은 애플리케이션을 컨테이너 단위로 배포하고, 빌드와 실행, 트래픽 라우팅, 인증서 발급 같은 운영 작업을 플랫폼이 대신 처리하는 형태의 서비스예요. 그래서 백엔드 개발자는 서버 프로비저닝이나 리버스 프록시 설정 대신 이미지와 실행 설정에 집중하게 돼요.
@@ -98,6 +104,9 @@ Koyeb은 애플리케이션을 컨테이너 단위로 배포하고, 빌드와 �
 
 여섯째, 이미지 크기와 빌드 시간을 줄이는 노력이 효과가 커요. 멀티 스테이지 빌드로 실행 이미지를 가볍게 유지하면 배포 성공률과 시작 속도가 함께 좋아져요.
 
+
+
+![koyeb free tier hosting: 무료 플랜 배포 구조와 절차 질문 카드. 배포 방식부터 정하기, 프로젝트와 서비스 만들기, 환경 변수와 시크릿 넣기](/static/images/koyeb-free-tier-hosting/faq.webp)
 ## 자주 묻는 질문
 
 ### Koyeb 무료 플랜으로 상시 운영이 가능한가요?

@@ -4,15 +4,23 @@ description: 'Koyeb 무료 플랜에서 실제로 막히는 지점을 공식 문
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['배포 플랫폼']
-images: ['/static/images/koyeb-free-tier-limits/cover.webp']
+images: ['/static/images/koyeb-free-tier-limits/cover.webp', '/static/images/koyeb-free-tier-limits/diagram.webp', '/static/images/koyeb-free-tier-limits/faq.webp']
 sources:
   - 'https://www.koyeb.com/docs'
   - 'https://www.koyeb.com/pricing'
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![koyeb free tier limits: 무료 플랜 범위 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/koyeb-free-tier-limits/cover.webp)
+
 
 Koyeb 무료 플랜은 "무엇을 쓸 수 있는가"보다 "어디까지가 무료인가"를 먼저 확인해야 하는 구조예요. 이 글은 공식 문서와 가격 페이지를 기준으로 무료 범위를 점검하는 순서와, 배포 운영에서 자주 걸리는 지점을 정리해요. 정확한 수치는 정책에 따라 달라지므로, 아래에 정리한 절차로 직접 확인하는 방법을 함께 설명해요.
 
+
+
+![koyeb free tier limits: 무료 플랜 범위 정리 소제목 카드. 한눈에 보기, 무료 플랜에서 실제로 부딪히는 제한 항목, 무료 범위 확인 표, 단계별로 무료 범위 확인하기](/static/images/koyeb-free-tier-limits/diagram.webp)
 ## 한눈에 보기
 
 Koyeb 무료 플랜의 경계는 크게 세 축으로 나뉘어요. 동시에 유지할 수 있는 서비스 수, 무료 인스턴스의 사양, 그리고 유휴 상태에서 인스턴스가 어떻게 처리되는지예요. 여기에 선택 가능한 리전과 빌드·네트워크 관련 항목이 더해져요.
@@ -101,6 +109,9 @@ Koyeb 무료 플랜의 경계는 크게 세 축으로 나뉘어요. 동시에 �
 
 환경 변수와 시크릿은 대시보드에만 두지 말고, 재배포 시 복원할 수 있게 별도로 관리해요. 무료 플랜에서 잦은 재배포는 흔한 일이라, 설정이 날아가면 복구에 시간이 걸려요.
 
+
+
+![koyeb free tier limits: 무료 플랜 범위 정리 질문 카드. 서비스 수와 인스턴스 수, 인스턴스 사양, 실행 방식과 슬립](/static/images/koyeb-free-tier-limits/faq.webp)
 ## 자주 묻는 질문
 
 ### Koyeb 무료 플랜만으로 서비스를 계속 운영할 수 있나요?

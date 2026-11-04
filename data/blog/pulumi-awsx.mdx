@@ -4,18 +4,24 @@ description: "pulumi awsx가 무엇인지, 기본 AWS 프로바이더와 무엇�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/pulumi-awsx/cover.webp']
+images: ['/static/images/pulumi-awsx/cover.webp', '/static/images/pulumi-awsx/diagram.webp', '/static/images/pulumi-awsx/faq.webp']
 sources:
   - https://www.pulumi.com/registry/packages/awsx/
   - https://www.pulumi.com/docs/iac/concepts/inputs-outputs/
   - https://www.pulumi.com/docs/iac/concepts/resources/
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![pulumi awsx로 AWS 인프라를 간결하게 정의하는 방법 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/pulumi-awsx/cover.webp)
+
 
 pulumi awsx는 Pulumi가 제공하는 AWS Crosswalk 패키지로, VPC나 컨테이너 서비스처럼 매번 비슷하게 반복되는 AWS 구성을 짧은 코드로 완성해 주는 상위 수준 컴포넌트 모음입니다. 기본 AWS 프로바이더가 서브넷과 보안 그룹을 하나씩 직접 선언하게 한다면, awsx는 검증된 기본값을 미리 묶어 두고 필요한 부분만 조정하게 해 줍니다. 이 글은 서버 운영과 배포를 담당하는 백엔드 개발자가 awsx를 언제 쓰고 언제 내려와야 하는지 스스로 판단할 수 있도록 개념과 도입 절차를 정리합니다.
 
+
+
+![pulumi awsx로 AWS 인프라를 간결하게 정의하는 방법 소제목 카드. 한눈에 보기, awsx와 기본 AWS 프로바이더 비교, 단계별로 도입하는 방법, 상황별 선택 기준](/static/images/pulumi-awsx/diagram.webp)
 ## 한눈에 보기
 
 pulumi awsx를 한 문장으로 줄이면 "자주 쓰는 AWS 조합을 미리 만들어 둔 상위 수준 컴포넌트"입니다. 기본 AWS 프로바이더가 EC2, 보안 그룹, 서브넷, 라우팅 테이블을 각각 선언하게 만든다면, awsx는 그 조합 자체를 하나의 컴포넌트로 감싸고 합리적인 기본값을 채워 넣습니다. 그래서 인프라 코드의 줄 수가 줄고, 네트워크 구성에서 빠뜨리기 쉬운 연결 작업이 자동으로 채워집니다.
@@ -108,6 +114,9 @@ awsx의 가장 큰 장점이자 가장 큰 주의점은 기본값입니다. 컴�
 
 마지막으로 컴포넌트가 감싸지 못하는 영역은 반드시 존재합니다. 모든 AWS 서비스에 상위 컴포넌트가 있는 것은 아니므로, awsx와 기본 프로바이더를 함께 쓰는 것을 전제로 구조를 잡는 편이 현실적입니다.
 
+
+
+![pulumi awsx로 AWS 인프라를 간결하게 정의하는 방법 질문 카드. 패키지 설치와 프로젝트 준비, 네트워크부터 만들기, 컨테이너 서비스 배포](/static/images/pulumi-awsx/faq.webp)
 ## 자주 묻는 질문
 
 ### awsx만 설치하면 기본 AWS 프로바이더는 필요 없나요?

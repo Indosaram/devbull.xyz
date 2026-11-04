@@ -4,16 +4,24 @@ description: "Pulumi에서 aws.ec2.vpcendpoint 리소스로 VPC 엔드포인트�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/aws-ec2-vpcendpoint-pulumi/cover.webp']
+images: ['/static/images/aws-ec2-vpcendpoint-pulumi/cover.webp', '/static/images/aws-ec2-vpcendpoint-pulumi/diagram.webp', '/static/images/aws-ec2-vpcendpoint-pulumi/faq.webp']
 sources:
   - "https://www.pulumi.com/registry/packages/aws/api-docs/ec2/vpcendpoint/"
   - "https://docs.aws.amazon.com/vpc/latest/privatelink/vpc-endpoints.html"
   - "https://docs.aws.amazon.com/vpc/latest/privatelink/concepts.html"
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![aws.ec2.vpcendpoint pulumi로 VPC 엔드포인트 운영하기 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/aws-ec2-vpcendpoint-pulumi/cover.webp)
+
 
 Pulumi에서 aws.ec2.vpcendpoint는 AWS VPC 엔드포인트를 선언적으로 관리하는 리소스예요. Gateway와 Interface의 차이를 먼저 정하고 serviceName, subnetIds, routeTableIds 같은 입력을 맞춰야 배포 후 연결 문제를 줄일 수 있어요. 이 글은 공식 문서에서 확인한 범위를 기준으로 구성 절차와 운영 시 판단 기준을 정리해요.
 
+
+
+![aws.ec2.vpcendpoint pulumi로 VPC 엔드포인트 운영하기 소제목 카드. 한눈에 보기, 비교 표, 단계별 방법, 상황별 선택](/static/images/aws-ec2-vpcendpoint-pulumi/diagram.webp)
 ## 한눈에 보기
 
 aws.ec2.vpcendpoint는 Pulumi AWS provider의 EC2 리소스로, VPC 엔드포인트를 코드로 선언할 때 사용해요. VPC 엔드포인트는 VPC 안에서 AWS 서비스나 PrivateLink 서비스에 사설로 접근하기 위한 진입점이에요. 따라서 리소스를 만들기 전에 어떤 서비스에 접근할지, Gateway와 Interface 중 무엇이 맞는지, DNS 이름을 어떻게 해석할지를 먼저 정해야 해요.
@@ -82,6 +90,9 @@ PrivateLink를 지원하는 서비스에 사설 IP로 접근해야 한다면 Int
 
 Pulumi에서 리소스를 교체하면 같은 이름을 유지하더라도 내부적으로 새 리소스가 만들어질 수 있어요. 운영 환경에서는 변경 전에 `pulumi preview`로 교체 여부를 확인하고, 애플리케이션의 연결 대상이 바뀌지 않는지 점검해요. 특히 Interface 엔드포인트의 서브넷이나 보안 그룹을 바꾸는 경우에는 배포 중 일시적인 연결 단절 가능성도 고려해요.
 
+
+
+![aws.ec2.vpcendpoint pulumi로 VPC 엔드포인트 운영하기 질문 카드. 준비: VPC와 서브넷, 라우팅 확인, 서비스 이름 정하기, Pulumi 리소스 선언](/static/images/aws-ec2-vpcendpoint-pulumi/faq.webp)
 ## 자주 묻는 질문
 
 ### aws.ec2.vpcendpoint와 VPC 엔드포인트 서비스는 같은 개념인가요?

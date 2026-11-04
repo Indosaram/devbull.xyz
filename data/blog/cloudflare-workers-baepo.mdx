@@ -4,19 +4,25 @@ description: "cloudflare workers 배포를 처음 진행하는 백엔드 개발�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['배포 플랫폼']
-images: ['/static/images/cloudflare-workers-baepo/cover.webp']
+images: ['/static/images/cloudflare-workers-baepo/cover.webp', '/static/images/cloudflare-workers-baepo/diagram.webp', '/static/images/cloudflare-workers-baepo/faq.webp']
 sources:
   - https://developers.cloudflare.com/workers/get-started/guide/
   - https://developers.cloudflare.com/workers/wrangler/
   - https://developers.cloudflare.com/workers/configuration/wrangler-configuration/
   - https://developers.cloudflare.com/workers/ci-cd/
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![cloudflare workers 배포 기초 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/cloudflare-workers-baepo/cover.webp)
+
 
 cloudflare workers 배포는 Wrangler CLI로 프로젝트를 준비하고 `wrangler deploy`를 실행하는 흐름으로 정리됩니다. 다만 설정 파일의 호환성 날짜, 환경 분리, 시크릿 주입, 롤백 절차를 미리 알아 두어야 운영 중 장애를 줄일 수 있어요. 이 글은 Cloudflare 공식 문서에서 확인한 범위만 가지고 배포 준비부터 검증과 되돌리기까지 순서대로 설명합니다.
 
+
+
+![cloudflare workers 배포 기초 정리 소제목 카드. 한눈에 보기, 배포 방식 비교, 단계별 배포 방법, 상황별 선택](/static/images/cloudflare-workers-baepo/diagram.webp)
 ## 한눈에 보기
 
 Cloudflare Workers는 사용자와 가까운 엣지 네트워크에서 요청을 처리하는 서버리스 런타임입니다. 서버를 직접 띄우지 않고 코드 번들을 업로드하면, Cloudflare가 전 세계 위치에서 그 코드를 실행합니다. 백엔드 개발자 입장에서 중요한 변화는 “인스턴스를 배포한다”가 아니라 “번들을 업로드하고 라우팅을 연결한다”는 점입니다.
@@ -121,6 +127,9 @@ Cloudflare 계정과 Node.js 실행 환경을 준비합니다. Wrangler는 npm �
 - 로그와 알림을 켜 두세요. 엣지에서 실행되는 코드는 로컬 재현이 어려운 경우가 많아 관측 수단이 사실상 유일한 단서입니다.
 - 배포 후에는 반드시 실제 엔드포인트를 호출해 검증하세요. 배포 성공 표시와 서비스 정상은 다른 문제입니다.
 
+
+
+![cloudflare workers 배포 기초 정리 질문 카드. 사전 준비, 프로젝트 생성, 로컬 실행과 확인](/static/images/cloudflare-workers-baepo/faq.webp)
 ## 자주 묻는 질문
 
 ### 로컬에서 잘 되던 코드가 배포 후 실패하는 이유는 무엇인가요?

@@ -4,19 +4,25 @@ description: "윈도우에서 ssh 키를 생성하는 방법을 OpenSSH 클라�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Linux 명령어']
-images: ['/static/images/ssh-ki-saengseong-windou/cover.webp']
+images: ['/static/images/ssh-ki-saengseong-windou/cover.webp', '/static/images/ssh-ki-saengseong-windou/diagram.webp', '/static/images/ssh-ki-saengseong-windou/faq.webp']
 sources:
   - https://learn.microsoft.com/ko-kr/windows-server/administration/openssh/openssh_keymanagement
   - https://learn.microsoft.com/ko-kr/windows-server/administration/openssh/openssh_install_firstuse
   - https://man.openbsd.org/ssh-keygen
   - https://docs.github.com/ko/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent
 firstHand:
-  type: 'screenshot'
-  evidence: '마이크로소프트 러닝의 OpenSSH 키 관리 문서와 OpenBSD ssh-keygen 매뉴얼, GitHub SSH 키 문서에서 확인한 범위만 요약했어요.'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![ssh 키 생성 윈도우 한눈에 보기 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/ssh-ki-saengseong-windou/cover.webp)
+
 
 윈도우에서 ssh 키를 만들 때는 별도 프로그램을 설치하기보다 윈도우에 포함된 OpenSSH 클라이언트의 ssh-keygen을 쓰는 편이 가장 간단해요. PowerShell을 열고 ssh-keygen을 실행해 키 쌍을 만든 뒤, 공개키를 서버나 Git 호스팅 계정에 등록하면 바로 키 기반 접속을 쓸 수 있어요. 이 글은 설치 확인부터 키 생성, 공개키 등록, 권한 점검, 상황별 선택 기준까지 순서대로 정리해요.
 
+
+
+![ssh 키 생성 윈도우 한눈에 보기 소제목 카드. 한눈에 보기, ssh-keygen과 키 파일 구조, 단계별로 ssh 키 생성하기, 상황별 선택 기준](/static/images/ssh-ki-saengseong-windou/diagram.webp)
 ## 한눈에 보기
 
 전체 흐름은 길지 않아요. OpenSSH 클라이언트가 있는지 확인하고, 키를 만들 위치와 암호를 정하고, 공개키를 상대 서버에 등록하면 끝이에요. 여기서 갈리는 지점은 "어떤 알고리즘으로 만들 것인가"와 "개인키를 어떤 권한으로 보관할 것인가" 정도예요.
@@ -116,6 +122,9 @@ Git 호스팅을 쓴다면 해당 서비스의 계정 설정 화면에서 SSH �
 
 권한 문제는 특히 헷갈리기 쉬워요. 리눅스 서버에서 키 인증이 되지 않을 때는 서버 쪽 홈 디렉터리와 `.ssh` 디렉터리, authorized_keys 파일의 권한을 함께 확인해야 해요. 클라이언트 문제라고 단정하고 윈도우 쪽만 들여다보면 원인을 놓치기 쉬워요.
 
+
+
+![ssh 키 생성 윈도우 한눈에 보기 질문 카드. OpenSSH 클라이언트 확인과 설치, ssh-keygen으로 키 만들기, 공개키를 서버와 Git 호스팅에 등록하기](/static/images/ssh-ki-saengseong-windou/faq.webp)
 ## 자주 묻는 질문
 
 ### 윈도우에서 ssh-keygen을 찾을 수 없다고 나오면 어떻게 하나요?

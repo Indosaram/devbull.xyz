@@ -4,17 +4,25 @@ description: "pulumi aws eks 조합으로 EKS 클러스터를 구성할 때 필�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['기타']
-images: ['/static/images/pulumi-aws-eks/cover.webp']
+images: ['/static/images/pulumi-aws-eks/cover.webp', '/static/images/pulumi-aws-eks/diagram.webp', '/static/images/pulumi-aws-eks/faq.webp']
 sources:
   - https://www.pulumi.com/docs/iac/clouds/aws/guides/eks/
   - https://www.pulumi.com/registry/packages/eks/
   - https://docs.aws.amazon.com/eks/latest/userguide/what-is-eks.html
   - https://www.pulumi.com/registry/packages/aws/
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![pulumi aws eks로 EKS 클러스터 구축하기 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/pulumi-aws-eks/cover.webp)
+
 
 pulumi aws eks를 함께 쓰면 EKS 클러스터의 네트워크, IAM, 노드 그룹을 코드로 선언하고 스택 단위로 재현할 수 있어요. 다만 Pulumi EKS 컴포넌트가 만들어 주는 기본값을 이해하지 않으면 운영 중 예상하지 못한 리소스가 생길 수 있어요. 이 글은 공식 문서에서 확인한 범위를 기준으로 구성 절차와 선택 기준을 정리해요.
 
+
+
+![pulumi aws eks로 EKS 클러스터 구축하기 소제목 카드. 한눈에 보기, Pulumi와 EKS를 함께 쓰는 이유, 비교 표: 어떤 방식으로 구성할까, 단계별 구성 방법](/static/images/pulumi-aws-eks/diagram.webp)
 ## 한눈에 보기
 
 Pulumi는 TypeScript, Python, Go 같은 범용 언어로 클라우드 리소스를 선언하는 도구예요. AWS provider는 VPC, 서브넷, IAM 역할, EKS 클러스터 같은 리소스를 낮은 수준에서 다루고, EKS 패키지는 클러스터와 노드 그룹을 더 편하게 만들도록 기본값과 컴포넌트를 제공해요.
@@ -95,6 +103,9 @@ IRSA를 사용할 때는 OIDC 공급자와 IAM 신뢰 정책을 함께 관리해
 
 애드온과 Kubernetes 버전은 운영 클러스터에서 바로 올리지 말고 테스트 스택에서 먼저 검증해요. 노드 그룹 교체가 필요한 변경인지, 롤링 업데이트로 처리되는 변경인지도 preview 단계에서 확인해요.
 
+
+
+![pulumi aws eks로 EKS 클러스터 구축하기 질문 카드. 사전 준비, 프로젝트와 스택 초기화, 클러스터 선언](/static/images/pulumi-aws-eks/faq.webp)
 ## 자주 묻는 질문
 
 ### Pulumi로 EKS를 만들면 kubectl 설정도 자동으로 되나요?

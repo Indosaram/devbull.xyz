@@ -4,19 +4,25 @@ description: 'axum vs actix-web을 라우팅, 미들웨어, 상태 공유, 배�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Rust·서버']
-images: ['/static/images/axum-vs-actix-web/cover.webp']
+images: ['/static/images/axum-vs-actix-web/cover.webp', '/static/images/axum-vs-actix-web/diagram.webp', '/static/images/axum-vs-actix-web/faq.webp']
 sources:
   - https://docs.rs/axum/latest/axum/
   - https://github.com/tokio-rs/axum
   - https://actix.rs/docs/
   - https://github.com/actix/actix-web
 firstHand:
-  type: 'screenshot'
-  evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![axum vs actix-web: 백엔드 개발자를 위한 선택 기준 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/axum-vs-actix-web/cover.webp)
+
 
 axum과 actix-web은 둘 다 Rust 비동기 서버를 운영할 수 있는 성숙한 선택지이며, 결론부터 말씀드리면 이미 tower 기반 구성을 쓰고 있거나 미들웨어를 직접 조합하는 편을 선호한다면 axum이, 프레임워크가 정한 실행 규약과 내장 기능을 그대로 활용하는 편을 선호한다면 actix-web이 운영 부담을 줄여 줍니다. 두 프레임워크 모두 실제 서비스에서 쓰이지만 설계 철학이 달라서 장애 대응 방식과 업그레이드 비용이 갈립니다. 이 글은 서버 운영과 배포를 담당하는 백엔드 개발자 관점에서 두 프레임워크를 같은 기준으로 비교해 드려요.
 
+
+
+![axum vs actix-web: 백엔드 개발자를 위한 선택 기준 소제목 카드. 한눈에 보기, 비교 표, 설계 차이: tower 계층과 앱 팩토리, 라우팅과 추출자 비교](/static/images/axum-vs-actix-web/diagram.webp)
 ## 한눈에 보기
 
 axum은 Tokio 진영에서 관리하는 웹 프레임워크로, HTTP 처리는 hyper에, 미들웨어와 서비스 조합은 tower에 맡기는 구조입니다. 라우터에 핸들러를 등록하고 추출자로 요청 데이터를 꺼내는 방식이 중심이며, 매크로 없이도 라우팅 코드가 그대로 읽히는 점이 특징이에요. 공유 상태는 `State` 추출자와 `with_state`로 연결하고, 미들웨어는 tower 계층을 쌓아서 구성합니다.
@@ -102,6 +108,9 @@ actix-web은 `App`에 서비스를 등록하고 `web::Path`, `web::Query`, `web:
 
 에러 응답 형식은 초기에 통일해 두는 편이 좋아요. 두 프레임워크 모두 에러를 응답으로 바꾸는 지점이 여러 곳에 흩어지기 쉬워서, 공통 에러 타입과 변환 규칙을 정해 두지 않으면 클라이언트가 예외 처리를 하기 어려워집니다.
 
+
+
+![axum vs actix-web: 백엔드 개발자를 위한 선택 기준 질문 카드. axum 도입 순서, actix-web 도입 순서, axum이 actix-web보다 항상 빠른가요?](/static/images/axum-vs-actix-web/faq.webp)
 ## 자주 묻는 질문
 
 ### axum이 actix-web보다 항상 빠른가요?

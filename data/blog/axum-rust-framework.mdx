@@ -4,13 +4,21 @@ description: "axum rust framework를 도입하려는 백엔드 개발자를 위�
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['Rust·서버']
-images: ['/static/images/axum-rust-framework/cover.webp']
+images: ['/static/images/axum-rust-framework/cover.webp', '/static/images/axum-rust-framework/diagram.webp', '/static/images/axum-rust-framework/faq.webp']
 sources: ['https://docs.rs/axum/latest/axum/', 'https://github.com/tokio-rs/axum', 'https://docs.rs/tower-http/latest/tower_http/']
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![axum rust framework: 라우팅·미들웨어·배포 구성 정리 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/axum-rust-framework/cover.webp)
+
 
 axum은 Tokio 진영에서 관리하는 Rust 웹 프레임워크로, 라우팅과 추출자, 미들웨어를 타입 시스템 위에서 조합하는 방식이 핵심이에요. 서버 운영과 배포를 맡는 백엔드 개발자라면 "핸들러가 어떤 타입을 받고 무엇을 돌려주는가"라는 규칙 하나만 붙잡아도 전체 구조가 정리돼요. 이 글은 공식 문서에서 확인한 범위 안에서 axum rust framework의 구성 요소, 도입 순서, 배포 전에 점검할 지점을 차분히 정리했어요.
 
+
+
+![axum rust framework: 라우팅·미들웨어·배포 구성 정리 소제목 카드. 한눈에 보기, 다른 Rust 웹 프레임워크와의 비교, 단계별로 프로젝트 구성하기, 라우팅과 추출자에서 자주 막히는 지점](/static/images/axum-rust-framework/diagram.webp)
 ## 한눈에 보기
 
 axum은 HTTP 처리를 hyper에, 비동기 실행을 Tokio에 맡기고, 그 위에 라우팅과 추출자 계층을 얹은 프레임워크예요. 그래서 axum을 이해한다는 것은 곧 tower의 Service 조합으로 요청 파이프라인을 만드는 일에 가까워요. 구성 요소는 아래처럼 나눠 볼 수 있어요.
@@ -151,6 +159,9 @@ axum의 미들웨어는 tower의 Layer예요. 그래서 tower에 있는 타임�
 - 종료 신호 처리 없이 배포하면 진행 중인 요청이 끊겨요.
 - axum, tower, tower-http, hyper의 버전 호환을 함께 확인해요. 하나만 올리면 컴파일 오류가 나는 조합이 있어요.
 
+
+
+![axum rust framework: 라우팅·미들웨어·배포 구성 정리 질문 카드. 의존성 추가, 최소 서버 띄우기, 핸들러와 추출자 연결](/static/images/axum-rust-framework/faq.webp)
 ## 자주 묻는 질문
 
 ### axum은 어떤 런타임 위에서 동작하나요?

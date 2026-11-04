@@ -4,13 +4,21 @@ description: "PostgreSQL 백업과 복원 절차를 pg_dump, pg_restore, pg_base
 date: '2026-11-02'
 lastmod: '2026-11-02'
 tags: ['DB']
-images: ['/static/images/postgres-baekeop-bokwon/cover.webp']
+images: ['/static/images/postgres-baekeop-bokwon/cover.webp', '/static/images/postgres-baekeop-bokwon/diagram.webp', '/static/images/postgres-baekeop-bokwon/faq.webp']
 sources: ['https://www.postgresql.org/docs/current/backup.html', 'https://www.postgresql.org/docs/current/app-pgdump.html', 'https://www.postgresql.org/docs/current/app-pgrestore.html', 'https://www.postgresql.org/docs/current/app-pgbasebackup.html', 'https://www.postgresql.org/docs/current/continuous-archiving.html']
-firstHand: {type: 'screenshot', evidence: '공식 문서·공식 사이트에서 확인한 범위 요약'}
+firstHand:
+  type: document-summary
+  evidence: '화면 캡처나 실측은 하지 않았어요. 절차는 이 글 sources에 적힌 공식 문서 범위로만 한정해요.'
 ---
+
+![postgres 백업 복원 정리: pg_dump부터 PITR까지 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/postgres-baekeop-bokwon/cover.webp)
+
 
 postgres 백업 복원은 운영 데이터베이스에서 장애와 실수를 되돌리기 위한 기본 절차예요. 핵심은 논리 백업과 물리 백업을 구분하고, 복원 목표에 따라 pg_dump, pg_basebackup, PITR를 선택하는 것이에요. 이 글은 공식 문서에서 확인한 범위를 기준으로 백업과 복원 흐름을 정리해요.
 
+
+
+![postgres 백업 복원 정리: pg_dump부터 PITR까지 소제목 카드. 한눈에 보기, 백업 방식 비교 표, 단계별 백업과 복원 방법, 상황별 선택 기준](/static/images/postgres-baekeop-bokwon/diagram.webp)
 ## 한눈에 보기
 
 백업은 “무엇을 되돌릴 것인가”에 따라 도구가 달라져요. 특정 데이터베이스나 테이블만 옮기려면 논리 백업이 편하고, 클러스터 전체를 빠르게 복구하거나 장애 시점으로 되돌리려면 물리 백업과 WAL 아카이브를 함께 준비해야 해요.
@@ -121,6 +129,9 @@ PITR는 WAL 연속성이 핵심이에요. 아카이브가 중간에 끊기거나
 
 시퀀스 값이 백업 시점과 어긋나면 새 데이터 입력 시 충돌이 생길 수 있어요. 복원 후 쓰기 테스트를 수행하고, 필요하면 시퀀스 값을 현재 데이터에 맞게 조정해요.
 
+
+
+![postgres 백업 복원 정리: pg_dump부터 PITR까지 질문 카드. 논리 백업: pg_dump와 pg_dumpall, 논리 복원: pg_restore와 psql, 물리 백업: pg_basebackup](/static/images/postgres-baekeop-bokwon/faq.webp)
 ## 자주 묻는 질문
 
 ### pg_dump와 pg_basebackup은 무엇이 다른가요?
