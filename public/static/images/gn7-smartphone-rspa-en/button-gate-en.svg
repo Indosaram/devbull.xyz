@@ -1,47 +1,63 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 520" width="880" height="520" role="img" aria-labelledby="title">
-  <title id="title">When the remote parking button gets drawn</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 440" width="640" height="440" role="img" aria-labelledby="title desc">
+  <title id="title">Three app screens and what they mean</title>
+  <desc id="desc">No card means no lock, window, or start button. Only remote parking missing means no 1536 status arrived. Remote parking shown means 1536 status arrived or a saved record remained.</desc>
   <style>
-    text { font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #1c1917; }
-    .h { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; }
-    .b { font-size: 15px; }
-    .s { font-size: 13px; fill: #57534e; }
+    text { font-family: 'Apple SD Gothic Neo','Noto Sans KR','Helvetica Neue',Arial,sans-serif; }
+    .t { font-size: 22px; font-weight: 700; fill: #1c1917; }
+    .st { font-size: 16px; fill: #57534e; }
+    .h { font-size: 17px; font-weight: 700; fill: #1c1917; }
+    .b { font-size: 17px; fill: #1c1917; }
+    .s { font-size: 15px; fill: #57534e; }
+    .xs { font-size: 12px; fill: #57534e; }
+    .btn { font-size: 13px; fill: #1c1917; }
+    .acc { fill: #9a3412; }
+    .w { fill: #ffffff; }
+    .wl { fill: #d6d3d1; }
   </style>
-  <rect width="880" height="520" fill="#faf8f5"/>
-  <text x="32" y="36" class="h">The order the home card draws buttons</text>
-  <text x="32" y="60" class="s">Model code, VIN, and server flags are not part of it</text>
-
-  <rect x="250" y="84" width="380" height="52" rx="8" fill="#fff" stroke="#1c1917"/>
-  <text x="440" y="116" text-anchor="middle" class="b">Digital Key 2 control card</text>
-
-  <line x1="440" y1="136" x2="440" y2="164" stroke="#a8a29e"/>
-  <polygon points="434,164 446,164 440,174" fill="#a8a29e"/>
-
-  <rect x="210" y="178" width="460" height="52" rx="8" fill="#fff" stroke="#d6d3d1"/>
-  <text x="440" y="210" text-anchor="middle" class="b">Any lock, window, or start button?</text>
-
-  <line x1="280" y1="230" x2="160" y2="268" stroke="#a8a29e"/>
-  <line x1="600" y1="230" x2="700" y2="268" stroke="#a8a29e"/>
-  <text x="188" y="252" class="s">No</text>
-  <text x="628" y="252" class="s">Yes</text>
-
-  <rect x="32" y="276" width="250" height="72" rx="8" fill="#fff" stroke="#9a3412"/>
-  <text x="157" y="306" text-anchor="middle" class="b">Card is not drawn</text>
-  <text x="157" y="328" text-anchor="middle" class="s">May be unrelated to 1536</text>
-
-  <rect x="560" y="276" width="288" height="52" rx="8" fill="#fff" stroke="#d6d3d1"/>
-  <text x="704" y="308" text-anchor="middle" class="b">Is support flow F true?</text>
-
-  <line x1="640" y1="328" x2="520" y2="368" stroke="#a8a29e"/>
-  <line x1="760" y1="328" x2="760" y2="368" stroke="#a8a29e"/>
-  <text x="548" y="356" class="s">No</text>
-  <text x="772" y="356" class="s">Yes</text>
-
-  <rect x="360" y="376" width="280" height="88" rx="8" fill="#fff" stroke="#9a3412"/>
-  <text x="500" y="408" text-anchor="middle" class="b">Only other buttons show</text>
-  <text x="500" y="432" text-anchor="middle" class="s">No 1536 status, cache is false</text>
-  <text x="500" y="452" text-anchor="middle" class="s">Dedicated query never fires here</text>
-
-  <rect x="660" y="376" width="188" height="72" rx="8" fill="#1c1917"/>
-  <text x="754" y="408" text-anchor="middle" class="b" fill="#faf8f5">Remote parking</text>
-  <text x="754" y="430" text-anchor="middle" class="s" fill="#d6d3d1">ic_filled_rspa</text>
+  <defs>
+    <marker id="ad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c1917"/></marker>
+    <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9a3412"/></marker>
+  </defs>
+  <rect width="640" height="440" fill="#faf8f5"/>
+  <text x="32" y="44" class="t">Three app screens and what they mean</text>
+  <text x="32" y="72" class="st">Model, VIN, and server settings play no part in this</text>
+  <rect x="28" y="96" width="172" height="236" rx="24" fill="#1c1917"/>
+  <rect x="36" y="108" width="156" height="212" rx="16" fill="#faf8f5"/>
+  <text x="50" y="136" class="xs">MyHyundai</text>
+  <rect x="42" y="154" width="144" height="150" rx="10" fill="none" stroke="#a8a29e" stroke-dasharray="6 5"/>
+  <text x="114" y="234" class="s" text-anchor="middle">No card</text>
+  <text x="114" y="368" class="h acc" text-anchor="middle">No card</text>
+  <text x="114" y="394" class="s" text-anchor="middle">No lock, window, or</text>
+  <text x="114" y="416" class="s" text-anchor="middle">start button at all</text>
+  <rect x="234" y="96" width="172" height="236" rx="24" fill="#1c1917"/>
+  <rect x="242" y="108" width="156" height="212" rx="16" fill="#faf8f5"/>
+  <text x="256" y="136" class="xs">MyHyundai</text>
+  <rect x="248" y="154" width="144" height="150" rx="10" fill="#fff" stroke="#d6d3d1"/>
+  <rect x="258" y="164" width="58" height="58" rx="10" fill="#f5f5f4" stroke="#d6d3d1"/>
+  <text x="287" y="198" class="btn" text-anchor="middle">Lock</text>
+  <rect x="324" y="164" width="58" height="58" rx="10" fill="#f5f5f4" stroke="#d6d3d1"/>
+  <text x="353" y="198" class="btn" text-anchor="middle">Window</text>
+  <rect x="258" y="232" width="58" height="58" rx="10" fill="#f5f5f4" stroke="#d6d3d1"/>
+  <text x="287" y="266" class="btn" text-anchor="middle">Start</text>
+  <rect x="324" y="232" width="58" height="58" rx="10" fill="none" stroke="#9a3412" stroke-width="2" stroke-dasharray="5 4"/>
+  <text x="353" y="267" class="btn acc" text-anchor="middle">?</text>
+  <text x="320" y="368" class="h acc" text-anchor="middle">No parking button</text>
+  <text x="320" y="394" class="s" text-anchor="middle">No 1536 status and</text>
+  <text x="320" y="416" class="s" text-anchor="middle">no saved record</text>
+  <rect x="440" y="96" width="172" height="236" rx="24" fill="#1c1917"/>
+  <rect x="448" y="108" width="156" height="212" rx="16" fill="#faf8f5"/>
+  <text x="462" y="136" class="xs">MyHyundai</text>
+  <rect x="454" y="154" width="144" height="150" rx="10" fill="#fff" stroke="#d6d3d1"/>
+  <rect x="464" y="164" width="58" height="58" rx="10" fill="#f5f5f4" stroke="#d6d3d1"/>
+  <text x="493" y="198" class="btn" text-anchor="middle">Lock</text>
+  <rect x="530" y="164" width="58" height="58" rx="10" fill="#f5f5f4" stroke="#d6d3d1"/>
+  <text x="559" y="198" class="btn" text-anchor="middle">Window</text>
+  <rect x="464" y="232" width="58" height="58" rx="10" fill="#f5f5f4" stroke="#d6d3d1"/>
+  <text x="493" y="266" class="btn" text-anchor="middle">Start</text>
+  <rect x="530" y="232" width="58" height="58" rx="10" fill="#9a3412"/>
+  <text x="559" y="266" class="btn w" text-anchor="middle">Parking</text>
+  <text x="526" y="368" class="h" text-anchor="middle">Parking button</text>
+  <text x="526" y="394" class="s" text-anchor="middle">1536 status arrived</text>
+  <text x="526" y="416" class="s" text-anchor="middle">or a record was saved</text>
+  
 </svg>

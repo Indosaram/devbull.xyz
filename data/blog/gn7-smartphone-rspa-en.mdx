@@ -27,7 +27,7 @@ On a normal connection the app never asks for 1536 specifically. So the observat
 
 Forcing the button on does not create model support. The remote parking code exists in the app because it is an SDK shared across all models. Unless the car sends 1536 status, names the phone as the control owner, and first supplies the values the phone's packet needs, the car will not accept phone commands.
 
-![Smart key and phone are two different doors](/static/images/gn7-smartphone-rspa-en/two-paths-en.svg)
+![Per the manual the smart key moves the car; the phone button needs the car's 1536 status first](/static/images/gn7-smartphone-rspa-en/two-paths-en.svg)
 
 ## The manual only describes the smart key
 
@@ -45,7 +45,7 @@ Source: [2026 Grandeur (GN7) Remote Smart Parking Assist operation](https://owne
 
 Sentences like "move the car forward or backward with the smart key or digital key," which show up in search results, are not on these two pages. The same topic number carries different content per model folder. These two pages in the GN7 2026 folder describe the smart-key procedure.
 
-![The order the home card draws the button](/static/images/gn7-smartphone-rspa-en/button-gate-en.svg)
+![Three app screens and what they mean](/static/images/gn7-smartphone-rspa-en/button-gate-en.svg)
 
 ## The button is not gated by a model table
 
@@ -70,7 +70,7 @@ Function statuses other than 1536 go to the status map of ordinary buttons like 
 
 So when other digital-key buttons are visible but remote parking is not, the card was drawn and the flag is simply false. In this session's connection no 1536 status packet arrived, and the cache did not hold true either.
 
-![The 1536-only query fires only when already true](/static/images/gn7-smartphone-rspa-en/query-1536-en.svg)
+![The app never asks about 1536 first](/static/images/gn7-smartphone-rspa-en/query-1536-en.svg)
 
 ## The app does not normally ask for 1536
 

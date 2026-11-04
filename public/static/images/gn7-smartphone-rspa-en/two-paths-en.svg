@@ -1,33 +1,64 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 420" width="880" height="420" role="img" aria-labelledby="title desc">
-  <title id="title">Smart key and phone are two different doors</title>
-  <desc id="desc">GN7 remote forward/reverse is a smart-key button in the manual. The phone only gets a home button when the digital-key function 1536 status packet arrives.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 520" width="640" height="520" role="img" aria-labelledby="title desc">
+  <title id="title">Per the manual, the smart key moves the car</title>
+  <desc id="desc">The smart key moves the car while its button is held. The MyHyundai app creates the remote parking button only after the car sends function 1536 status.</desc>
   <style>
-    text { font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #1c1917; }
-    .label { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; }
-    .body { font-size: 15px; }
-    .small { font-size: 13px; fill: #57534e; }
+    text { font-family: 'Apple SD Gothic Neo','Noto Sans KR','Helvetica Neue',Arial,sans-serif; }
+    .t { font-size: 22px; font-weight: 700; fill: #1c1917; }
+    .st { font-size: 16px; fill: #57534e; }
+    .h { font-size: 17px; font-weight: 700; fill: #1c1917; }
+    .b { font-size: 17px; fill: #1c1917; }
+    .s { font-size: 15px; fill: #57534e; }
+    .xs { font-size: 12px; fill: #57534e; }
+    .btn { font-size: 13px; fill: #1c1917; }
+    .acc { fill: #9a3412; }
+    .w { fill: #ffffff; }
+    .wl { fill: #d6d3d1; }
   </style>
-  <rect width="880" height="420" fill="#faf8f5"/>
-  <text x="32" y="36" class="label">Two different doors</text>
-  <text x="32" y="62" class="small">Same-looking feature, different receivers</text>
+  <defs>
+    <marker id="ad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1c1917"/></marker>
+    <marker id="ao" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#9a3412"/></marker>
+  </defs>
+  <rect width="640" height="520" fill="#faf8f5"/>
+  <text x="32" y="44" class="t">Per the manual, the smart key moves the car</text>
+  <text x="32" y="72" class="st">The phone's parking button appears only after the car signals first</text>
 
-  <rect x="32" y="88" width="390" height="292" rx="8" fill="#fff" stroke="#d6d3d1"/>
-  <text x="56" y="124" class="label">Smart key</text>
-  <text x="56" y="152" class="body">The actuator written in the manual</text>
-  <line x1="56" y1="176" x2="398" y2="176" stroke="#e7e5e4"/>
-  <text x="56" y="208" class="body">Door lock → remote start</text>
-  <text x="56" y="236" class="body">Hold the forward or reverse button</text>
-  <text x="56" y="264" class="body">Release to stop. ~4 m, up to 7 m per move</text>
-  <rect x="56" y="300" width="250" height="36" rx="6" fill="#1c1917"/>
-  <text x="72" y="324" class="body" fill="#faf8f5">The car moves by this button</text>
+  <rect x="24" y="96" width="592" height="180" rx="12" fill="#fff" stroke="#d6d3d1"/>
+  <text x="48" y="128" class="h">What the owner's manual describes</text>
+  <g>
+    <rect x="76" y="148" width="48" height="84" rx="22" fill="#1c1917"/>
+    <circle cx="100" cy="176" r="11" fill="#57534e"/><path d="M95,179 L100,171 L105,179 Z" fill="#ffffff"/>
+    <circle cx="100" cy="204" r="11" fill="#57534e"/><path d="M95,201 L100,209 L105,201 Z" fill="#ffffff"/>
+  </g>
+  <g>
+    <path d="M446,208 L446,190 Q448,182 464,180 L486,160 Q490,156 500,156 L542,156 Q552,156 560,162 L578,180 Q594,182 594,194 L594,208 Z" fill="#44403c"/>
+    <path d="M474,179 L492,163 L516,163 L516,179 Z M522,179 L522,163 L542,163 Q550,163 556,169 L566,179 Z" fill="#d6d3d1"/>
+    <circle cx="478" cy="208" r="13" fill="#1c1917"/><circle cx="478" cy="208" r="5" fill="#d6d3d1"/>
+    <circle cx="562" cy="208" r="13" fill="#1c1917"/><circle cx="562" cy="208" r="5" fill="#d6d3d1"/>
+  </g>
+  <line x1="150" y1="192" x2="424" y2="192" stroke="#1c1917" stroke-width="3" marker-end="url(#ad)"/>
+  <text x="287" y="178" class="b" text-anchor="middle">while the button is held</text>
+  <text x="287" y="218" class="s" text-anchor="middle">release to stop · ~4 m, up to 7 m per move</text>
+  <text x="100" y="256" class="s" text-anchor="middle">Smart key</text>
+  <text x="520" y="256" class="s" text-anchor="middle">Car</text>
 
-  <rect x="458" y="88" width="390" height="292" rx="8" fill="#fff" stroke="#d6d3d1"/>
-  <text x="482" y="124" class="label">Smartphone</text>
-  <text x="482" y="152" class="body">MyHyundai digital-key path</text>
-  <line x1="482" y1="176" x2="824" y2="176" stroke="#e7e5e4"/>
-  <text x="482" y="208" class="body">BLE digital key, function 1536</text>
-  <text x="482" y="236" class="body">Home button needs the 1536 status packet</text>
-  <text x="482" y="264" class="body">It cannot press the key-fob button instead</text>
-  <rect x="482" y="300" width="286" height="36" rx="6" fill="#9a3412"/>
-  <text x="498" y="324" class="body" fill="#fff">No button ≠ 1536 silence</text>
+  <rect x="24" y="296" width="592" height="180" rx="12" fill="#fff" stroke="#9a3412"/>
+  <text x="48" y="328" class="h">MyHyundai app (digital key)</text>
+  <g>
+    <rect x="70" y="342" width="60" height="100" rx="10" fill="#1c1917"/>
+    <rect x="75" y="350" width="50" height="80" rx="4" fill="#faf8f5"/>
+    <rect x="84" y="380" width="32" height="24" rx="5" fill="none" stroke="#9a3412" stroke-width="2" stroke-dasharray="4 3"/>
+  </g>
+  <g>
+    <path d="M446,408 L446,390 Q448,382 464,380 L486,360 Q490,356 500,356 L542,356 Q552,356 560,362 L578,380 Q594,382 594,394 L594,408 Z" fill="#44403c"/>
+    <path d="M474,379 L492,363 L516,363 L516,379 Z M522,379 L522,363 L542,363 Q550,363 556,369 L566,379 Z" fill="#d6d3d1"/>
+    <circle cx="478" cy="408" r="13" fill="#1c1917"/><circle cx="478" cy="408" r="5" fill="#d6d3d1"/>
+    <circle cx="562" cy="408" r="13" fill="#1c1917"/><circle cx="562" cy="408" r="5" fill="#d6d3d1"/>
+  </g>
+  <line x1="424" y1="392" x2="150" y2="392" stroke="#9a3412" stroke-width="3" stroke-dasharray="9 6" marker-end="url(#ao)"/>
+  <text x="287" y="378" class="b acc" text-anchor="middle">the car must send 1536 status first</text>
+  <text x="287" y="418" class="s" text-anchor="middle">only then does the parking button appear</text>
+  <text x="100" y="460" class="s" text-anchor="middle">Phone</text>
+  <text x="520" y="460" class="s" text-anchor="middle">Car</text>
+
+  <text x="32" y="504" class="s">The phone cannot press the smart-key button for you.</text>
 </svg>
