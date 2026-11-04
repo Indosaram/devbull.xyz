@@ -17,19 +17,16 @@ firstHand:
 
 ![systemctl 사용법: 서비스 상태 확인부터 자동 시작까지 안내 카드. 오른쪽에는 이 글의 소제목이 있어요.](/static/images/systemctl-sayongbeop/cover.webp)
 
-
-systemctl 사용법의 핵심은 서비스의 현재 상태를 확인하는 일과 시작·중지·자동 시작을 서로 다른 명령으로 다루는 일을 구분하는 데 있어요. 장애 대부분은 `status`로 상태를 보고 `journalctl`로 로그를 확인하는 두 단계에서 원인이 드러나요. 이 글은 백엔드 개발자가 배포 직후나 장애 대응 중에 바로 따라 할 수 있는 순서로 정리했어요.
-
-
+장애 대부분은 `status`로 상태를 보고 `journalctl`로 로그를 확인하는 두 단계에서 원인이 드러나요. systemctl 사용법의 핵심은 서비스의 현재 상태를 확인하는 일과 시작·중지·자동 시작을 서로 다른 명령으로 다루는 일을 구분하는 데 있어요. 백엔드 개발자가 배포 직후나 장애 대응 중에 바로 따라 할 수 있는 순서로 정리했어요.
 
 ![systemctl 사용법: 서비스 상태 확인부터 자동 시작까지 소제목 카드. 한눈에 보기, 자주 쓰는 명령 비교 표, 단계별 사용법, 상황별 선택](/static/images/systemctl-sayongbeop/diagram.webp)
 ## 한눈에 보기
 
-systemd는 리눅스 배포판에서 서비스(데몬)를 관리하는 기본 시스템이고, `systemctl`은 그 systemd에 명령을 전달하는 클라이언트 도구예요. 그래서 systemctl 사용법을 익힌다는 것은 유닛(unit)이라는 관리 단위를 이해한다는 뜻이에요. 유닛은 서비스뿐 아니라 타이머, 마운트, 소켓, 타깃까지 포함하는 개념이고, 실무에서 가장 자주 만나는 것은 `.service` 유닛이에요.
+`systemctl`은 systemd에 명령을 전달하는 클라이언트 도구예요. systemd는 리눅스 배포판에서 서비스(데몬)를 관리하는 기본 시스템이에요. 그래서 systemctl 사용법을 익힌다는 것은 유닛(unit)이라는 관리 단위를 이해한다는 뜻이에요. 실무에서 가장 자주 만나는 것은 `.service` 유닛이에요. 유닛은 서비스뿐 아니라 타이머, 마운트, 소켓, 타깃까지 포함하는 개념이에요.
 
-유닛 파일이 놓이는 위치는 역할에 따라 나뉘어요. 패키지가 설치한 유닛은 `/usr/lib/systemd/system`에 있고, 관리자가 직접 만들거나 수정한 유닛은 `/etc/systemd/system`에 둬요. 같은 이름이 양쪽에 있으면 `/etc` 쪽이 우선하기 때문에, 패키지가 제공한 파일을 직접 고치는 대신 `/etc`에 새로 두거나 `systemctl edit`로 덧붙이는 방식이 안전해요. 런타임에만 존재하는 유닛은 `/run/systemd/system`에 있어요.
+관리자가 직접 만들거나 수정한 유닛은 `/etc/systemd/system`에 둬요. 패키지가 설치한 유닛은 `/usr/lib/systemd/system`에 있어요. 유닛 파일이 놓이는 위치는 역할에 따라 나뉘어요. 같은 이름이 양쪽에 있으면 `/etc` 쪽이 우선하기 때문에, 패키지가 제공한 파일을 직접 고치는 대신 `/etc`에 새로 두거나 `systemctl edit`로 덧붙이는 방식이 안전해요. 런타임에만 존재하는 유닛은 `/run/systemd/system`에 있어요.
 
-명령을 외우기 전에 알아둘 구분이 하나 있어요. `start`와 `stop`은 지금 이 순간의 실행 상태를 바꾸고, `enable`과 `disable`은 다음 부팅 때 자동으로 올라올지를 정해요. 이 둘을 섞으면 "enable은 했는데 지금 안 돌아간다"거나 "지금은 도는데 재부팅하면 사라진다"는 상황이 생겨요.
+`enable`과 `disable`은 다음 부팅 때 자동으로 올라올지를 정해요. `start`와 `stop`은 지금 이 순간의 실행 상태를 바꿔요. 명령을 외우기 전에 알아둘 구분이 하나 있어요. 이 둘을 섞으면 "enable은 했는데 지금 안 돌아간다"거나 "지금은 도는데 재부팅하면 사라진다"는 상황이 생겨요.
 
 ## 자주 쓰는 명령 비교 표
 
@@ -57,35 +54,35 @@ systemd는 리눅스 배포판에서 서비스(데몬)를 관리하는 기본 �
 
 ### 상태 확인이 먼저입니다
 
-서비스에 손대기 전에 `systemctl status myapp.service`로 현재 상태를 확인해요. 출력에서 `Loaded:` 줄은 유닛 파일을 어디서 읽었는지와 enabled 상태를 알려 주고, `Active:` 줄은 실행 중인지 종료됐는지, 종료됐다면 종료 코드가 무엇인지 보여 줘요. 마지막에 붙는 로그 몇 줄은 참고용일 뿐이라, 원인을 파악할 때는 뒤에서 설명할 `journalctl`을 함께 봐야 해요.
+서비스에 손대기 전에 `systemctl status myapp.service`로 현재 상태를 확인해요. `Active:` 줄은 실행 중인지 종료됐는지, 종료됐다면 종료 코드가 무엇인지 보여 줘요. 출력에서 `Loaded:` 줄은 유닛 파일을 어디서 읽었는지와 enabled 상태를 알려 줘요. 마지막에 붙는 로그 몇 줄은 참고용일 뿐이라, 원인을 파악할 때는 뒤에서 설명할 `journalctl`을 같이 봐야 해요.
 
-스크립트에서는 사람이 읽는 출력보다 단답형 명령이 편해요. `systemctl is-active myapp.service`는 `active`, `inactive`, `failed` 같은 값을 돌려주고, `systemctl is-enabled myapp.service`는 `enabled`, `disabled`, `masked` 같은 값을 돌려줘요. 종료 코드로 분기할 때도 이 명령들이 다루기 쉬워요.
+`systemctl is-enabled myapp.service`는 `enabled`, `disabled`, `masked` 같은 값을 돌려줘요. `systemctl is-active myapp.service`는 `active`, `inactive`, `failed` 같은 값을 돌려줘요. 스크립트에서는 사람이 읽는 출력보다 단답형 명령이 편해요. 종료 코드로 분기할 때도 이 명령들이 다루기 쉬워요.
 
-전체 상황을 훑을 때는 `systemctl list-units --type=service --state=running`으로 실행 중인 서비스만 추리고, `systemctl --failed`로 실패한 유닛만 모아 볼 수 있어요. 배포 직후에는 이 두 명령만으로도 이상 징후를 빠르게 잡아낼 수 있어요.
+`systemctl --failed`로 실패한 유닛만 모아 볼 수 있어요. 전체 상황을 훑을 때는 `systemctl list-units --type=service --state=running`으로 실행 중인 서비스만 추려요. 배포 직후에는 이 두 명령만으로도 이상 징후를 빠르게 잡아낼 수 있어요.
 
 ### 시작과 중지, 재시작
 
-`systemctl start myapp.service`는 지금 서비스를 올리고, `systemctl stop myapp.service`는 지금 내려요. 재시작은 `systemctl restart myapp.service`인데, 이 명령은 프로세스를 완전히 새로 띄우기 때문에 연결이 끊기는 순간이 생겨요. 그래서 애플리케이션이 신호를 받아 설정만 다시 읽을 수 있게 만들어져 있다면 `reload`를 쓰는 편이 낫고, 그 판단이 애매하면 `reload-or-restart`를 쓰면 돼요.
+`systemctl stop myapp.service`는 지금 내려요. `systemctl start myapp.service`는 지금 서비스를 올려요. 재시작은 `systemctl restart myapp.service`인데, 이 명령은 프로세스를 완전히 새로 띄우기 때문에 연결이 끊기는 순간이 생겨요. 그 판단이 애매하면 `reload-or-restart`를 쓰면 돼요. 그래서 애플리케이션이 신호를 받아 설정만 다시 읽을 수 있게 만들어져 있다면 `reload`를 쓰는 편이 낫요.
 
 `try-restart`는 서비스가 이미 실행 중일 때만 재시작해요. 꺼져 있는 서비스를 실수로 살려놓고 싶지 않을 때 유용해요. 프로세스에 특정 신호만 보내고 싶다면 `systemctl kill -s HUP myapp.service`처럼 신호를 지정할 수 있어요.
 
 ### 부팅 시 자동 시작 설정
 
-`systemctl enable myapp.service`는 부팅 시 자동으로 올라오도록 등록하고, `systemctl disable myapp.service`는 그 등록을 해제해요. 여기서 중요한 점은 `enable`이 지금 당장 서비스를 시작하지는 않는다는 것이에요. 배포 직후에는 `systemctl enable --now myapp.service`처럼 두 동작을 한 번에 처리하는 편이 실수가 적어요.
+`systemctl disable myapp.service`는 그 등록을 해제해요. `systemctl enable myapp.service`는 부팅 시 자동으로 올라오도록 등록해요. 여기서 중요한 점은 `enable`이 지금 당장 서비스를 시작하지는 않는다는 것이에요. 배포 직후에는 `systemctl enable --now myapp.service`처럼 두 동작을 한 번에 처리하는 편이 실수가 적어요.
 
 `enable`이 실제로 하는 일은 `[Install]` 섹션에 적힌 `WantedBy` 값을 기준으로 대상 타깃의 `.wants` 디렉터리에 심볼릭 링크를 만드는 것이에요. 그래서 유닛 파일에 `[Install]` 섹션이 없으면 `enable`이 등록할 곳을 찾지 못하고 아무 일도 하지 않아요. 서비스가 재부팅 후 올라오지 않는다면 이 부분을 가장 먼저 확인해야 해요.
 
-일시적으로 서비스를 완전히 막고 싶을 때는 `mask`를 써요. `disable`은 자동 시작만 해제할 뿐 수동으로 시작할 수 있지만, `mask`는 유닛을 `/dev/null`에 연결해 수동 시작도 막아요. `systemctl unmask`로 되돌릴 수 있어요.
+일시적으로 서비스를 완전히 막고 싶을 때는 `mask`를 써요. `mask`는 유닛을 `/dev/null`에 연결해 수동 시작도 막아요. `disable`은 자동 시작만 해제할 뿐 수동으로 시작할 수 있어요. `systemctl unmask`로 되돌릴 수 있어요.
 
 ### 로그 확인
 
-`systemctl status`가 보여 주는 로그는 아주 짧아요. 실제 로그는 `journalctl -u myapp.service`로 확인해요. 실시간으로 따라가려면 `-f`를 붙이고, 최근 것부터 보고 싶으면 `-n`으로 줄 수를 지정해요. 특정 시점 이후만 보고 싶다면 `--since`를 쓰고, 이번 부팅 이후로 범위를 좁히려면 `-b`를 붙여요.
+`systemctl status`가 보여 주는 로그는 아주 짧아요. 실제 로그는 `journalctl -u myapp.service`로 확인해요. 최근 것부터 보고 싶으면 `-n`으로 줄 수를 지정해요. 실시간으로 따라가려면 `-f`를 붙여요. 이번 부팅 이후로 범위를 좁히려면 `-b`를 붙여요. 특정 시점 이후만 보고 싶다면 `--since`를 써요.
 
-에러만 추리고 싶을 때는 `journalctl -u myapp.service -p err`처럼 우선순위를 지정해요. 서비스가 시작하자마자 죽는 경우에는 `systemctl status`의 종료 코드와 함께 이 명령으로 스택트레이스를 확인하는 것이 가장 빠른 길이에요. 부팅 자체가 실패했다면 `journalctl -b -1`로 직전 부팅의 로그를 볼 수 있어요.
+에러만 추리고 싶을 때는 `journalctl -u myapp.service -p err`처럼 우선순위를 지정해요. 서비스가 시작하자마자 죽는 경우에는 `systemctl status`의 종료 코드와 같이 이 명령으로 스택트레이스를 확인하는 것이 가장 빠른 길이에요. 부팅 자체가 실패했다면 `journalctl -b -1`로 직전 부팅의 로그를 볼 수 있어요.
 
 ### 유닛 파일 작성과 반영
 
-직접 만든 서비스는 `/etc/systemd/system/myapp.service`처럼 `/etc` 아래에 두는 것이 관례예요. 파일은 `[Unit]`, `[Service]`, `[Install]` 세 섹션으로 나뉘고, `[Unit]`에는 설명과 의존 관계를, `[Service]`에는 실행 방법과 재시작 정책을, `[Install]`에는 자동 시작 대상 타깃을 적어요.
+직접 만든 서비스는 `/etc/systemd/system/myapp.service`처럼 `/etc` 아래에 두는 것이 관례예요. `[Unit]`에는 설명과 의존 관계를, `[Service]`에는 실행 방법과 재시작 정책을, `[Install]`에는 자동 시작 대상 타깃을 적어요. 파일은 `[Unit]`, `[Service]`, `[Install]` 세 섹션으로 나뉘요.
 
 `[Service]`에서 자주 쓰는 항목은 실행 명령을 지정하는 `ExecStart`, 작업 디렉터리를 지정하는 `WorkingDirectory`, 실행 사용자를 지정하는 `User`, 환경 변수 파일을 지정하는 `EnvironmentFile`, 비정상 종료 시 자동 재시작을 정하는 `Restart` 등이에요. `Type`은 프로세스가 어떤 방식으로 뜨는지를 나타내는데, 포그라운드로 도는 애플리케이션이라면 기본값인 `simple`로 충분한 경우가 많아요.
 
@@ -101,36 +98,34 @@ systemd는 리눅스 배포판에서 서비스(데몬)를 관리하는 기본 �
 
 ## 주의할 점
 
-`enable`과 `start`를 한 동작으로 착각하는 것이 가장 흔한 실수예요. `enable`은 부팅 시 자동 시작 등록일 뿐이고, 지금 실행 상태는 `start`가 담당해요. 반대로 `disable`만 하고 `stop`을 하지 않으면 서비스는 재부팅 전까지 계속 돌아요.
+`enable`과 `start`를 한 동작으로 착각하는 것이 가장 흔한 실수예요. 지금 실행 상태는 `start`가 담당해요. `enable`은 부팅 시 자동 시작 등록일 뿐이에요. 반대로 `disable`만 하고 `stop`을 하지 않으면 서비스는 재부팅 전까지 계속 돌아요.
 
 유닛 파일을 수정한 뒤 `daemon-reload`를 빠뜨리는 것도 자주 나오는 문제예요. 유닛 파일을 새로 추가했거나 `ExecStart` 같은 항목을 바꿨다면 반드시 반영해야 해요. 또 패키지가 관리하는 `/usr/lib/systemd/system` 아래 파일을 직접 고치면 패키지 업데이트 때 덮어써질 수 있으므로, 수정은 `/etc` 쪽에서 하는 편이 좋아요.
 
-`Restart` 정책은 편리하지만 무한 재시작을 만들 수 있어요. 애플리케이션이 뜨자마자 죽는 상황에서 재시작 정책이 켜져 있으면 로그가 빠르게 쌓이고 원인 파악이 어려워질 수 있으니, 장애 초기에는 `journalctl`로 원인을 먼저 확인하는 편이 좋아요. 마지막으로 `Type`을 잘못 지정하면 프로세스가 정상인데도 상태가 기대와 다르게 보일 수 있으니, 포그라운드 실행인지 포크하는 방식인지 확인하고 맞춰야 해요.
-
-
+`Restart` 정책은 편리하지만 무한 재시작을 만들 수 있어요. 애플리케이션이 뜨자마자 죽는 상황에서 재시작 정책이 켜져 있으면 로그가 빠르게 쌓이고 원인 파악이 어려워질 수 있으니, 장애 초기에는 `journalctl`로 원인을 먼저 보는 편이 좋아요. 마지막으로 `Type`을 잘못 지정하면 프로세스가 정상인데도 상태가 기대와 다르게 보일 수 있으니, 포그라운드 실행인지 포크하는 방식인지 확인하고 맞춰야 해요.
 
 ![systemctl 사용법: 서비스 상태 확인부터 자동 시작까지 질문 카드. 상태 확인이 먼저입니다, 시작과 중지, 재시작, 부팅 시 자동 시작 설정](/static/images/systemctl-sayongbeop/faq.webp)
 ## 자주 묻는 질문
 
 ### systemctl restart와 reload는 무엇이 다른가요?
 
-`restart`는 프로세스를 완전히 내렸다가 다시 띄우고, `reload`는 프로세스를 유지한 채 설정을 다시 읽게 해요. 다만 `reload`는 유닛 파일에 `ExecReload`가 정의되어 있을 때만 동작하므로, 정의가 없으면 `reload-or-restart`를 쓰는 편이 안전해요.
+`reload`는 프로세스를 유지한 채 설정을 다시 읽게 해요. `restart`는 프로세스를 완전히 내렸다가 다시 띄우요. 다만 `reload`는 유닛 파일에 `ExecReload`가 정의되어 있을 때만 동작하므로, 정의가 없으면 `reload-or-restart`를 쓰는 편이 안전해요.
 
 ### enable을 했는데 재부팅 후 서비스가 올라오지 않습니다.
 
-유닛 파일에 `[Install]` 섹션이 있는지부터 확인해요. `WantedBy`가 없으면 `enable`이 등록할 대상을 찾지 못하고, `systemctl is-enabled`로 실제 등록 여부를 확인할 수 있어요. 등록은 되어 있는데 실패한다면 `systemctl --failed`와 `journalctl -b`로 부팅 시점의 오류를 봐야 해요.
+유닛 파일에 `[Install]` 섹션이 있는지부터 확인해요. `systemctl is-enabled`로 실제 등록 여부를 확인할 수 있어요. `WantedBy`가 없으면 `enable`이 등록할 대상을 찾지 못해요. 등록은 되어 있는데 실패한다면 `systemctl --failed`와 `journalctl -b`로 부팅 시점의 오류를 봐야 해요.
 
 ### 유닛 파일을 수정했는데 변경 사항이 반영되지 않습니다.
 
-`systemctl daemon-reload`를 실행하지 않았을 가능성이 커요. 반영 후에도 그대로라면 `systemctl cat`으로 실제 적용 중인 파일 경로를 확인해 보세요. 같은 이름의 유닛이 다른 디렉터리에 있어서 예상과 다른 파일이 읽히는 경우도 있어요.
+`systemctl daemon-reload`를 실행하지 않았을 가능성이 커요. 반영 후에도 그대로라면 `systemctl cat`으로 실제 적용 중인 파일 경로를 확인해 봐요. 같은 이름의 유닛이 다른 디렉터리에 있어서 예상과 다른 파일이 읽히는 경우도 있어요.
 
 ### 서비스가 계속 재시작됩니다. 원인은 어디서 보나요?
 
-`journalctl -u <유닛> -p err`로 오류 로그를 먼저 확인하고, `systemctl status`에서 종료 코드를 함께 봐요. 원인을 고친 뒤에는 `systemctl reset-failed`로 실패 상태를 초기화해야 다시 시도할 수 있어요.
+`systemctl status`에서 종료 코드를 같이 봐요. `journalctl -u <유닛> -p err`로 오류 로그를 먼저 확인해요. 원인을 고친 뒤에는 `systemctl reset-failed`로 실패 상태를 초기화해야 다시 시도할 수 있어요.
 
 ### systemctl과 service 명령은 무엇이 다른가요?
 
-`service`는 예전 init 스크립트와의 호환을 위해 남아 있는 래퍼이고, 실제 관리는 `systemctl`이 담당해요. 상태 확인과 자동 시작 여부처럼 세밀한 정보가 필요하면 `systemctl`을 쓰는 편이 정확해요.
+실제 관리는 `systemctl`이 담당해요. `service`는 예전 init 스크립트와의 호환을 위해 남아 있는 래퍼예요. 상태 확인과 자동 시작 여부처럼 세밀한 정보가 필요하면 `systemctl`을 쓰는 편이 정확해요.
 
 ## 출처
 
@@ -139,4 +134,4 @@ systemd는 리눅스 배포판에서 서비스(데몬)를 관리하는 기본 �
 - systemd.unit 공식 매뉴얼: https://www.freedesktop.org/software/systemd/man/latest/systemd.unit.html
 - Red Hat Enterprise Linux systemd 유닛 파일 관리 문서: https://docs.redhat.com/en/documentation/red_hat_enterprise_linux/9/html/using_systemd_unit_files_to_customize_and_optimize_your_system/index
 
-배포 자동화와 함께 읽으면 좋은 글도 준비해 두었어요. 서비스 등록 절차를 스크립트로 옮기는 방법은 [배포 스크립트에서 systemctl 안전하게 쓰기](/blog/deploy-script-systemctl)에서, 정기 작업을 서비스에서 타이머로 옮기는 방법은 [systemd 타이머로 배치 작업 이전하기](/blog/systemd-timer-migration)에서 이어서 확인하실 수 있어요.
+배포 자동화와 같이 읽으면 좋은 글도 준비해 두었어요. 서비스 등록 절차를 스크립트로 옮기는 방법은 [배포 스크립트에서 systemctl 안전하게 쓰기](/blog/deploy-script-systemctl)에서, 정기 작업을 서비스에서 타이머로 옮기는 방법은 [systemd 타이머로 배치 작업 이전하기](/blog/systemd-timer-migration)에서 이어서 확인하실 수 있어요.
