@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 420" width="880" height="420" role="img" aria-labelledby="title desc">
+  <title id="title">Smart key and phone are two different doors</title>
+  <desc id="desc">GN7 remote forward/reverse is a smart-key button in the manual. The phone only gets a home button when the digital-key function 1536 status packet arrives.</desc>
+  <style>
+    text { font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #1c1917; }
+    .label { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; }
+    .body { font-size: 15px; }
+    .small { font-size: 13px; fill: #57534e; }
+  </style>
+  <rect width="880" height="420" fill="#faf8f5"/>
+  <text x="32" y="36" class="label">Two different doors</text>
+  <text x="32" y="62" class="small">Same-looking feature, different receivers</text>
+
+  <rect x="32" y="88" width="390" height="292" rx="8" fill="#fff" stroke="#d6d3d1"/>
+  <text x="56" y="124" class="label">Smart key</text>
+  <text x="56" y="152" class="body">The actuator written in the manual</text>
+  <line x1="56" y1="176" x2="398" y2="176" stroke="#e7e5e4"/>
+  <text x="56" y="208" class="body">Door lock → remote start</text>
+  <text x="56" y="236" class="body">Hold the forward or reverse button</text>
+  <text x="56" y="264" class="body">Release to stop. ~4 m, up to 7 m per move</text>
+  <rect x="56" y="300" width="250" height="36" rx="6" fill="#1c1917"/>
+  <text x="72" y="324" class="body" fill="#faf8f5">The car moves by this button</text>
+
+  <rect x="458" y="88" width="390" height="292" rx="8" fill="#fff" stroke="#d6d3d1"/>
+  <text x="482" y="124" class="label">Smartphone</text>
+  <text x="482" y="152" class="body">MyHyundai digital-key path</text>
+  <line x1="482" y1="176" x2="824" y2="176" stroke="#e7e5e4"/>
+  <text x="482" y="208" class="body">BLE digital key, function 1536</text>
+  <text x="482" y="236" class="body">Home button needs the 1536 status packet</text>
+  <text x="482" y="264" class="body">It cannot press the key-fob button instead</text>
+  <rect x="482" y="300" width="286" height="36" rx="6" fill="#9a3412"/>
+  <text x="498" y="324" class="body" fill="#fff">No button ≠ 1536 silence</text>
+</svg>
