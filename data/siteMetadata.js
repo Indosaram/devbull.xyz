@@ -4,7 +4,7 @@ const siteMetadata = {
   author: 'Indo Yoon',
   headerTitle: 'Indo Yoon',
   description: 'Rustacean, Pythonista, and [Type|Java]Scripter',
-  language: 'en-us',
+  language: 'ko',
   theme: 'system', // system, dark or light
   siteUrl: 'https://devbull.xyz',
   siteRepo: 'https://devbull.xyz',

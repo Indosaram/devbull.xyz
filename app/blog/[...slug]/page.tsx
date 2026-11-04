@@ -43,6 +43,24 @@ export async function generateMetadata(props: {
   if (post.images) {
     imageList = typeof post.images === 'string' ? [post.images] : post.images
   }
+  const translations = post.translations as Record<string, string> | undefined
+  const alternates = translations
+    ? {
+        canonical: './',
+        types: { 'application/rss+xml': `${siteMetadata.siteUrl}/feed.xml` },
+        languages: {
+          ...Object.fromEntries(
+            Object.entries(translations).map(([lang, s]) => [
+              lang,
+              `${siteMetadata.siteUrl}/blog/${s}`,
+            ])
+          ),
+          ...(translations.ko
+            ? { 'x-default': `${siteMetadata.siteUrl}/blog/${translations.ko}` }
+            : {}),
+        },
+      }
+    : undefined
   const ogImages = imageList.map((img) => {
     return {
       url: img.includes('http') ? img : siteMetadata.siteUrl + img,
@@ -52,11 +70,12 @@ export async function generateMetadata(props: {
   return {
     title: post.title,
     description: post.summary,
+    ...(alternates ? { alternates } : {}),
     openGraph: {
       title: post.title,
       description: post.summary,
       siteName: siteMetadata.title,
-      locale: 'en_US',
+      locale: post.lang === 'en' ? 'en_US' : 'ko_KR',
       type: 'article',
       publishedTime: publishedAt,
       modifiedTime: modifiedAt,

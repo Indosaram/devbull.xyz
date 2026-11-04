@@ -30,14 +30,14 @@ interface LayoutProps {
 }
 
 export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
-  const { filePath, path, slug, date, title, tags, images } = content
+  const { filePath, path, slug, date, title, tags, images, lang } = content
   const coverImage = images && images.length > 0 ? images[0] : null
   const basePath = path.split('/')[0]
 
   return (
     <SectionContainer>
       <ScrollTopAndComment />
-      <article>
+      <article lang={lang}>
         <div className="xl:divide-y xl:divide-gray-200 xl:dark:divide-gray-700">
           <header className="pt-6 xl:pb-6">
             <div className="space-y-1 text-center">

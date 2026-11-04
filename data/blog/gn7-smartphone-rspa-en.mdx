@@ -5,6 +5,10 @@ summary: "Static analysis of the MyHyundai Android app shows when the remote par
 date: '2026-11-04'
 lastmod: '2026-11-04'
 tags: ['Reverse Engineering', 'App Analysis']
+lang: en
+translations:
+  ko: gn7-smartphone-rspa-bunseok
+  en: gn7-smartphone-rspa-en
 images: ['/static/images/gn7-smartphone-rspa-en/cover.png', '/static/images/gn7-smartphone-rspa-en/two-paths-en.svg', '/static/images/gn7-smartphone-rspa-en/button-gate-en.svg', '/static/images/gn7-smartphone-rspa-en/query-1536-en.svg']
 sources:
   - https://ownersmanual.hyundai.com/full_webhelp/GN7/2026/ko_KR/ide8a49083051.html
@@ -26,7 +30,7 @@ The phone-side remote parking button is separate. The Digital Key 2 card on the 
 
 On a normal connection the app never asks for 1536 specifically. So the observation "the button is missing" cannot be read as "the controller stayed silent to a 1536 query" — the app never sent that query.
 
-Forcing the button on does not create model support. The remote parking code exists in the app because it is an SDK shared across all models. Unless the car sends 1536 status, names the phone as the control owner, and first supplies the values the phone's packet needs, the car will not accept phone commands.
+Forcing the button on does not create model support. The remote parking code exists in the app because a single app ships for every model. Unless the car sends 1536 status, names the phone as the control owner, and first supplies the values the phone's packet needs, the car will not accept phone commands.
 
 ![Per the manual the smart key moves the car; the phone button needs the car's 1536 status first](/static/images/gn7-smartphone-rspa-en/two-paths-en.svg)
 
@@ -36,11 +40,11 @@ I opened the two GN7 2026 web help pages directly.
 
 The remote forward/reverse introduction page begins (Korean original, translated here):
 
-> The remote smart parking assist function can be operated remotely from outside the vehicle using the smart key.
+> The remote forward/reverse function can be operated remotely from outside the vehicle using the smart key.
 
 Source: [2026 Grandeur (GN7) Remote Smart Parking Assist](https://ownersmanual.hyundai.com/full_webhelp/GN7/2026/ko_KR/ide8a49083051.html)
 
-The preparation and movement steps on the operating page are all smart key: door lock, remote start, forward, reverse. "Carry the smart key and leave the car" is the boarding condition. The forward or reverse button on the smart key must stay held during movement; releasing it stops the car. Operating distance is about 4 m, up to 7 m per move, and the function releases past 14 m in total. Digital key never appears on this page.
+The preparation and movement steps on the operating page are all smart key: door lock, remote start, forward, reverse. "Carry the smart key and leave the car" is the precondition for operation. The forward or reverse button on the smart key must stay held during movement; releasing it stops the car. Operating distance is about 4 m, up to 7 m per move, and the function releases past 14 m in total. Digital key never appears on this page.
 
 Source: [2026 Grandeur (GN7) Remote Smart Parking Assist operation](https://ownersmanual.hyundai.com/full_webhelp/GN7/2026/ko_KR/idc25ea14ed1f.html)
 
@@ -59,7 +63,7 @@ The Digital Key 2 control card (`HomeVehicleDigitalKey2ControlButtonsCard`) on t
 
 Model code, VIN, and a server-side "this car supports remote parking" flag play no role in these conditions. The app contains `isVehicleOemSupported(vin)`, but a search across all DEX files finds zero call sites. A dev-only mock keeps a fake implementation of that function returning true, but the production path never uses it.
 
-The support flow starts false. Two paths write true:
+The support flow starts false. Three places change it: two write true, and one resets it to false.
 
 | Path | When | What it uses |
 |---|---|---|
@@ -95,9 +99,9 @@ Summing up:
 
 ## Code in the app is not evidence of support
 
-`com.hmg.ccs.sdk.dk2.rspa` contains start, stop, forward/reverse, parallel exit, engine status, and control owner (phone / smart key). This SDK is shared across every Hyundai model. A function existing in the binary does not mean the GN7 implements it. That is where the missing button fits: the app does not remove features by model table; it opens the button when the car reports 1536 status. If the GN7 never reports it, the button never appears.
+`com.hmg.ccs.sdk.dk2.rspa` contains start, stop, forward/reverse, parallel exit, engine status, and control owner (phone / smart key). MyHyundai ships as one APK regardless of model, so this SDK sits on every owner's phone alike. A function existing in the binary does not mean the GN7 implements it. That is where the missing button fits: the app does not remove features by model table; it opens the button when the car reports 1536 status. If the GN7 never reports it, the button never appears.
 
-To build a forward/reverse packet, the phone needs values from the car first. Without them the app gives up on packet creation and ends with an error. A session already entered with the smart key keeps the smart key as the control owner, and the app refuses phone intervention. Mimicking the radio frequency is a separate, earlier problem. The manual's actuator is the smart-key button; the app's actuator is digital-key function 1536. The phone is not a transmitter that presses the fob's buttons on its behalf.
+To build a forward/reverse packet, the phone needs values from the car first. Without them the app gives up on packet creation and ends with an error. A session already entered with the smart key keeps the smart key as the control owner, and the app refuses phone intervention. The manual's actuator is the smart-key button; the app's actuator is digital-key function 1536. The phone is not a transmitter that presses the fob's buttons on its behalf.
 
 This path in the Android app runs through the Google Play Services digital key API. Nothing in this APK proves the same class tree exists in the iPhone app.
 
