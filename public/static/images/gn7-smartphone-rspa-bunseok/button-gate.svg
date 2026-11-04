@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 520" width="880" height="520" role="img" aria-labelledby="title">
+  <title id="title">원격주차 버튼이 그려지는 조건</title>
+  <style>
+    text { font-family: "Apple SD Gothic Neo", "Noto Sans KR", sans-serif; fill: #1c1917; }
+    .h { font-size: 13px; font-weight: 700; letter-spacing: 0.04em; }
+    .b { font-size: 15px; }
+    .s { font-size: 13px; fill: #57534e; }
+  </style>
+  <rect width="880" height="520" fill="#faf8f5"/>
+  <text x="32" y="36" class="h">홈 카드가 버튼을 그리는 순서</text>
+  <text x="32" y="60" class="s">차종 코드, VIN, 서버 플래그는 이 순서에 없다</text>
+
+  <rect x="250" y="84" width="380" height="52" rx="8" fill="#fff" stroke="#1c1917"/>
+  <text x="440" y="116" text-anchor="middle" class="b">디지털키 2 제어 카드</text>
+
+  <line x1="440" y1="136" x2="440" y2="164" stroke="#a8a29e"/>
+  <polygon points="434,164 446,164 440,174" fill="#a8a29e"/>
+
+  <rect x="210" y="178" width="460" height="52" rx="8" fill="#fff" stroke="#d6d3d1"/>
+  <text x="440" y="210" text-anchor="middle" class="b">잠금·창문·시동 버튼이 1개 이상인가</text>
+
+  <line x1="280" y1="230" x2="160" y2="268" stroke="#a8a29e"/>
+  <line x1="600" y1="230" x2="700" y2="268" stroke="#a8a29e"/>
+  <text x="188" y="252" class="s">아니오</text>
+  <text x="628" y="252" class="s">예</text>
+
+  <rect x="32" y="276" width="250" height="72" rx="8" fill="#fff" stroke="#9a3412"/>
+  <text x="157" y="306" text-anchor="middle" class="b">카드 자체를 안 그림</text>
+  <text x="157" y="328" text-anchor="middle" class="s">1536과 무관할 수 있음</text>
+
+  <rect x="560" y="276" width="288" height="52" rx="8" fill="#fff" stroke="#d6d3d1"/>
+  <text x="704" y="308" text-anchor="middle" class="b">지원 흐름 F 가 참인가</text>
+
+  <line x1="640" y1="328" x2="520" y2="368" stroke="#a8a29e"/>
+  <line x1="760" y1="328" x2="760" y2="368" stroke="#a8a29e"/>
+  <text x="548" y="356" class="s">아니오</text>
+  <text x="772" y="356" class="s">예</text>
+
+  <rect x="360" y="376" width="280" height="88" rx="8" fill="#fff" stroke="#9a3412"/>
+  <text x="500" y="408" text-anchor="middle" class="b">다른 버튼만 보임</text>
+  <text x="500" y="432" text-anchor="middle" class="s">1536 상태 없음 + 캐시가 거짓</text>
+  <text x="500" y="452" text-anchor="middle" class="s">전용 질의는 이 상태에서 안 나감</text>
+
+  <rect x="660" y="376" width="188" height="72" rx="8" fill="#1c1917"/>
+  <text x="754" y="408" text-anchor="middle" class="b" fill="#faf8f5">원격주차 버튼</text>
+  <text x="754" y="430" text-anchor="middle" class="s" fill="#d6d3d1">ic_filled_rspa</text>
+</svg>
