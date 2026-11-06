@@ -142,7 +142,14 @@ function langmult() {
 // ---------------------------------------------------------------- render
 const file = 'components/charts/svg-data.json'
 const data = JSON.parse(fs.readFileSync(file, 'utf8'))
-const next = { ...data, paradox: paradox(), langmult: langmult() }
+
+// Authored labels as small as 10px fall under 10px once the figure is scaled
+// down to the 654px desktop column, so clamp the floor at 11.
+const clampFonts = (s) =>
+  s.replace(/font-size="([0-9.]+)"/g, (m, v) => (parseFloat(v) < 11 ? 'font-size="11"' : m))
+
+const merged = { ...data, paradox: paradox(), langmult: langmult() }
+const next = Object.fromEntries(Object.entries(merged).map(([k, v]) => [k, clampFonts(v)]))
 fs.writeFileSync(file, JSON.stringify(next, null, 2) + '\n')
 
 console.log('wrote', Object.keys(next).join(', '))
