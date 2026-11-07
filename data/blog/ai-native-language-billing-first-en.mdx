@@ -1,0 +1,237 @@
+---
+title: 'Look at the bill before you build a language AI prefers'
+description: 'Could a language built for AI beat TypeScript and Rust? Decompose a real agent bill and code text is 0.8%. I ran the experiment myself: a 29x larger repo raised input tokens by only 18%.'
+summary: 'Could a language built for AI beat TypeScript and Rust? Decompose a real agent bill and code text is 0.8%. I ran the experiment myself: a 29x larger repo raised input tokens by only 18%. The bottleneck is harness fixed cost, not syntax.'
+date: '2026-11-06'
+lastmod: '2026-11-06'
+tags: ['AI Agents', 'LLM', 'Cost Analysis']
+lang: en
+translations:
+  ko: ai-native-language-billing-first
+  en: ai-native-language-billing-first-en
+firstHand:
+  type: measurement
+  evidence: 'Agent execution cost is my own measurement (same bug, 7-file repo vs 202-file repo, 8 sequential runs and 10 parallel runs). Every other figure is quoted, with the original conditions stated in the text. I did not reproduce the cited papers.'
+sources:
+  - https://arxiv.org/abs/2607.12161
+  - https://arxiv.org/abs/2604.07502
+  - https://arxiv.org/abs/2606.01326
+  - https://arxiv.org/abs/2610.08794
+  - https://arxiv.org/abs/2410.16292
+  - https://arxiv.org/abs/2607.22807
+  - https://arxiv.org/abs/2402.01030
+  - https://arxiv.org/abs/2607.14167
+  - https://arxiv.org/abs/2310.01798
+---
+
+import { Chart } from 'components/charts/Chart'
+
+Code text is 0.8% of an agent bill. Erase every line a human can actually touch and 6% remains. I put the same bug in a 7-file repo and a 202-file repo and ran the same prompt at each: input tokens rose 18% while the repo grew 29x.
+
+Building a new language aims at that 0.8%. The rest of the bill goes up again every turn.
+
+## Decomposing the bill
+
+"Token Reduction Is Not Cost Reduction" (arXiv 2607.12161, 2026-07) breaks down 1,212 Claude Code sessions and 11,773 requests by component. By cost, not by token count.
+
+| Component                           | Share of context | Share of cost |
+| ----------------------------------- | ---------------- | ------------- |
+| Harness base (system prompt, tools) | 71.6%            | **74.7%**     |
+| Hidden thinking                     | 21.8%            | 19.4%         |
+| Tool output                         | 3.5%             | 3.3%          |
+| Tool call arguments                 | 1.6%             | 1.4%          |
+| **File text read from disk**        | 0.9%             | **0.8%**      |
+| Conversation history                | 0.5%             | 0.5%          |
+
+Those six rows are everything a human can touch. Code sits at the bottom.
+
+<figure className="my-8 -mx-2 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+<Chart id="cost" lang="en" />
+
+<figcaption className="mt-3 text-center text-[13px] leading-relaxed text-gray-500 dark:text-gray-400">
+    Agent bill decomposed by component, by cost. Code is 0.8%, at the bottom. Source: arXiv 2607.12161
+    Table 1.
+  </figcaption>
+</figure>
+
+That table is an empirical average over a specific workload, priced with Claude Code and Haiku 4.5. The paper says so itself: _"These are empirical averages from the coding-agent workloads evaluated in this study, not industry averages."_ Change the model or the harness and the ratios move. The ordering, with code at the bottom, still points the same way as my own measurement (29x to 18%).
+
+A harness prompt is billed again every turn. Code is read once and done, but the system prompt and tool schemas go up 200 times across 200 turns.
+
+| Intervention         | Savings                      |
+| -------------------- | ---------------------------- |
+| Compress code by 50% | **0.4%**                     |
+| Cut turns by 10%     | **about 7.5%** (74.7% × 10%) |
+
+<figure className="my-8 -mx-2 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+<Chart id="perTurn" lang="en" />
+
+<figcaption className="mt-3 text-center text-[13px] leading-relaxed text-gray-500 dark:text-gray-400">
+    Cumulative bill out to 20 turns, with one turn normalized to 1. The harness repeats every turn and
+    climbs to 1,494; code stays at 0.8. Arithmetic from the table above, not an experiment.
+  </figcaption>
+</figure>
+
+The arithmetic comes from the same table. Cutting turns by 10% does about 18x more than halving the code. Halving your code with a new language is touching the rounding error on the bill.
+
+## The 29x experiment
+
+Quoting was not enough, so I ran it. The same bug went into a 7-file repo and a 202-file repo, with the same prompt at each.
+
+The first pass ran five at a time in parallel.
+
+| Condition    | 7 files                           | 202 files                          |
+| ------------ | --------------------------------- | ---------------------------------- |
+| Parallel (5) | 6, 21, 40, 35, 43 → mean **29.0** | 10, 12, 10, 12, 40 → mean **16.8** |
+
+The smaller repo took longer. The cause was not the repo but the run order: I ran the five small-repo trials first and the five large-repo trials second, so queue time overlapped the condition completely.
+
+I re-ran them one at a time.
+
+<figure className="my-8 -mx-2 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+<Chart id="turns" lang="en" />
+
+<figcaption className="mt-3 text-center text-[13px] leading-relaxed text-gray-500 dark:text-gray-400">
+    Turn-count distribution over 8 sequential runs. One dot is one run. The two ranges overlap fully at
+    7-11 turns, and the 95% confidence interval on the difference crosses zero.
+  </figcaption>
+</figure>
+
+| Condition      | 7-file turns                 | 202-file turns                  |
+| -------------- | ---------------------------- | ------------------------------- |
+| Sequential (1) | 7, 11, 9, 11 → mean **9.50** | 10, 11, 10, 11 → mean **10.50** |
+
+The difference is 1.0 turn, with a 95% confidence interval of -1.92 to +3.92 turns, p=0.38 (Welch t=1.00, df=3.54, d=0.71). Zero sits inside the interval, so "no difference" is the right reading.
+
+The same repo and the same task took 40 turns in parallel and 7 turns alone. The "+50%" and "-86%" before that were both noise.
+
+Tokens came out like this.
+
+| Repo      | Mean input tokens | Turns |
+| --------- | ----------------- | ----- |
+| 7 files   | 161,602           | 9.50  |
+| 202 files | 190,729           | 10.50 |
+
+The file count is 29x larger; input tokens are 1.18x. The rest comes from turn count. Across the 8 sequential runs, input per turn ranged from 14,710 to 21,092 tokens. Fixing a one-line bug still meant resending that much every turn. Cache reads were 54.5% of billed tokens (50.6-59.7% per run), which means the same conversation was resent every turn.
+
+<figure className="my-8 -mx-2 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+<Chart id="cache" lang="en" />
+
+<figcaption className="mt-3 text-center text-[13px] leading-relaxed text-gray-500 dark:text-gray-400">
+    Cache reads as a share of billed tokens. The 8-run total is 54.5%, and individual runs range from
+    50.6% to 59.7%.
+  </figcaption>
+</figure>
+
+However you shape the code, most of the bill is not code.
+
+## Compression costs more
+
+Compressing the syntax should make things cheaper. There is a direct refutation.
+
+"Beyond Human-Readable" (arXiv 2604.07502, 2026-04):
+
+> _aggressive compression **increased total session cost by 67%** despite reducing input tokens by 17%_
+
+Input tokens fell 17% and the session bill rose 67%, because the model reasons more while decoding the compressed form. The authors' conclusion is "semantic density optimization", not "minimum tokens".
+
+<figure className="my-8 -mx-2 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+<Chart id="paradox" lang="en" />
+
+<figcaption className="mt-3 text-center text-[13px] leading-relaxed text-gray-500 dark:text-gray-400">
+    The compression paradox. The grey bar is savings (-17%), the pink bar is spend (+67%). They diverge
+    on opposite sides of zero. Source: arXiv 2604.07502.
+  </figcaption>
+</figure>
+
+Other compression experiments price out just as badly.
+
+| Intervention                                      | Token savings         | Quality loss                  |
+| ------------------------------------------------- | --------------------- | ----------------------------- |
+| Code minification (2606.01326)                    | **-42%** input tokens | **-12pp** solve rate          |
+| File exploration → Tree-sitter graph (2603.27277) | 10x fewer tokens      | **83% vs 92%** answer quality |
+
+That trades 12 percentage points of solve rate for 42% of the tokens. The knowledge-graph version cut tokens tenfold and quality fell 9 points.
+
+## Tokenizers have converged
+
+Maybe a syntax that tokenizes favorably would help. That has been measured too.
+
+Tokka-Bench (arXiv 2610.08794) measures 20 programming languages and concludes:
+
+> _programming-language efficiency has **converged** among recent tokenizers_
+
+Across recent tokenizers, the spread between `cl100k` and `o200k` is about -1.4% to +2.4%. Anthropic's newest tokenizer produces roughly 30% more tokens for the same text. The trend runs against new-language designers.
+
+## Language explains 16%
+
+This is not an argument that language is meaningless. Measured properly:
+
+| Study                           | Finding                                                            |
+| ------------------------------- | ------------------------------------------------------------------ |
+| Barbero (arXiv 2410.16292)      | **Language explains about 16%** of model performance variance      |
+| Multi-LCB (arXiv 2606.20517)    | A well-trained model differs from Python by **0.6pp** on Rust      |
+| 2607.22807 (2,000 trajectories) | Accuracy barely moves by language, but **tokens move up to 1.69x** |
+
+<figure className="my-8 -mx-2 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+<Chart id="langmult" lang="en" />
+
+<figcaption className="mt-3 text-center text-[13px] leading-relaxed text-gray-500 dark:text-gray-400">
+    Token multiplier versus Python, over 2,000 trajectories. The dashed line is Python at 1.00x, and
+    longer to the right is more expensive. Java dips to 0.85x while Rust and OCaml are always costlier,
+    and only OCaml is significant across all three models. Source: arXiv 2607.22807.
+  </figcaption>
+</figure>
+
+<figure className="my-8 -mx-2 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-900">
+<Chart id="lang" lang="en" />
+
+<figcaption className="mt-3 text-center text-[13px] leading-relaxed text-gray-500 dark:text-gray-400">
+    Language accounts for 16% of model performance variance. Source: arXiv 2410.16292 (GPT-4o-mini, 8
+    languages, Codewars).
+  </figcaption>
+</figure>
+
+The other 84% is model, task, and prompt. Even that 16% turns on how much the model has thought in that language, not on the language being better. The paper's phrase is _"process cost is not surface cost"_.
+
+Faced with an unfamiliar language, models prototype in Python first and translate. Give them a new language and they do not think in it; they think in a familiar one and port the result. Translation cost eats the syntax savings immediately.
+
+## The levers sit outside the language
+
+Ordered by effect for the same spend. None of these require changing language.
+
+| Rank | Lever                            | Measured effect                                  |
+| ---- | -------------------------------- | ------------------------------------------------ |
+| 1    | **Cut harness fixed cost**       | 29x repo → **18%** more input (my measurement)   |
+| 2    | **Turn tool calls into code**    | 150,000 → 2,000 tokens, **-98.7%** (Code Mode)   |
+| 3    | **Put alternatives in feedback** | 14/50 → **36/50**, **+44pp** (VeriHarness)       |
+| 4    | **Switch edit format to diff**   | **20% → 61%** (Aider, same model, same language) |
+| 5    | Language surface                 | **16%** ceiling on variance                      |
+| —    | Syntax compression               | **0.4%** of the bill                             |
+
+Rank 4 is the telling one. Aider left the language alone, switched the edit format to unified diff, and tripled the success rate. The paper is titled _"Unified diffs make GPT-4 Turbo 3X less lazy"_, and its diagnosis is precise.
+
+> _GPT is terrible at working with source code line numbers_ … _choose an edit format that GPT is already familiar with_
+
+A format that matches the training distribution wins. That is the same reason a new language loses, diff wins, and code mode wins.
+
+Do not expect self-correction without a verifier. "LLMs Cannot Self-Correct Reasoning Yet" (arXiv 2310.01798, ICLR 2024) reports that without external feedback, performance can get worse.
+
+## If you are evaluating a new language
+
+Measure these four before building anything.
+
+1. **Measure total session cost.** Not input tokens. Input can fall while cost rises (-17% to +67%).
+2. **Make turn count the dependent variable.** Code compression ratio is not a metric. Compress perfectly and, if turns hold, so does the bill.
+3. **Suspect the harness first.** Count how much system prompt, tool schemas, and memory injection go up every turn. In my runs that was 14k-21k input tokens per turn, with 54.5% of billed tokens as cache reads.
+4. **Change the format first.** Switching edit format is 3x cheaper than switching language.
+
+## Limits
+
+- **My measurement is n=4.** Four sequential runs each, 8 total. The no-effect conclusion holds for this sample; I am not claiming no larger effect exists.
+- **The parallel pass was a failed experiment.** Condition and queue order overlapped. I re-measured sequentially and report both here.
+- **I did not reproduce the cited papers.** The 0.8%/74.7% from 2607.12161, Aider's 20% to 61%, and VeriHarness's 14/50 to 36/50 are the papers' reported values. The only thing I re-ran is the repo-size experiment.
+- **"10% fewer turns → 7.5% savings" is arithmetic.** It follows from 74.7% being rebilled every turn; it is not a cited experiment.
+- **This post originally had an arithmetic error of mine.** I wrote that "98.7% of billed tokens are cache reads." Since `billed = input + cacheRead + output` matches exactly across all 8 runs, those two are separate additive terms. Dividing by the remainder was wrong, and the correct figure is 54.5%. A number check before publication caught it.
+
+The direction holds. The harness is three quarters of the bill and code is under one percent, from two independent measurements, and my own (29x to 18%) points the same way.
