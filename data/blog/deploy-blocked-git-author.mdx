@@ -1,0 +1,41 @@
+---
+title: "배포가 BLOCKED로 멈췄다 — 커밋 작성자 한 줄 때문에"
+date: "2026-11-16T18:30:00.000Z"
+tags: ["dev-diary", "deploy", "vercel"]
+draft: false
+summary: "빌드는 시작조차 못 했는데 코드는 멀쩡했다. Vercel이 커밋 작성자를 Git 계정과 매칭하지 못해 배포를 막는 경우와 그 확인법."
+---
+오늘 저녁, 블로그 글 여섯 편을 커밋하고 푸시했더니 배포가 움직이지 않았다. 상태는 `BLOCKED`. 빌드 로그는 비어 있었다.
+
+## 증상
+
+CI는 초록이었고 코드도 문제가 없었다. 그런데 배포만 멈췄다. 처음엔 캐시를 의심했고, 다음엔 빌드 시간 초과를 의심했다. 둘 다 아니었다.
+
+## 확인
+
+Vercel API로 배포 상태를 직접 조회하면 이유가 한 줄로 나온다.
+
+```
+state: BLOCKED
+substate: The deployment was blocked because Vercel couldn't find a Git account for the commit author.
+```
+
+커밋 작성자가 저장소에 연결된 Git 계정과 매칭되지 않는다는 뜻이다. 자동화 스크립트가 `bot@example.local` 같은 주소로 커밋하면 실제로 이 상황이 된다.
+
+## 해결
+
+작성자만 고쳐서 다시 커밋하면 끝이다. 커밋 내용은 그대로 두고 메타데이터만 바꾼다.
+
+```
+git reset --soft HEAD~1
+git -c user.name="실제이름" -c user.email="실제이메일" commit -m "같은 메시지"
+git push --force-with-lease origin main
+```
+
+`--force-with-lease`를 쓰는 이유는 원격이 그 사이 바뀌었는지 확인하기 위해서다. 혼자 쓰는 브랜치라도 이 습관이 사고를 막는다.
+
+## 배운 것
+
+배포가 멈췄을 때 로그가 비어 있으면 빌드 이전 단계에서 막힌 것이다. 그때는 상태 API를 직접 보는 편이 빠르다. CLI가 `UNKNOWN`으로 표시하는 것도 이 경우가 많다 — 실제로는 `BLOCKED`인데 조회 경로가 달라 그렇게 보인다.
+
+자동화로 커밋하는 스크립트를 만든다면, `git config user.email`을 항상 저장소 소유자로 명시해 두는 게 좋다. 오늘 배운 건 그 한 줄이었다.
